@@ -122,7 +122,19 @@ const Register2 = () => {
             marginBottom: '10px'
           }}
         >
-          <FormControl sx={{ width: '50%', marginRight: '10px' }} variant='outlined'>
+          <FormControl sx={{ width: '100%' }} variant='outlined'>
+            <InputLabel htmlFor='outlined1'>Username</InputLabel>
+            <OutlinedInput
+              id='outlined1'
+              endAdornment={
+                <InputAdornment position='end'>
+                  <PersonIcon />
+                </InputAdornment>
+              }
+              label='Username'
+            />
+          </FormControl>
+          {/* <FormControl sx={{ width: '50%', marginRight: '10px' }} variant='outlined'>
             <InputLabel htmlFor='outlined-adornment-password'>First name</InputLabel>
             <OutlinedInput
               id='outlined-adornment-password'
@@ -145,7 +157,7 @@ const Register2 = () => {
               }
               label='Last name'
             />
-          </FormControl>
+          </FormControl> */}
         </Box>
         <Box
           sx={{

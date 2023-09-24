@@ -1,5 +1,6 @@
 import { MongoClient } from 'mongodb'
 import { config } from 'dotenv'
+import mongoose from 'mongoose'
 config()
 const uri = 'mongodb+srv://anhsangprovl:anhsangprovl@cluster0.defhizq.mongodb.net/?retryWrites=true&w=majority'
 

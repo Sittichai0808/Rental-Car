@@ -9,7 +9,7 @@ import { hashPassword } from '../utils/crypto.js'
 export const registerValidator = validate(
   checkSchema(
     {
-      name: {
+      username: {
         notEmpty: {
           errorMessage: USER_MESSAGES.NAME_IS_REQUIRED
         },

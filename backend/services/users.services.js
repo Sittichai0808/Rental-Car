@@ -11,10 +11,10 @@ class UsersService {
   signAccessToken(user_id) {
     return signToken({
       payload: { user_id, token_type: TokenType.AccessToken },
-      privateKey: process.env.JWT_SECRET_ACCESS_TOKEN,
-      options: {
-        expiresIn: process.env.ACCESS_TOKEN_EXPIRES_IN
-      }
+      privateKey: process.env.JWT_SECRET_ACCESS_TOKEN
+      // options: {
+      //   expiresIn: process.env.ACCESS_TOKEN_EXPIRES_IN
+      // }
     })
   }
 
@@ -46,9 +46,13 @@ class UsersService {
     return Boolean(user)
   }
 
-  async login(user_id) {
+  async login(payload) {
+    const user = { ...payload }
+    const user_id = user._id
+
+    const { password: hashedPassword, ...rest } = user._doc
     const access_token = await this.signAccessToken(user_id)
-    return { user_id, access_token }
+    return { rest, access_token }
   }
 }
 

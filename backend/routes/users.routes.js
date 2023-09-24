@@ -20,4 +20,9 @@ usersRoutes.post('/register', registerValidator, wrapRequestHandler(registerCont
  */
 usersRoutes.post('/login', loginValidator, wrapRequestHandler(loginController))
 
+usersRoutes.get('/lay-cookie', (req, res) => {
+  const tenCookie = req.cookies.access_token
+  const tenCookie1 = req.cookies.ten_cookie
+  res.send(`Giá trị của cookie là: ${tenCookie}  and ${tenCookie1}`)
+})
 export default usersRoutes

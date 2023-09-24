@@ -4,26 +4,44 @@ import databaseServices from './services/database.services.js'
 import { defaultErrorHandler } from './middlewares/errors.middlewares.js'
 import express from 'express'
 import mongoose from 'mongoose'
+import cookieParser from 'cookie-parser'
+import cors from 'cors'
 const app = express()
 const port = 4000
 console.log('hello')
-// databaseServices.connect()
-
-mongoose
-  .connect(
-    'mongodb+srv://anhsangprovl:anhsangprovl@cluster0.defhizq.mongodb.net/rental-car?retryWrites=true&w=majority'
-  )
-  .then(() => {
-    console.log('Connected to MongoDB')
+databaseServices.connect()
+app.use(
+  cors({
+    origin: 'http://localhost:3000', // Thay đổi nguồn gốc tại đây nếu cần
+    credentials: true // Cho phép sử dụng các credentials như cookie
   })
-  .catch((err) => {
-    console.log(err)
-  })
+)
 app.use(express.json())
-
-app.use('/users', usersRouter)
-app.use(defaultErrorHandler)
+app.use(cookieParser())
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
+})
+
+app.use('/users', usersRouter)
+// app.use((err, req, res, next) => {
+//   const statusCode = err.statusCode || 500
+//   const message = err.message || 'Internal Server Error'
+//   return res.status(statusCode).json({
+//     success: false,
+//     message,
+//     statusCode
+//   })
+// })
+app.use((err, req, res, next) => {
+  if (err instanceof ErrorWithStatus) {
+    return res.status(err.status).json(omit(err, ['status']))
+  }
+  Object.getOwnPropertyNames(err || Object(err)).forEach((key) => {
+    Object.defineProperty(err, key, { enumerable: true })
+  })
+  return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
+    message: err,
+    errorInfo: omit(err, ['stack'])
+  })
 })

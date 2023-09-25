@@ -83,7 +83,7 @@ const Sidebar = () => {
               <ListItemIcon>
                 <AiOutlineUser />
               </ListItemIcon>
-              <ListItemText primary='Tài khoản của tôi' />
+              <ListItemText primary='My Account' />
             </ListItemButton>
           </ListItem>
           <ListItem
@@ -102,7 +102,7 @@ const Sidebar = () => {
                 <AiOutlineHeart />
               </ListItemIcon>
               <ListItemText
-                primary='Xe yêu thích'
+                primary='My FavoriteCar'
                 sx={{
                   color: '#000000'
                 }}
@@ -125,7 +125,7 @@ const Sidebar = () => {
                 <AiOutlineCar width={50} height={100} />
               </ListItemIcon>
               <ListItemText
-                primary='Xe của tôi'
+                primary='My Car'
                 sx={{
                   color: '#000000'
                 }}
@@ -148,7 +148,7 @@ const Sidebar = () => {
                 <BiTrip />
               </ListItemIcon>
               <ListItemText
-                primary='Chuyến đi của tôi'
+                primary='My Trip'
                 sx={{
                   color: '#000000'
                 }}
@@ -171,7 +171,7 @@ const Sidebar = () => {
                 <BiGift />
               </ListItemIcon>
               <ListItemText
-                primary='Khuyến mãi/ Quà tặng'
+                primary='Gift'
                 sx={{
                   color: '#000000'
                 }}
@@ -193,7 +193,7 @@ const Sidebar = () => {
               <ListItemIcon>
                 <PiAddressBookLight />
               </ListItemIcon>
-              <ListItemText primary='Địa chỉ của tôi' />
+              <ListItemText primary='My Address' />
             </ListItemButton>
           </ListItem>
           <ListItem
@@ -211,7 +211,7 @@ const Sidebar = () => {
               <ListItemIcon>
                 <RiGitRepositoryPrivateLine />
               </ListItemIcon>
-              <ListItemText primary='Đổi mật khẩu' />
+              <ListItemText primary='Change Password' />
             </ListItemButton>
           </ListItem>
           <ListItem
@@ -229,7 +229,7 @@ const Sidebar = () => {
               <ListItemIcon>
                 <CiLogout />
               </ListItemIcon>
-              <ListItemText primary='Đăng xuất' />
+              <ListItemText primary='LogOut' />
             </ListItemButton>
           </ListItem>
 
@@ -247,7 +247,7 @@ const Sidebar = () => {
               <ListItemIcon>
                 <AiOutlineDelete />
               </ListItemIcon>
-              <ListItemText primary='Yêu cầu xóa tài khoản' />
+              <ListItemText primary='Delete Password' />
             </ListItemButton>
           </ListItem>
         </List>

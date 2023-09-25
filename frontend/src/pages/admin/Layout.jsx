@@ -9,7 +9,7 @@ const Layout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true)
 
   return (
-    <Box display={isNonMobile ? 'flex' : 'block'} width='100%' height='100%'>
+    <Box display={isNonMobile ? '-webkit-inline-box' : 'block'} width='100%' height='100%' bgcolor='#f2f5f9'>
       <Sidebar
         isNonMobile={isNonMobile}
         drawerWidth='250px'

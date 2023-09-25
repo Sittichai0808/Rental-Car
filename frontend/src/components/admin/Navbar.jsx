@@ -1,14 +1,14 @@
 import React, { useState } from 'react'
 import {
-  DarkModeOutlined,
   Menu as MenuIcon,
   Search,
-  SettingsOutlined,
   ArrowDropDownOutlined,
   NotificationsNoneOutlined,
   ChatBubbleOutlineOutlined
 } from '@mui/icons-material'
+import { styled } from '@mui/material/styles'
 import Badge from '@mui/material/Badge'
+import MuiAppBar from '@mui/material/AppBar'
 import {
   AppBar,
   Button,
@@ -28,6 +28,7 @@ const Navbar = ({ isSidebarOpen, setIsSidebarOpen }) => {
   const isOpen = Boolean(anchorEl)
   const handleClick = (event) => setAnchorEl(event.currentTarget)
   const handleClose = () => setAnchorEl(null)
+
   return (
     <AppBar
       sx={{
@@ -68,12 +69,6 @@ const Navbar = ({ isSidebarOpen, setIsSidebarOpen }) => {
           }}
         >
           <IconButton>
-            <DarkModeOutlined sx={{ fontSize: '25px' }} />
-          </IconButton>
-          <IconButton>
-            <SettingsOutlined sx={{ fontSize: '25px' }} />
-          </IconButton>
-          <IconButton>
             <Badge badgeContent={4} color='error'>
               <NotificationsNoneOutlined sx={{ fontSize: '25px' }} />
             </Badge>
@@ -84,7 +79,7 @@ const Navbar = ({ isSidebarOpen, setIsSidebarOpen }) => {
             </Badge>
           </IconButton>
 
-          <Box display='flex' justifyContent='space-between' alignItems='center'>
+          <Box display='flex' alignItems='center'>
             <Button
               onClick={handleClick}
               sx={{
@@ -92,7 +87,11 @@ const Navbar = ({ isSidebarOpen, setIsSidebarOpen }) => {
                 justifyContent: 'space-between',
                 alignItems: 'center',
                 textTransform: 'none',
-                gap: '1rem'
+                borderRadius: '20%',
+                bgcolor: '#E3F2FD',
+                ':hover': {
+                  bgcolor: '#1E88E5'
+                }
               }}
             >
               <Box
@@ -104,14 +103,6 @@ const Navbar = ({ isSidebarOpen, setIsSidebarOpen }) => {
                 borderRadius='50%'
                 sx={{ objectFit: 'cover' }}
               />
-              <Box textAlign='left'>
-                <Typography fontWeight='bold' fontSize='0.85rem' sx={{ color: '#000' }}>
-                  Huytn
-                </Typography>
-                <Typography fontSize='0.75rem' sx={{ color: '#000' }}>
-                  Admin
-                </Typography>
-              </Box>
               <ArrowDropDownOutlined sx={{ color: '#000', fontSize: '25px' }} />
             </Button>
             <Menu

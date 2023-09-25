@@ -28,43 +28,42 @@ import { useLocation, useNavigate } from 'react-router-dom'
 
 const navItems = [
   {
-    text: 'Dashboard',
-    icon: <HomeOutlined />
+    text: 'Bảng Điều Khiển',
+    icon: <HomeOutlined />,
+    path: 'dashboard'
   },
   {
-    text: 'Management',
-    icon: null
+    text: 'Xe',
+    icon: <DirectionsCarOutlined />,
+    path: 'cars'
   },
   {
-    text: 'Cars',
-    icon: <DirectionsCarOutlined />
+    text: 'Người dùng',
+    icon: <Groups2Outlined />,
+    path: 'users'
   },
   {
-    text: 'Users',
-    icon: <Groups2Outlined />
+    text: 'Duyệt xe',
+    icon: <ReceiptLongOutlined />,
+    path: 'registerCar'
   },
   {
-    text: 'Booking',
-    icon: <ReceiptLongOutlined />
+    text: 'Lịch Thuê Xe',
+    icon: <CalendarMonthOutlined />,
+    path: 'booking'
   },
   {
-    text: 'Calender',
-    icon: <CalendarMonthOutlined />
+    text: 'Báo Cáo',
+    icon: <ReportOutlined />,
+    path: 'reports'
   },
   {
-    text: 'Action',
-    icon: null
+    text: 'Cài Đặt',
+    icon: <SettingsOutlined />,
+    path: 'settings'
   },
   {
-    text: 'Report',
-    icon: <ReportOutlined />
-  },
-  {
-    text: 'Settings',
-    icon: <SettingsOutlined />
-  },
-  {
-    text: 'Sign Out',
+    text: 'Đăng Xuất',
     icon: <LogoutOutlined />
   }
 ]
@@ -84,14 +83,14 @@ const Sidebar = ({ drawerWidth, isSidebarOpen, setIsSidebarOpen, isNonMobile }) 
       {isSidebarOpen && (
         <Drawer
           open={isSidebarOpen}
-          onClose={() => setIsSidebarOpen(false)}
+          onClose={() => setIsSidebarOpen(true)}
           variant='persistent'
           anchor='left'
           sx={{
             width: drawerWidth,
             '& .MuiDrawer-paper': {
               color: '#cccc',
-              backgroundColor: '#ffff',
+              backgroundColor: '#f8f9fa',
               boxSizing: 'border-box',
               borderWidth: '2px',
               width: drawerWidth
@@ -99,8 +98,8 @@ const Sidebar = ({ drawerWidth, isSidebarOpen, setIsSidebarOpen, isNonMobile }) 
           }}
         >
           <Box width='100%'>
-            <Box m='1rem 1rem 1rem 1rem'>
-              <Box display='flex' justifyContent='center' alignItems='center' color={theme.palette.primary.main}>
+            <Box m='2rem 2rem 1.4rem 1rem'>
+              <Box display='flex' justifyContent='center' alignItems='end' color='#000'>
                 <Box display='flex' alignItems='center' gap='0.5rem'>
                   <Typography variant='h4' fontWeight='bold'>
                     CRT
@@ -114,46 +113,40 @@ const Sidebar = ({ drawerWidth, isSidebarOpen, setIsSidebarOpen, isNonMobile }) 
               </Box>
             </Box>
             <List>
-              {navItems.map(({ text, icon }) => {
-                if (!icon) {
-                  return (
-                    <Typography
-                      key={text}
-                      sx={{
-                        m: '1rem 0 1rem 3rem',
-                        color: '#000000'
-                      }}
-                    >
-                      {text}
-                    </Typography>
-                  )
-                }
-                const lcText = text.toLowerCase()
+              {navItems.map(({ text, icon, path }) => {
+                const lcPath = path
                 return (
-                  <ListItem key={text} disablePadding>
+                  <ListItem key={text}>
                     <ListItemButton
                       onClick={() => {
-                        navigate(`/${lcText}`)
-                        setActive(lcText)
+                        navigate(`/${lcPath}`)
+                        setActive(lcPath)
                       }}
                       sx={{
-                        backgroundColor: active === lcText ? 'rgba(150, 246, 150, 0.5)' : 'transparent',
-                        color: active === lcText ? '#43fb05' : '#8c8c8c',
+                        backgroundColor: active === lcPath ? '#ffffff' : 'transparent',
+                        color: active === lcPath ? '#2a2a2b' : '#8c8c8c',
+                        boxShadow: active === lcPath ? '0px 2px 9px 0.4px rgba(209,209,209,0.8)' : 'none',
                         ':hover': {
-                          bgcolor: 'rgba(150, 246, 150, 0.5)'
-                        }
+                          bgcolor: '#ffffff'
+                        },
+                        borderRadius: '10px'
                       }}
                     >
                       <ListItemIcon
                         sx={{
-                          ml: '2rem',
-                          color: active === lcText ? '#43fb05' : '#8c8c8c'
+                          color: active === lcPath ? '#fbfeff' : '#575d84',
+                          minWidth: '36px',
+                          boxShadow: '0px 2px 9px 0.4px rgba(209,209,209,0.8)',
+                          justifyContent: 'center',
+                          padding: '6px',
+                          marginRight: '16px',
+                          borderRadius: '10px',
+                          bgcolor: active === lcPath ? '#17c1e8' : 'none'
                         }}
                       >
                         {icon}
                       </ListItemIcon>
                       <ListItemText primary={text} />
-                      {active === lcText && <ChevronRightOutlined sx={{ ml: 'auto' }} />}
                     </ListItemButton>
                   </ListItem>
                 )

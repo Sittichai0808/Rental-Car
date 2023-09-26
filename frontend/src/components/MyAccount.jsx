@@ -15,14 +15,55 @@ import LinkOffIcon from '@mui/icons-material/LinkOff'
 import Tab from '@mui/material/Tab'
 import TabContext from '@mui/lab/TabContext'
 import TabList from '@mui/lab/TabList'
+import Button from '@mui/material/Button'
 import TabPanel from '@mui/lab/TabPanel'
+import DialogTitle from '@mui/material/DialogTitle'
+import Modal from '@mui/material/Modal'
+import IconButton from '@material-ui/core/IconButton'
+import CloseIcon from '@material-ui/icons/Close'
 
+import { FormControl, FormLabel } from '@mui/material'
+import MenuItem from '@mui/material/MenuItem'
+import Select from '@mui/material/Select'
+
+const sex = [
+  {
+    value: 'Male',
+    label: 'Nam'
+  },
+  {
+    value: 'Female',
+    label: 'Nữ'
+  }
+]
+
+const style = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: 500,
+  height: 500,
+  border: '1px solid #e0e0e0',
+  fontSize: '1.25rem',
+  fontWeight: '800',
+
+  color: '#000',
+  padding: '10px',
+  bgcolor: 'background.paper',
+
+  boxShadow: 24,
+  p: 4
+}
 const MyAccount = () => {
   const [value, setValue] = React.useState('1')
 
   const handleChange = (event, newValue) => {
     setValue(newValue)
   }
+  const [open, setOpen] = React.useState(false)
+  const handleOpen = () => setOpen(true)
+  const handleClose = () => setOpen(false)
   return (
     <Box
       sx={{
@@ -49,7 +90,100 @@ const MyAccount = () => {
             fontWeight: 'bold'
           }}
         >
-          Thông tin tài khoản <AiOutlineEdit />
+          Thông tin tài khoản
+          <Button onClick={handleOpen}>
+            <AiOutlineEdit />
+          </Button>
+          <Modal
+            open={open}
+            onClose={handleClose}
+            aria-labelledby='modal-modal-title'
+            aria-describedby='modal-modal-description'
+          >
+            <Box sx={style}>
+              <Typography
+                id='modal-modal-title'
+                variant='h5'
+                component='h2'
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  fontSize: '1.5rem',
+                  fontWeight: '700'
+                }}
+              >
+                Cập nhật thông tin
+              </Typography>
+              <FormControl sx={{ width: '100%', display: 'flex', flexDirection: 'column' }} variant='outlined'>
+                <FormLabel
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    fontSize: '.875rem',
+                    fontWeight: '700',
+                    color: '#767676',
+                    padding: '5px'
+                  }}
+                >
+                  Tên tài khoản
+                </FormLabel>
+                <TextField id='outlined-size-normal' defaultValue='Thịnh Tsubasa' sx={{ paddingBottom: '20px' }} />
+                <FormLabel
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    fontSize: '.875rem',
+                    fontWeight: '700',
+                    color: '#767676'
+                  }}
+                >
+                  Ngày sinh
+                </FormLabel>
+                <TextField
+                  id='outlined-size-normal'
+                  defaultValue='01-01-1950'
+                  sx={{
+                    paddingBottom: '20px'
+                  }}
+                />
+                <FormLabel
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    fontSize: '.875rem',
+                    fontWeight: '700',
+                    color: '#767676'
+                  }}
+                >
+                  Giới tính
+                </FormLabel>
+
+                <Select labelId='demo-simple-select-helper-label' id='demo-simple-select-helper' defaultValue='Male'>
+                  {' '}
+                  {sex.map((option) => (
+                    <MenuItem key={option.value} value={option.value}>
+                      {option.label}
+                    </MenuItem>
+                  ))}
+                </Select>
+
+                <Button
+                  variant='contained'
+                  sx={{
+                    marginTop: '20px',
+                    padding: '16px 24px',
+                    color: '#fff',
+                    fontWeight: '700'
+                  }}
+                >
+                  Cập nhật
+                </Button>
+              </FormControl>
+            </Box>
+          </Modal>
         </Typography>
         <Box
           sx={{

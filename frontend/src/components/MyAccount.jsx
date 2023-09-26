@@ -36,9 +36,7 @@ const MyAccount = () => {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          flexDirection: 'column',
-          gridGap: '8px',
-          gap: '8px'
+          flexDirection: 'column'
         }}
       >
         <Typography
@@ -46,8 +44,7 @@ const MyAccount = () => {
           sx={{
             display: 'flex',
             alignItems: 'center',
-            gridGap: '8px',
-            gap: '8px',
+
             fontSize: '1.25rem',
             fontWeight: 'bold'
           }}
@@ -61,8 +58,7 @@ const MyAccount = () => {
             position: 'absolute',
             right: '100px',
             padding: '8px 16px',
-            gridGap: '4px',
-            gap: '4px',
+
             borderRadius: '8px',
             border: '1px solid #e0e0e0'
           }}
@@ -78,14 +74,12 @@ const MyAccount = () => {
           </Typography>
           Chuyến
         </Box>
+
         <Box
           justifyContent='center'
           alignItems='center'
           sx={{
             display: 'flex',
-            flexDirection: 'row',
-            gridGap: '16px',
-            gap: '16px',
             position: 'relative',
             border: '1px solid #e0e0e0',
             borderRadius: '100%',
@@ -100,7 +94,6 @@ const MyAccount = () => {
           sx={{
             fontWeight: '600',
             fontSize: '1.25rem',
-
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center'
@@ -150,6 +143,7 @@ const MyAccount = () => {
             0 điểm
           </Typography>
         </Box>
+
         <Box
           sx={{
             display: 'flex',

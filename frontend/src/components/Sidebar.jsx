@@ -74,7 +74,6 @@ const Sidebar = () => {
             sx={{
               positive: 'relative',
               display: 'flex',
-
               cursor: 'pointer',
               left: '50px'
             }}

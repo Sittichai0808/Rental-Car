@@ -15,3 +15,13 @@ export const loginController = async (req, res) => {
     result: result.rest
   })
 }
+
+export const googleController = async (req, res, next) => {
+  console.log(req.body)
+  const result = await usersService.google(req.body)
+  const expiryDate = new Date(Date.now() + 3600000) // 1 hour
+  return res.cookie('access_token', result.access_token.toString(), { httpOnly: true, expires: expiryDate }).json({
+    message: USER_MESSAGES.LOGIN_SUCCESS,
+    result: result.rest
+  })
+}

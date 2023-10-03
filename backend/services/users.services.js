@@ -54,6 +54,36 @@ class UsersService {
     const access_token = await this.signAccessToken(user_id)
     return { rest, access_token }
   }
+
+  async google(payload) {
+    try {
+      const user = { ...payload }
+      const user1 = await User.findOne({ email: user.email })
+      if (user1) {
+        const access_token = await this.signAccessToken(user1._id)
+
+        const { password: hashedPassword, ...rest } = user1._doc
+
+        return { rest, access_token }
+      } else {
+        const generatedPassword = Math.random().toString(36).slice(-8) + Math.random().toString(36).slice(-8)
+        const hashedPassword1 = hashPassword(generatedPassword).toString()
+        const newUser = new User({
+          username: user.username.split(' ').join('').toLowerCase() + Math.random().toString(36).slice(-8),
+          email: user.email,
+          password: hashedPassword1,
+          profilePicture: user.photo
+        })
+        await newUser.save()
+        const access_token = await this.signAccessToken(user._id)
+
+        const { password: hashedPassword2, ...rest } = newUser._doc
+        return { rest, access_token }
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
 }
 
 const usersService = new UsersService()

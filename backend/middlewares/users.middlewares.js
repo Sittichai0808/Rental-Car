@@ -5,6 +5,13 @@ import { USER_MESSAGES } from '../constants/messages.js'
 import usersService from '../services/users.services.js'
 import User from '../models/user.model.js'
 import { hashPassword } from '../utils/crypto.js'
+import { ErrorWithStatus } from '../models/error.js'
+import { verifyToken } from '../utils/jwt.js'
+import pkg from 'lodash'
+const { capitalize } = pkg
+
+import { config } from 'dotenv'
+config()
 
 export const registerValidator = validate(
   checkSchema(
@@ -155,3 +162,107 @@ export const loginValidator = validate(
     ['body']
   )
 )
+
+// export const accessTokenValidator = validate(
+//   checkSchema(
+//     {
+//       authorization: {
+//         trim: true,
+//         custom: {
+//           options: async (value, { req }) => {
+//             if (!value) {
+//               throw new ErrorWithStatus({
+//                 message: USER_MESSAGES.ACCESS_TOKEN_IS_REQUESTED,
+//                 status: HTTP_STATUS.UNAUTHORIZED
+//               })
+//             }
+//             const access_token = (value || '').split(' ')[1]
+
+//             if (!access_token) {
+//               throw new ErrorWithStatus({
+//                 message: USER_MESSAGES.ACCESS_TOKEN_IS_REQUESTED,
+//                 status: HTTP_STATUS.UNAUTHORIZED
+//               })
+//             }
+
+//             try {
+//               const decoded_authorization = await verifyToken({
+//                 token: access_token,
+//                 secretOrPublickey: process.env.JWT_SECRET_ACCESS_TOKEN
+//               })
+//               const { user_id } = decoded_authorization
+//               console.log(user_id)
+//               req.decoded_authorization = decoded_authorization
+//             } catch (error) {
+//               throw new ErrorWithStatus({
+//                 message: capitalize(error.message),
+//                 status: HTTP_STATUS.UNAUTHORIZED
+//               })
+//             }
+
+//             return true
+//           }
+//         }
+//       }
+//     },
+//     ['headers']
+//   )
+// )
+
+export const accessTokenValidator = async (req, res, next) => {
+  const token = req.cookies.access_token
+  if (!token) {
+    throw new ErrorWithStatus({
+      message: USER_MESSAGES.ACCESS_TOKEN_IS_REQUESTED,
+      status: HTTP_STATUS.UNAUTHORIZED
+    })
+  }
+
+  try {
+    const decoded_authorization = await verifyToken({
+      token: token,
+      secretOrPublickey: process.env.JWT_SECRET_ACCESS_TOKEN
+    })
+    const { user_id } = decoded_authorization
+
+    req.decoded_authorization = decoded_authorization
+    next()
+  } catch (error) {
+    throw new ErrorWithStatus({
+      message: capitalize(error.message),
+      status: HTTP_STATUS.UNAUTHORIZED
+    })
+  }
+}
+
+export const adminValidator = async (req, res, next) => {
+  const token = req.cookies.access_token
+  if (!token) {
+    throw new ErrorWithStatus({
+      message: USER_MESSAGES.ACCESS_TOKEN_IS_REQUESTED,
+      status: HTTP_STATUS.UNAUTHORIZED
+    })
+  }
+
+  try {
+    const decoded_authorization = await verifyToken({
+      token: token,
+      secretOrPublickey: process.env.JWT_SECRET_ACCESS_TOKEN
+    })
+    const { role } = decoded_authorization
+    if (role === 'admin') {
+      req.decoded_authorization = decoded_authorization
+      next()
+    } else {
+      throw new ErrorWithStatus({
+        message: 'You not admin',
+        status: HTTP_STATUS.UNAUTHORIZED
+      })
+    }
+  } catch (error) {
+    throw new ErrorWithStatus({
+      message: capitalize(error.message),
+      status: HTTP_STATUS.UNAUTHORIZED
+    })
+  }
+}

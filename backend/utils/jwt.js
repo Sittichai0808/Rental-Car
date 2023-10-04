@@ -16,16 +16,13 @@ export const signToken = ({ payload, privateKey, options = { algorithm: 'HS256' 
 }
 
 export const verifyToken = ({ token, secretOrPublickey }) => {
-  return (
-    new Promise() <
-    TokenPayload >
-    ((resolve, reject) => {
-      jwt.verify(token, secretOrPublickey, (error, decoded) => {
-        if (error) {
-          throw reject(error)
-        }
-        resolve(decoded)
-      })
+  return new Promise((resolve, reject) => {
+    jwt.verify(token, secretOrPublickey, (error, decoded) => {
+      if (error) {
+        throw reject(error)
+      }
+      console.log(decoded)
+      resolve(decoded)
     })
-  )
+  })
 }

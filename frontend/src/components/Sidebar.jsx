@@ -28,7 +28,7 @@ import { PiAddressBookLight } from 'react-icons/pi'
 import { RiGitRepositoryPrivateLine } from 'react-icons/ri'
 import { CiLogout } from 'react-icons/ci'
 
-const drawerWidth = 350
+const drawerWidth = 240
 
 const Sidebar = () => {
   const [menudata, setMenudata] = useState(
@@ -68,16 +68,7 @@ const Sidebar = () => {
         <Toolbar />
         <Divider />
         <List>
-          <ListItem
-            disablePadding
-            onClick={() => setMenudata('MyAccount')}
-            sx={{
-              positive: 'relative',
-              display: 'flex',
-              cursor: 'pointer',
-              left: '50px'
-            }}
-          >
+          <ListItem disablePadding onClick={() => setMenudata('MyAccount')}>
             <ListItemButton>
               <ListItemIcon>
                 <AiOutlineUser />
@@ -85,17 +76,7 @@ const Sidebar = () => {
               <ListItemText primary='My Account' />
             </ListItemButton>
           </ListItem>
-          <ListItem
-            disablePadding
-            onClick={() => setMenudata('MyFavoriteCar')}
-            sx={{
-              positive: 'relative',
-              display: 'flex',
-
-              cursor: 'pointer',
-              left: '50px'
-            }}
-          >
+          <ListItem disablePadding onClick={() => setMenudata('MyFavoriteCar')}>
             <ListItemButton>
               <ListItemIcon>
                 <AiOutlineHeart />
@@ -108,63 +89,23 @@ const Sidebar = () => {
               />
             </ListItemButton>
           </ListItem>
-          <ListItem
-            disablePadding
-            onClick={() => setMenudata('MyCar')}
-            sx={{
-              positive: 'relative',
-              display: 'flex',
-
-              cursor: 'pointer',
-              left: '50px'
-            }}
-          >
+          <ListItem disablePadding onClick={() => setMenudata('MyCar')}>
             <ListItemButton>
               <ListItemIcon>
                 <AiOutlineCar width={50} height={100} />
               </ListItemIcon>
-              <ListItemText
-                primary='My Car'
-                sx={{
-                  color: '#000000'
-                }}
-              />
+              <ListItemText primary='My Car' />
             </ListItemButton>
           </ListItem>
-          <ListItem
-            disablePadding
-            onClick={() => setMenudata('MyTrip')}
-            sx={{
-              positive: 'relative',
-              display: 'flex',
-
-              cursor: 'pointer',
-              left: '50px'
-            }}
-          >
+          <ListItem disablePadding onClick={() => setMenudata('MyTrip')}>
             <ListItemButton>
               <ListItemIcon>
                 <BiTrip />
               </ListItemIcon>
-              <ListItemText
-                primary='My Trip'
-                sx={{
-                  color: '#000000'
-                }}
-              />
+              <ListItemText primary='My Trip' />
             </ListItemButton>
           </ListItem>
-          <ListItem
-            disablePadding
-            onClick={() => setMenudata('Gift')}
-            sx={{
-              positive: 'relative',
-              display: 'flex',
-
-              cursor: 'pointer',
-              left: '50px'
-            }}
-          >
+          <ListItem disablePadding onClick={() => setMenudata('Gift')}>
             <ListItemButton>
               <ListItemIcon>
                 <BiGift />
@@ -177,17 +118,7 @@ const Sidebar = () => {
               />
             </ListItemButton>
           </ListItem>
-          <ListItem
-            disablePadding
-            onClick={() => setMenudata('MyAddress')}
-            sx={{
-              positive: 'relative',
-              display: 'flex',
-
-              cursor: 'pointer',
-              left: '50px'
-            }}
-          >
+          <ListItem disablePadding onClick={() => setMenudata('MyAddress')}>
             <ListItemButton>
               <ListItemIcon>
                 <PiAddressBookLight />
@@ -195,17 +126,7 @@ const Sidebar = () => {
               <ListItemText primary='My Address' />
             </ListItemButton>
           </ListItem>
-          <ListItem
-            disablePadding
-            onClick={() => setMenudata('ChangePassword')}
-            sx={{
-              positive: 'relative',
-              display: 'flex',
-
-              cursor: 'pointer',
-              left: '50px'
-            }}
-          >
+          <ListItem disablePadding onClick={() => setMenudata('ChangePassword')}>
             <ListItemButton>
               <ListItemIcon>
                 <RiGitRepositoryPrivateLine />
@@ -213,17 +134,7 @@ const Sidebar = () => {
               <ListItemText primary='Change Password' />
             </ListItemButton>
           </ListItem>
-          <ListItem
-            disablePadding
-            onClick={() => setMenudata('LogOut')}
-            sx={{
-              positive: 'relative',
-              display: 'flex',
-
-              cursor: 'pointer',
-              left: '50px'
-            }}
-          >
+          <ListItem disablePadding onClick={() => setMenudata('LogOut')}>
             <ListItemButton>
               <ListItemIcon>
                 <CiLogout />
@@ -232,16 +143,7 @@ const Sidebar = () => {
             </ListItemButton>
           </ListItem>
 
-          <ListItem
-            disablePadding
-            onClick={() => setMenudata('DeletePassword')}
-            sx={{
-              positive: 'relative',
-              display: 'flex',
-
-              left: '50px'
-            }}
-          >
+          <ListItem disablePadding onClick={() => setMenudata('DeletePassword')}>
             <ListItemButton>
               <ListItemIcon>
                 <AiOutlineDelete />

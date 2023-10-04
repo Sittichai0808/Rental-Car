@@ -13,8 +13,10 @@ import {
 import logo from '../assets/logo.png'
 import EmailIcon from '@mui/icons-material/Email'
 import GoogleIcon from '@mui/icons-material/Google'
-import FacebookOutlinedIcon from '@mui/icons-material/FacebookOutlined'
+
 import React from 'react'
+import OAuthGoogle from './OAuthGoogle'
+
 const BoxLogin = styled(Box)(({ theme }) => ({
   alignItems: 'center',
   justifyContent: 'center',
@@ -217,48 +219,7 @@ const Register1 = () => {
             marginBottom: '10px'
           }}
         >
-          <Button
-            variant='outlined'
-            sx={{
-              width: '100%',
-              top: '10px',
-              // left: '7px',
-              color: 'gray',
-              textTransform: 'capitalize',
-              borderColor: '#c4c2c2',
-              padding: '10px',
-              position: 'relative'
-            }}
-            // startIcon={<GoogleIcon />}
-          >
-            <GoogleIcon sx={{ position: 'absolute', left: '15px' }} />
-            Sign up with Google
-          </Button>
-        </Box>
-        <Box
-          sx={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center'
-            // paddingRight: '23px'
-          }}
-        >
-          <Button
-            variant='outlined'
-            sx={{
-              width: '100%',
-              top: '10px',
-              // left: '7px',
-              color: 'gray',
-              textTransform: 'capitalize',
-              borderColor: '#c4c2c2',
-              padding: '10px',
-              position: 'relative'
-            }}
-          >
-            <FacebookOutlinedIcon sx={{ position: 'absolute', left: '15px' }} />
-            Sign up with facebook
-          </Button>
+          <OAuthGoogle />
         </Box>
       </BoxLogin>
     </Box>

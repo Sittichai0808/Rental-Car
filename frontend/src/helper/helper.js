@@ -1,7 +1,11 @@
 import axios from 'axios'
+import { signInFailure, signInSuccess, signInStart } from '../redux/user/userSlice'
+import { useDispatch } from 'react-redux'
+
 /** register user function */
 export async function registerUser(credentials) {
   try {
+    // dispatch(signInStart())
     const res = await axios.post(
       'http://localhost:4000/users/register',
 
@@ -11,9 +15,11 @@ export async function registerUser(credentials) {
       }
     )
     console.log(res)
-    return Promise.resolve(res)
+
+    // return Promise.resolve(dispatch(signInSuccess(res)))
   } catch (error) {
-    return Promise.reject(error.response.data)
+    console.log(error)
+    // return Promise.reject(dispatch(signInFailure(error)))
   }
 }
 

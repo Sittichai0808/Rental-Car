@@ -13,13 +13,14 @@ import Visibility from '@mui/icons-material/Visibility'
 import VisibilityOff from '@mui/icons-material/VisibilityOff'
 import { styled } from '@mui/material/styles'
 import GoogleIcon from '@mui/icons-material/Google'
-import FacebookOutlinedIcon from '@mui/icons-material/FacebookOutlined'
+
 import EmailIcon from '@mui/icons-material/Email'
 import toast, { Toaster } from 'react-hot-toast'
 import { useFormik } from 'formik'
 import * as yup from 'yup'
 import { loginUser } from '../helper/helper'
 import { Link, useNavigate } from 'react-router-dom'
+
 const validationSchema = yup.object({
   email: yup.string('Enter your email').email('Enter a valid email').required('Email is required'),
   password: yup
@@ -27,6 +28,9 @@ const validationSchema = yup.object({
     .min(8, 'Password should be of minimum 8 characters length')
     .required('Password is required')
 })
+
+import { useDispatch, useSelector } from 'react-redux'
+import OAuthGoogle from './OAuthGoogle'
 
 const BootstrapButton = styled(Button)({
   boxShadow: 'none',
@@ -99,9 +103,9 @@ const BoxLogin = styled(Box)(({ theme }) => ({
 }))
 const Login1 = () => {
   const [showPassword, setShowPassword] = React.useState(false)
-
+  const { loading, error } = useSelector((state) => state.user)
   const handleClickShowPassword = () => setShowPassword((show) => !show)
-
+  const dispatch = useDispatch()
   const navigate = useNavigate()
   const handleMouseDownPassword = (event) => {
     event.preventDefault()
@@ -110,33 +114,29 @@ const Login1 = () => {
   const formik = useFormik({
     initialValues: {
       email: '',
-
       password: ''
     },
     validationSchema: validationSchema,
     onSubmit: async (values) => {
-      console.log(values)
       let loginPromise = loginUser(values)
+      console.log(error)
       toast.promise(loginPromise, {
-        loading: 'Logining...',
+        loading: loading && 'Logining...',
         success: <b>Login Successfully...!</b>,
-        error: (err) => {
-          if (err || err.errors || err.errors.length > 0) {
-            // Lấy lỗi đầu tiên từ mảng lỗi (có thể bạn muốn xử lý nhiều lỗi ở đây)
-            const firstError = err.errors[0]
+        error: (error) => {
+          if (error || error.errors || error.errors.length > 0) {
+            const firstError = error.errors[0]
 
-            // Truy cập các thuộc tính của lỗi và sử dụng chúng để tạo thông báo
-            const errorMessage = `${firstError.msg} (${firstError.path} in ${firstError.location})`
+            const errorMessage = <b>{firstError.msg} </b>
 
             return errorMessage
           } else {
-            // Xử lý trường hợp không có lỗi hoặc không có thông tin lỗi
             return 'Unknown error occurred'
           }
         }
       })
       loginPromise.then(function () {
-        navigate('/')
+        navigate('/', { success: true })
       })
     }
   })
@@ -322,48 +322,7 @@ const Login1 = () => {
               marginBottom: '10px'
             }}
           >
-            <Button
-              variant='outlined'
-              sx={{
-                width: '100%',
-                top: '10px',
-                // left: '7px',
-                color: 'gray',
-                textTransform: 'capitalize',
-                borderColor: '#c4c2c2',
-                padding: '10px',
-                position: 'relative'
-              }}
-              // startIcon={<GoogleIcon />}
-            >
-              <GoogleIcon sx={{ position: 'absolute', left: '15px' }} />
-              Sign up with Google
-            </Button>
-          </Box>
-          <Box
-            sx={{
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center'
-              // paddingRight: '23px'
-            }}
-          >
-            <Button
-              variant='outlined'
-              sx={{
-                width: '100%',
-                top: '10px',
-                // left: '7px',
-                color: 'gray',
-                textTransform: 'capitalize',
-                borderColor: '#c4c2c2',
-                padding: '10px',
-                position: 'relative'
-              }}
-            >
-              <FacebookOutlinedIcon sx={{ position: 'absolute', left: '15px' }} />
-              Sign up with facebook
-            </Button>
+            <OAuthGoogle />
           </Box>
         </BoxLogin>
       </form>

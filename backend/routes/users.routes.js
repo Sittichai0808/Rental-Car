@@ -1,14 +1,19 @@
 import express from 'express'
-import { registerValidator, loginValidator } from '../middlewares/users.middlewares.js'
+import { registerValidator, loginValidator, accessTokenValidator } from '../middlewares/users.middlewares.js'
 import { wrapRequestHandler } from '../utils/handlers.js'
-import { registerController, loginController } from '../controllers/users.controllers.js'
+import {
+  registerController,
+  loginController,
+  googleController,
+  getUserController
+} from '../controllers/users.controllers.js'
 const usersRoutes = express.Router()
 
 /**
  * Description: Register a user
  * Path: /register
  * Method: POST
- * Body:{ name: string, email: string, password: string, confirm_password: string, date_of_birth: ISO8601}
+ * Body:{ username: string, email: string, password: string, confirm_password: string, date_of_birth: ISO8601}
  */
 usersRoutes.post('/register', registerValidator, wrapRequestHandler(registerController))
 
@@ -16,13 +21,23 @@ usersRoutes.post('/register', registerValidator, wrapRequestHandler(registerCont
  * Description: Login a user
  * Path: /login
  * Method: POST
- * Body:{ name: string, email: string, password: string}
+ * Body:{ username: string, email: string, password: string}
  */
 usersRoutes.post('/login', loginValidator, wrapRequestHandler(loginController))
 
-usersRoutes.get('/lay-cookie', (req, res) => {
-  const tenCookie = req.cookies.access_token
-  const tenCookie1 = req.cookies.ten_cookie
-  res.send(`Giá trị của cookie là: ${tenCookie}  and ${tenCookie1}`)
-})
+/**
+ * Description: OAuth Google Account
+ * Path: /google
+ * Method: POST
+ * Body:{ username: string, email: string, password: string,profilePicture: string}
+ */
+usersRoutes.post('/google', wrapRequestHandler(googleController))
+
+/**
+ * Description: get User
+ * Path: /get-user
+ * Method: GET
+ * Headers: {Authorization: Bearer <access_token>}
+ */
+usersRoutes.get('/get-user', accessTokenValidator, wrapRequestHandler(getUserController))
 export default usersRoutes

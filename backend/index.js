@@ -5,6 +5,11 @@ import modelsRoutes from './routes/models.routes.js'
 import carsRoutes from './routes/cars.routes.js'
 import databaseServices from './services/database.services.js'
 import { defaultErrorHandler } from './middlewares/errors.middlewares.js'
+import pkg from 'lodash'
+const { omit } = pkg
+import { HTTP_STATUS } from './constants/httpStatus.js'
+import { ErrorWithStatus } from './models/error.js'
+
 import express from 'express'
 import mongoose from 'mongoose'
 import cookieParser from 'cookie-parser'
@@ -28,15 +33,7 @@ app.listen(port, () => {
 
 
 app.use('/users', usersRouter)
-// app.use((err, req, res, next) => {
-//   const statusCode = err.statusCode || 500
-//   const message = err.message || 'Internal Server Error'
-//   return res.status(statusCode).json({
-//     success: false,
-//     message,
-//     statusCode
-//   })
-// })
+
 app.use((err, req, res, next) => {
   if (err instanceof ErrorWithStatus) {
     return res.status(err.status).json(omit(err, ['status']))

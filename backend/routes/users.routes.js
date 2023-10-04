@@ -5,7 +5,8 @@ import {
   registerController,
   loginController,
   googleController,
-  getUserController
+  getUserController,
+  updateUserController
 } from '../controllers/users.controllers.js'
 const usersRoutes = express.Router()
 
@@ -34,10 +35,26 @@ usersRoutes.post('/login', loginValidator, wrapRequestHandler(loginController))
 usersRoutes.post('/google', wrapRequestHandler(googleController))
 
 /**
- * Description: get User
+ * Description: Get User
  * Path: /get-user
  * Method: GET
  * Headers: {Authorization: Bearer <access_token>}
  */
 usersRoutes.get('/get-user', accessTokenValidator, wrapRequestHandler(getUserController))
+
+/**
+ * Description: Update User
+ * Path: /update-user
+ * Method: POST
+ * Body:{ username: string, email: string, password: string,profilePicture: string,...}
+ */
+usersRoutes.post('/update-user/:userId', accessTokenValidator, wrapRequestHandler(updateUserController))
+
+/**
+ * Description: reset password
+ * Path: /reset-password
+ * Method: GET
+ * Headers: {Authorization: Bearer <access_token>}
+ */
+// usersRoutes.get('/get-user', accessTokenValidator, wrapRequestHandler(getUserController))
 export default usersRoutes

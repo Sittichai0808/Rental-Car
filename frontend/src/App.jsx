@@ -3,6 +3,8 @@ import About from './pages/About'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import Profile from './pages/Profile'
+import Layout from './pages/admin/Layout'
+import Dashboard from './pages/admin/Dashboard'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 // import Header from './components/Header'
 import RecoverPassword from './pages/RecoverPassword'
@@ -10,7 +12,7 @@ import Register1 from './pages/Register1'
 function App() {
   return (
     <BrowserRouter>
-      <Header />
+      {/* <Header /> */}
       <Routes>
         <Route path='/' element={<Home />} />
         <Route path='/about' element={<About />} />
@@ -20,6 +22,9 @@ function App() {
         <Route path='/sign-up-1' element={<Register1 />} />
         <Route path='/profile' element={<Profile />} />
         <Route path='/recover-password' element={<RecoverPassword />} />
+        <Route element={<Layout />}>
+          <Route path='/dashboard' element={<Dashboard />} />
+        </Route>
       </Routes>
     </BrowserRouter>
   )

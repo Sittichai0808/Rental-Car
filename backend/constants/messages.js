@@ -40,7 +40,7 @@ export const USER_MESSAGES = {
   VERIFY_FORGOT_PASSWORD_SUCCESS: 'Verified forgot password successfully',
   INVALID_FORGOT_PASSWORD_TOKEN: 'Invalid forgot password token',
   RESET_PASSWORD_SUCCESS: 'Reset password successfully',
-  GET_PROFILE_SUCCESS: 'Get profile successfully',
+  GET_PROFILE_SUCCESS: 'Get profile successfully'
 }
 
 export const BRAND_MESSAGE = {

@@ -61,7 +61,7 @@ class UsersService {
       const user = { ...payload }
       const user1 = await User.findOne({ email: user.email })
       if (user1) {
-        const access_token = await this.signAccessToken(user1._id, user1.role)
+        const access_token = await this.signAccessToken(user1._id.toString(), user1.role)
 
         const { password: hashedPassword, ...rest } = user1._doc
 
@@ -73,10 +73,13 @@ class UsersService {
           username: user.username.split(' ').join('').toLowerCase() + Math.random().toString(36).slice(-8),
           email: user.email,
           password: hashedPassword1,
-          profilePicture: user.photo
+          profilePicture: user.photo,
+          phoneNumber: ''
         })
         await newUser.save()
-        const access_token = await this.signAccessToken(user._id, 'user')
+        const user2 = await User.findOne({ email: user.email })
+        const { _id } = user2._doc
+        const access_token = await this.signAccessToken(_id.toString(), 'user')
 
         const { password: hashedPassword2, ...rest } = newUser._doc
         return { rest, access_token }
@@ -93,6 +96,22 @@ class UsersService {
       const getUser = await User.findOne({ _id: user_id.toString() })
       return getUser
     } catch (error) {}
+  }
+
+  async updateUser(user_id, payload) {
+    try {
+      // if (payload.password) {
+      //   password =
+      // }
+      const updateUser = await User.findByIdAndUpdate(
+        user_id.toString(),
+        { password: hashPassword(payload.password).toString(), ...payload },
+        { new: true }
+      )
+      return updateUser
+    } catch (error) {
+      console.log(error)
+    }
   }
 }
 

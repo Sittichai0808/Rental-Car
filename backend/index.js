@@ -1,5 +1,8 @@
 // import { defaultErrorHandler } from './middlewares/error.middlewares'
 import usersRouter from './routes/users.routes.js'
+import brandsRoutes from './routes/brands.routes.js'
+import modelsRoutes from './routes/models.routes.js'
+import carsRoutes from './routes/cars.routes.js'
 import databaseServices from './services/database.services.js'
 import { defaultErrorHandler } from './middlewares/errors.middlewares.js'
 import express from 'express'
@@ -23,6 +26,7 @@ app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
 })
 
+
 app.use('/users', usersRouter)
 // app.use((err, req, res, next) => {
 //   const statusCode = err.statusCode || 500
@@ -45,3 +49,6 @@ app.use((err, req, res, next) => {
     errorInfo: omit(err, ['stack'])
   })
 })
+app.use('/brands', brandsRoutes);
+app.use('/models', modelsRoutes);
+app.use('/cars', carsRoutes)

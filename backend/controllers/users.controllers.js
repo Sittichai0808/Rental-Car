@@ -20,7 +20,9 @@ export const loginController = async (req, res) => {
 export const googleController = async (req, res, next) => {
   console.log(req.body)
   const result = await usersService.google(req.body)
+
   const expiryDate = new Date(Date.now() + 3600000) // 1 hour
+  console.log(result.access_token.toString())
   return res.cookie('access_token', result.access_token.toString(), { httpOnly: true, expires: expiryDate }).json({
     message: USER_MESSAGES.LOGIN_SUCCESS,
     result: result.rest
@@ -28,10 +30,18 @@ export const googleController = async (req, res, next) => {
 }
 
 export const getUserController = async (req, res, next) => {
-  console.log(req.cookies.access_token)
   const result = await usersService.getUser(req.decoded_authorization)
   return res.json({
     message: USER_MESSAGES.GET_PROFILE_SUCCESS,
+    result: result
+  })
+}
+
+export const updateUserController = async (req, res, next) => {
+  const user_id = req.params.userId
+  const result = await usersService.updateUser(user_id, req.body)
+  return res.json({
+    message: USER_MESSAGES.UPDATE_PROFILE_SUCCESS,
     result: result
   })
 }

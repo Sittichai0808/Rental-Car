@@ -22,8 +22,7 @@ function OAuthGoogle() {
           photo: result.user.photoURL
         },
         {
-          headers: { 'Content-Type': 'application/json' },
-          withCredentials: true
+          headers: { 'Content-Type': 'application/json' }
         }
       )
       // const res = await fetch('/api/auth/google', {

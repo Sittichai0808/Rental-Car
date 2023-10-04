@@ -1,4 +1,4 @@
-import { Box, Button, Typography } from '@mui/material'
+import { Box, Button, Typography, AppBar } from '@mui/material'
 
 import bgImage from '../assets/bgImage.jpg'
 const BgImage = () => {

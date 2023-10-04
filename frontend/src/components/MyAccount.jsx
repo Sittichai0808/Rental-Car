@@ -47,11 +47,25 @@ const style = {
   border: '1px solid #e0e0e0',
   fontSize: '1.25rem',
   fontWeight: '800',
-
   color: '#000',
   padding: '10px',
   bgcolor: 'background.paper',
-
+  boxShadow: 24,
+  p: 4
+}
+const style1 = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: 500,
+  height: 300,
+  border: '1px solid #e0e0e0',
+  fontSize: '1.25rem',
+  fontWeight: '800',
+  color: '#000',
+  padding: '10px',
+  bgcolor: 'background.paper',
   boxShadow: 24,
   p: 4
 }
@@ -67,8 +81,8 @@ const MyAccount = () => {
   return (
     <Box
       sx={{
-        flexDirection: 'column',
         display: 'flex',
+        flexDirection: 'column',
         paddingLeft: '20px'
       }}
     >
@@ -85,9 +99,10 @@ const MyAccount = () => {
           sx={{
             display: 'flex',
             alignItems: 'center',
-
             fontSize: '1.25rem',
-            fontWeight: 'bold'
+            fontWeight: 'bold',
+            position: 'relative',
+            left: '13%'
           }}
         >
           Thông tin tài khoản
@@ -192,7 +207,6 @@ const MyAccount = () => {
             position: 'absolute',
             right: '100px',
             padding: '8px 16px',
-
             borderRadius: '8px',
             border: '1px solid #e0e0e0'
           }}
@@ -215,9 +229,8 @@ const MyAccount = () => {
           sx={{
             display: 'flex',
             position: 'relative',
-            border: '1px solid #e0e0e0',
-            borderRadius: '100%',
-            paddingTop: '20px'
+            // border: '1px solid #e0e0e0',
+            borderRadius: '100%'
           }}
         >
           <img src={logo} alt='' width={150} height={150} />
@@ -254,9 +267,6 @@ const MyAccount = () => {
           alignItems='center'
           sx={{
             display: 'flex',
-
-            gridGap: '4px',
-            gap: '4px',
             padding: '8px',
             flexWrap: 'wrap',
             border: '1px solid #e0e0e0'
@@ -421,7 +431,48 @@ const MyAccount = () => {
                   color: '#000'
                 }}
               >
-                +012345678 <AiOutlineEdit />
+                +012345678
+                <AiOutlineEdit />
+                {/* <Button onClick={handleOpen}>
+                  <AiOutlineEdit />
+                </Button>
+                <Modal
+                  open={open}
+                  onClose={handleClose}
+                  aria-labelledby='transition-modal-title'
+                  aria-describedby='transition-modal-description'
+                >
+                  <Box sx={style1}>
+                    <Typography
+                      id='transition-modal-title'
+                      variant='h6'
+                      component='h2'
+                      sx={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        fontSize: '1.5rem',
+                        fontWeight: '700'
+                      }}
+                    >
+                      Cập nhật số điện thoại
+                    </Typography>
+                    <FormControl sx={{ width: '100%', display: 'flex', flexDirection: 'column' }} variant='outlined'>
+                      <TextField id='outlined-size-normal' defaultValue='0123456' sx={{ paddingTop: '20px' }} />
+
+                      <Button
+                        variant='contained'
+                        sx={{
+                          marginTop: '20px',
+                          padding: '16px 24px',
+                          color: '#fff',
+                          fontWeight: '700'
+                        }}
+                      >
+                        Cập nhật
+                      </Button>
+                    </FormControl>
+                  </Box>
+                </Modal> */}
               </Typography>
             </Box>
           </Box>

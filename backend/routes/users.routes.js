@@ -1,7 +1,12 @@
 import express from 'express'
-import { registerValidator, loginValidator } from '../middlewares/users.middlewares.js'
+import { registerValidator, loginValidator, accessTokenValidator } from '../middlewares/users.middlewares.js'
 import { wrapRequestHandler } from '../utils/handlers.js'
-import { registerController, loginController, googleController } from '../controllers/users.controllers.js'
+import {
+  registerController,
+  loginController,
+  googleController,
+  getUserController
+} from '../controllers/users.controllers.js'
 const usersRoutes = express.Router()
 
 /**
@@ -28,4 +33,11 @@ usersRoutes.post('/login', loginValidator, wrapRequestHandler(loginController))
  */
 usersRoutes.post('/google', wrapRequestHandler(googleController))
 
+/**
+ * Description: get User
+ * Path: /get-user
+ * Method: GET
+ * Headers: {Authorization: Bearer <access_token>}
+ */
+usersRoutes.get('/get-user', accessTokenValidator, wrapRequestHandler(getUserController))
 export default usersRoutes

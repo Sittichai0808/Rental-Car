@@ -6,7 +6,10 @@ import {
   loginController,
   googleController,
   getUserController,
-  updateUserController
+  updateUserController,
+  generateOTPController,
+  verifyOTPController,
+  resetPasswordController
 } from '../controllers/users.controllers.js'
 const usersRoutes = express.Router()
 
@@ -48,13 +51,27 @@ usersRoutes.get('/get-user', accessTokenValidator, wrapRequestHandler(getUserCon
  * Method: POST
  * Body:{ username: string, email: string, password: string,profilePicture: string,...}
  */
-usersRoutes.post('/update-user/:userId', accessTokenValidator, wrapRequestHandler(updateUserController))
+usersRoutes.put('/update-user/:userId', accessTokenValidator, wrapRequestHandler(updateUserController))
 
 /**
- * Description: reset password
- * Path: /reset-password
+ * Description: Generate OTP
+ * Path: /generate-otp
  * Method: GET
- * Headers: {Authorization: Bearer <access_token>}
+ * Body: {email: String}
  */
-// usersRoutes.get('/get-user', accessTokenValidator, wrapRequestHandler(getUserController))
+usersRoutes.get('/generate-otp', wrapRequestHandler(generateOTPController))
+
+/**
+ * Description: Verify OTP
+ * Path: /verify-otp
+ * Method: GET
+ */
+usersRoutes.get('/verify-otp/:code', wrapRequestHandler(verifyOTPController))
+
+/**
+ * Description: Reset Password
+ * Path: /reset-password
+ * Method: PUT
+ */
+usersRoutes.put('/reset-password', wrapRequestHandler(resetPasswordController))
 export default usersRoutes

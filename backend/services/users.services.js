@@ -113,6 +113,21 @@ class UsersService {
       console.log(error)
     }
   }
+
+  async resetPassword(payload) {
+    try {
+      const user = await User.findOne({ email: payload.email })
+
+      const resetPassword = await User.findByIdAndUpdate(
+        user._id.toString(),
+        { $set: { password: hashPassword(payload.password).toString() } },
+        { new: true }
+      )
+      return resetPassword
+    } catch (error) {
+      console.log(error)
+    }
+  }
 }
 
 const usersService = new UsersService()

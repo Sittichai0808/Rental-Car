@@ -24,21 +24,8 @@ app.use(
 app.use(express.json())
 app.use(cookieParser())
 
+app.use('/users', usersRouter)
+app.use(defaultErrorHandler)
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
-})
-
-app.use('/users', usersRouter)
-
-app.use((err, req, res, next) => {
-  if (err instanceof ErrorWithStatus) {
-    return res.status(err.status).json(omit(err, ['status']))
-  }
-  Object.getOwnPropertyNames(err || Object(err)).forEach((key) => {
-    Object.defineProperty(err, key, { enumerable: true })
-  })
-  return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
-    message: err,
-    errorInfo: omit(err, ['stack'])
-  })
 })

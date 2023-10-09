@@ -84,3 +84,12 @@ export const resetPasswordController = async (req, res, next) => {
     result: result
   })
 }
+
+export const getUsersController = async (req, res, next) => {
+  const result = await usersService.getUsers()
+
+  return res.json({
+    message: USER_MESSAGES.GET_USERS_SUCCESS,
+    result: result
+  })
+}

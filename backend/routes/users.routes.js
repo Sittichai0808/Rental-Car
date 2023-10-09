@@ -9,7 +9,8 @@ import {
   updateUserController,
   generateOTPController,
   verifyOTPController,
-  resetPasswordController
+  resetPasswordController,
+  getUsersController
 } from '../controllers/users.controllers.js'
 const usersRoutes = express.Router()
 
@@ -74,4 +75,12 @@ usersRoutes.get('/verify-otp/:code', wrapRequestHandler(verifyOTPController))
  * Method: PUT
  */
 usersRoutes.put('/reset-password', wrapRequestHandler(resetPasswordController))
+
+/**
+ * Description: Get all users
+ * Path: /
+ * Method: PUT
+ */
+usersRoutes.get('/', wrapRequestHandler(getUsersController))
+
 export default usersRoutes

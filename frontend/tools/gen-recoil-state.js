@@ -3,7 +3,7 @@ import fs from "fs-extra";
 import inquirer from "inquirer";
 import { capitalize } from "lodash-es";
 
-async function main() {
+async function generateGlobalState() {
   const answers = await inquirer.prompt([
     {
       type: "input",
@@ -34,4 +34,4 @@ async function main() {
   }
 }
 
-main();
+generateGlobalState();

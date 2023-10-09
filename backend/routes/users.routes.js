@@ -9,7 +9,8 @@ import {
   updateUserController,
   generateOTPController,
   verifyOTPController,
-  resetPasswordController
+  resetPasswordController,
+  registerMailController
 } from '../controllers/users.controllers.js'
 const usersRoutes = express.Router()
 
@@ -74,4 +75,13 @@ usersRoutes.get('/verify-otp/:code', wrapRequestHandler(verifyOTPController))
  * Method: PUT
  */
 usersRoutes.put('/reset-password', wrapRequestHandler(resetPasswordController))
+
+/**
+ * Description: Register Mail
+ * Path: /register-mail
+ * Method: POST
+ * Body: {email: String,name: string, text: String, subject: String}
+ */
+usersRoutes.post('/register-mail', wrapRequestHandler(registerMailController))
+
 export default usersRoutes

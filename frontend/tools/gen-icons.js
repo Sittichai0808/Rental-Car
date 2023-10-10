@@ -3,9 +3,9 @@ import path from "path";
 import chalk from "chalk";
 import { capitalize } from "lodash-es";
 
-async function generateIndexFile() {
+async function generateIcons() {
   const iconsFolder = "./icons";
-  const indexFilePath = path.join(iconsFolder, "index.js");
+  const iconFilePath = path.join(iconsFolder, "index.js");
 
   try {
     const files = await fs.readdir(iconsFolder);
@@ -14,17 +14,13 @@ async function generateIndexFile() {
 
     const exportStatements = svgFiles
       .map((file) => {
-        const iconName = path
-          .basename(file, ".svg")
-          .split("-")
-          .map(capitalize)
-          .join("");
+        const iconName = path.basename(file, ".svg").split("-").map(capitalize).join("");
 
         return `export { default as ${iconName}Icon } from "./${file}";`;
       })
       .join("\n");
 
-    await fs.writeFile(indexFilePath, exportStatements);
+    await fs.writeFile(iconFilePath, exportStatements);
 
     console.log(chalk.green("\n✨ Generated all icons!\n"));
   } catch (err) {
@@ -32,4 +28,4 @@ async function generateIndexFile() {
   }
 }
 
-generateIndexFile();
+generateIcons();

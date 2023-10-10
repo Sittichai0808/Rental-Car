@@ -128,8 +128,14 @@ class UsersService {
       console.log(error)
     }
   }
+
+  async getUsers() {
+    try {
+      return await User.find()
+    } catch (error) {
+      throw Error(error)
+    }
+  }
 }
 
-const usersService = new UsersService()
-
-export default usersService
+export default new UsersService()

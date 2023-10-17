@@ -10,7 +10,9 @@ import {
   generateOTPController,
   verifyOTPController,
   resetPasswordController,
-  getUsersController
+  getUsersController,
+  registerMailController,
+  getUserByEmailController
 } from '../controllers/users.controllers.js'
 const usersRoutes = express.Router()
 
@@ -47,6 +49,14 @@ usersRoutes.post('/google', wrapRequestHandler(googleController))
 usersRoutes.get('/get-user', accessTokenValidator, wrapRequestHandler(getUserController))
 
 /**
+ * Description: Get User
+ * Path: /get-user
+ * Method: GET
+ * body: {email: string}
+ */
+usersRoutes.post('/get-user-by-email', wrapRequestHandler(getUserByEmailController))
+
+/**
  * Description: Update User
  * Path: /update-user
  * Method: POST
@@ -81,6 +91,14 @@ usersRoutes.put('/reset-password', wrapRequestHandler(resetPasswordController))
  * Path: /
  * Method: PUT
  */
+
+/**
+ * Description: Register Mail
+ * Path: /register-mail
+ * Method: POST
+ * Body: {email: String,name: string, text: String, subject: String}
+ */
+usersRoutes.post('/register-mail', wrapRequestHandler(registerMailController))
 usersRoutes.get('/', wrapRequestHandler(getUsersController))
 
 export default usersRoutes

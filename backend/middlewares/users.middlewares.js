@@ -55,6 +55,8 @@ export const registerValidator = validate(
         }
       },
       password: {
+        trim: true,
+
         notEmpty: {
           errorMessage: USER_MESSAGES.PASSWORD_IS_REQUIRED
         },

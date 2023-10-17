@@ -7,7 +7,10 @@ import styled from "@emotion/styled";
 import { GooglePlusOutlined } from "@ant-design/icons";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import axios from "axios";
-
+import OAuthGoogle from "@/components/OAuthGoogle.jsx";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { toast } from "react-toastify";
 const { Title } = Typography;
 
 const StyleInput = styled(Input)`
@@ -34,6 +37,7 @@ const LoginPage = () => {
     return src;
   };
   const [form] = Form.useForm();
+  const router = useRouter();
 
   const onSubmit = async (values) => {
     try {
@@ -48,12 +52,16 @@ const LoginPage = () => {
       );
 
       if (response.status === 200) {
-        console.log("Data submitted successfully");
+        router.push("/");
       } else {
-        console.error("Failed to submit data");
+        toast.error(error.response.data.errors[0].msg, {
+          position: toast.POSITION.TOP_CENTER,
+        });
       }
     } catch (error) {
-      console.error("Error:", error);
+      toast.error(error.response.data.errors[0].msg, {
+        position: toast.POSITION.TOP_CENTER,
+      });
     }
   };
 
@@ -123,7 +131,7 @@ const LoginPage = () => {
                 type="text"
                 className="  text-green-400 font-bold text-base  mb-3"
               >
-                Quên mật khẩu?
+                <Link href="/recover-password"> Quên mật khẩu?</Link>
               </Button>
             </div>
 
@@ -141,7 +149,7 @@ const LoginPage = () => {
                   type="text"
                   className="font-bold text-base text-green-500"
                 >
-                  Đăng ký
+                  <Link href="/register"> Đăng ký</Link>
                 </Button>
               </div>
             </div>
@@ -149,20 +157,7 @@ const LoginPage = () => {
           <Title level={5} className="flex justify-center">
             Or
           </Title>
-          <Button
-            type="default"
-            className="relative  text-base h-[50px] w-[400px] py-2 mt-2"
-          >
-            <GooglePlusOutlined
-              style={{
-                fontSize: "25px",
-                position: "absolute",
-                left: "20px",
-                color: "gray",
-              }}
-            />
-            Sign Up With Google
-          </Button>
+          <OAuthGoogle />
         </div>
       </div>
     </div>

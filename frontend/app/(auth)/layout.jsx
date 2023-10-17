@@ -3,7 +3,7 @@ import React from "react";
 import { Col, Divider, Row, Typography, Button } from "antd";
 import bgImage from "../../public/bgImage.jpg";
 import Image from "next/image";
-
+import Link from "next/link";
 import { Layout } from "antd";
 import { usePathname } from "next/navigation";
 const { Title } = Typography;
@@ -44,7 +44,11 @@ const LoginLayout = ({ children }) => {
                     type="text"
                     className="text-white font-bold text-base"
                   >
-                    {pathname === "/register" ? "Đăng nhập" : "Đăng ký"}
+                    {pathname === "/register" ? (
+                      <Link href="/login"> Đăng nhập</Link>
+                    ) : (
+                      <Link href="/register"> Đăng ký</Link>
+                    )}
                   </Button>
                 </Title>
               </div>

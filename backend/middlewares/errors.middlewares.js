@@ -10,7 +10,7 @@ export const defaultErrorHandler = (err, req, res, next) => {
   Object.getOwnPropertyNames(err || Object(err)).forEach((key) => {
     Object.defineProperty(err, key, { enumerable: true })
   })
-  return res.status(err.status).json({
-    errorInfo: omit(err, ['stack'])
+  return res.json({
+    error: omit(err, ['stack'])
   })
 }

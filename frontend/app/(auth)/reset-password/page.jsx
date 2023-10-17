@@ -4,12 +4,10 @@ import { Button, Form, Input, Typography } from "antd";
 import Image from "next/image";
 import forgotPassword from "../../../public/forgotPassword.png";
 import styled from "@emotion/styled";
-const onFinish = (values) => {
-  console.log("Success:", values);
-};
-const onFinishFailed = (errorInfo) => {
-  console.log("Failed:", errorInfo);
-};
+import { useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
+import { useMutation } from "@tanstack/react-query";
+import axios from "axios";
 
 const { Title } = Typography;
 
@@ -27,9 +25,6 @@ const ButtonSummit = styled(Button)`
 `;
 
 const ResetPasswordPage = () => {
-  const loaderProp = ({ src }) => {
-    return src;
-  };
   return (
     <div className="py-[30px] px-[20px] h-screen">
       <div className="flex flex-col justify-center items-center h-full ">
@@ -52,9 +47,10 @@ const ResetPasswordPage = () => {
             style={{
               maxWidth: 600,
             }}
-            initialValues={{}}
-            onFinish={onFinish}
-            onFinishFailed={onFinishFailed}
+            form={form}
+            onFinish={(values) => {
+              mutate(values);
+            }}
             autoComplete="off"
             className="mt-5"
           >

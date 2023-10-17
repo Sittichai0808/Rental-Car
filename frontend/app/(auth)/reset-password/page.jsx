@@ -4,12 +4,10 @@ import { Button, Form, Input, Typography } from "antd";
 import Image from "next/image";
 import forgotPassword from "../../../public/forgotPassword.png";
 import styled from "@emotion/styled";
-const onFinish = (values) => {
-  console.log("Success:", values);
-};
-const onFinishFailed = (errorInfo) => {
-  console.log("Failed:", errorInfo);
-};
+import { useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
+import { useMutation } from "@tanstack/react-query";
+import axios from "axios";
 
 const { Title } = Typography;
 
@@ -27,6 +25,36 @@ const ButtonSummit = styled(Button)`
 `;
 
 const ResetPasswordPage = () => {
+  const [form] = Form.useForm();
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const email = searchParams.get("email");
+
+  const onSubmit = async (values) => {
+    try {
+      const { password } = values;
+      const response = await axios.put(
+        "http://localhost:4000/users/reset-password",
+
+        { email: email.toString(), password: password.toString() },
+        {
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+
+      if (response.status === 200) {
+        console.log(response.data);
+        router.push("/");
+      } else {
+        console.log(error.response.data.errors[0].msg);
+      }
+    } catch (error) {
+      toast.error(error.response.data.errors[0].msg, {
+        position: toast.POSITION.TOP_CENTER,
+      });
+    }
+  };
+  const { mutate } = useMutation(onSubmit);
   return (
     <div className="py-[30px] px-[20px] h-screen">
       <div className="flex flex-col justify-center items-center h-full ">
@@ -43,9 +71,10 @@ const ResetPasswordPage = () => {
             style={{
               maxWidth: 600,
             }}
-            initialValues={{}}
-            onFinish={onFinish}
-            onFinishFailed={onFinishFailed}
+            form={form}
+            onFinish={(values) => {
+              mutate(values);
+            }}
             autoComplete="off"
             className="mt-5"
           >

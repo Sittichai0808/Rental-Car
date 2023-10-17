@@ -6,7 +6,8 @@ import logo from "../../../public/logo.png";
 import styled from "@emotion/styled";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
-
+import { toast } from "react-toastify";
+import { useRouter } from "next/navigation";
 const { Title } = Typography;
 
 const StyleInput = styled(Input)`
@@ -30,6 +31,7 @@ const ButtonSummit = styled(Button)`
 
 const RegisterPage = () => {
   const [form] = Form.useForm();
+  const router = useRouter();
 
   const onSubmit = async (values) => {
     try {
@@ -43,12 +45,14 @@ const RegisterPage = () => {
       );
 
       if (response.status === 200) {
-        console.log("Data submitted successfully");
+        router.push("/");
       } else {
-        console.error("Failed to submit data");
+        console.log(error.response.data.errors[0].msg);
       }
     } catch (error) {
-      console.error("Error:", error);
+      toast.error(error.response.data.errors[0].msg, {
+        position: toast.POSITION.TOP_CENTER,
+      });
     }
   };
 

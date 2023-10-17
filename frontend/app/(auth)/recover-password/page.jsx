@@ -4,14 +4,17 @@ import { Button, Form, Input, Typography } from "antd";
 import Image from "next/image";
 import forgotPassword from "../../../public/forgotPassword.png";
 import styled from "@emotion/styled";
-const onFinish = (values) => {
-  console.log("Success:", values);
-};
-const onFinishFailed = (errorInfo) => {
-  console.log("Failed:", errorInfo);
-};
+import { useRouter } from "next/navigation";
+import { useMutation } from "@tanstack/react-query";
+import axios from "axios";
 
 const { Title } = Typography;
+
+const StyleInput = styled(Input)`
+  border-color: #949494;
+  height: 50px;
+  width: 400px;
+`;
 
 const ButtonSummit = styled(Button)`
   width: 400px;
@@ -22,6 +25,49 @@ const ButtonSummit = styled(Button)`
 `;
 
 const RecoverPasswordPage = () => {
+  const [form] = Form.useForm();
+  const router = useRouter();
+
+  const onSubmit = async (values) => {
+    try {
+      const response = await axios.get(
+        "http://localhost:4000/users/generate-otp",
+
+        values
+      );
+
+      if (response.status === 200) {
+        const response1 = await axios.post(
+          "http://localhost:4000/users/get-user-by-email",
+          values
+        );
+
+        let text = `Your Password Recovery OTP is ${response.data.code}. Verify and recover your password.`;
+        await axios.post(
+          "http://localhost:4000/users/register-mail",
+
+          {
+            ...values,
+            name: response1.data.result.username,
+            text,
+            subject: "Password Recovery OTP",
+          },
+          {
+            headers: { "Content-Type": "application/json" },
+            withCredentials: true,
+          }
+        );
+
+        router.push(`/verify-otp-password?email=${values.email}`);
+      } else {
+        console.error("Failed to submit data");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
+  const { mutate } = useMutation(onSubmit);
   return (
     <div className="py-[30px] px-[20px] h-screen">
       <div className="flex flex-col justify-center items-center h-full ">
@@ -31,63 +77,34 @@ const RecoverPasswordPage = () => {
 
         <div>
           <Form
+            form={form}
+            onFinish={(values) => {
+              mutate(values);
+            }}
             layout="vertical"
             name="basic"
             style={{
               maxWidth: 600,
             }}
-            initialValues={{}}
-            onFinish={onFinish}
-            onFinishFailed={onFinishFailed}
             autoComplete="off"
             className="mt-5"
           >
             <Form.Item
-              name="password"
+              name="email"
               rules={[
                 {
+                  type: "email",
+                  message: "The input is not valid E-mail!",
+                },
+                {
                   required: true,
-                  message: "Please input your password!",
+                  message: "Please input your E-mail!",
                 },
               ]}
-              hasFeedback
             >
-              <StyleInputPassword
-                type="password"
-                placeholder="Password"
-                size="large"
-              />
+              <StyleInput placeholder="Email" size="large" />
             </Form.Item>
 
-            <Form.Item
-              name="confirm"
-              dependencies={["password"]}
-              hasFeedback
-              rules={[
-                {
-                  required: true,
-                  message: "Please confirm your password!",
-                },
-                ({ getFieldValue }) => ({
-                  validator(_, value) {
-                    if (!value || getFieldValue("password") === value) {
-                      return Promise.resolve();
-                    }
-                    return Promise.reject(
-                      new Error(
-                        "The new password that you entered do not match!"
-                      )
-                    );
-                  },
-                }),
-              ]}
-            >
-              <StyleInputPassword
-                type="password"
-                placeholder="Confirm Password"
-                size="large"
-              />
-            </Form.Item>
             <Form.Item>
               <ButtonSummit type="primary" htmlType="submit">
                 Tiếp tục

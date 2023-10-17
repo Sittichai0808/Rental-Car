@@ -52,4 +52,6 @@ export const MODEL_MESSAGE = {
 export const CARS_MESSAGE = {
   CREATE_CAR_SUCCESS: 'Create car successfully',
   UPDATE_CAR_SUCCESS: 'Update car successfully',
+  GET_CAR_SUCCESS: 'Get car successfully',
+  GET_CARS_SUCCESS: 'Get list cars successfully',
 }

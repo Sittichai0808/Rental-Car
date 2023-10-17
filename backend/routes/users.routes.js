@@ -10,7 +10,6 @@ import {
   generateOTPController,
   verifyOTPController,
   resetPasswordController,
-  getUsersController,
   registerMailController,
   getUserByEmailController
 } from '../controllers/users.controllers.js'
@@ -87,9 +86,10 @@ usersRoutes.get('/verify-otp/:code', wrapRequestHandler(verifyOTPController))
 usersRoutes.put('/reset-password', wrapRequestHandler(resetPasswordController))
 
 /**
- * Description: Get all users
- * Path: /
- * Method: PUT
+ * Description: Register Mail
+ * Path: /register-mail
+ * Method: POST
+ * Body: {email: String,name: string, text: String, subject: String}
  */
 
 /**
@@ -99,6 +99,5 @@ usersRoutes.put('/reset-password', wrapRequestHandler(resetPasswordController))
  * Body: {email: String,name: string, text: String, subject: String}
  */
 usersRoutes.post('/register-mail', wrapRequestHandler(registerMailController))
-usersRoutes.get('/', wrapRequestHandler(getUsersController))
 
 export default usersRoutes

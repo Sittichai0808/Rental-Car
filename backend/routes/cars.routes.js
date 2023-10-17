@@ -1,8 +1,13 @@
 import express from 'express'
-import { createCar, updateCar } from '../controllers/cars.controllers.js'
+import { createCar, updateCar, getCarById, getListCars } from '../controllers/cars.controllers.js'
+import { wrapRequestHandler } from '../utils/handlers.js'
+import { accessTokenValidator, adminValidator } from '../middlewares/users.middlewares.js'
 const carsRoutes = express.Router()
 
-carsRoutes.post('/createCar', createCar)
-carsRoutes.put('/updateCar/:carId', updateCar)
+carsRoutes.post('/createCar', wrapRequestHandler(createCar))
+carsRoutes.put('/updateCar/:carId', wrapRequestHandler(updateCar))
+carsRoutes.get('/:carId', wrapRequestHandler(getCarById))
+carsRoutes.get('/', getListCars)
+
 
 export default carsRoutes

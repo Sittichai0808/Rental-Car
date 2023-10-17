@@ -20,10 +20,31 @@ class CarsService {
 
             return updateCar
         } catch (error) {
-            console.log(error)
+            throw new Error(error)
         }
 
     }
+
+    async getCarById(carId) {
+        try {
+            const getCarById = await Cars.findById(carId)
+
+            return getCarById
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    async getListCars() {
+        try {
+            const getListCars = await Cars.find().populate('brand', 'name').populate('model', 'name').populate('user', 'username')
+            return getListCars
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+
 }
 const carsService = new CarsService()
 export default carsService

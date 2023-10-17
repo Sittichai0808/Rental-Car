@@ -2,7 +2,7 @@
 import { UserFilledIcon } from "@/icons";
 import styled from "@emotion/styled";
 import { Divider, Layout, Menu } from "antd";
-
+import { useUserState } from "@/recoils/user.state";
 const { Header, Content, Footer } = Layout;
 
 const StyledMenu = styled(Menu)`
@@ -18,6 +18,7 @@ const StyledMenu = styled(Menu)`
 `;
 
 export default function UserWebLayout({ children }) {
+  const [user, setUser] = useUserState();
   return (
     <Layout className="max-w-6xl mx-auto min-h-screen">
       <Header className="bg-white flex gap-2 items-center px-0">
@@ -41,7 +42,7 @@ export default function UserWebLayout({ children }) {
           <div className="flex bg-neutral-200 rounded-full p-1">
             <UserFilledIcon className="text-neutral-500" />
           </div>
-          <span>Luong Cong Truong</span>
+          <span>{user.username}</span>
         </div>
       </Header>
       <Content className="bg-white py-2">{children}</Content>

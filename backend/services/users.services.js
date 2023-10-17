@@ -21,7 +21,6 @@ class UsersService {
     const newUser = new User({
       ...payload,
       _id: user_id,
-
       password: hashPassword(payload.password).toString()
     })
     try {

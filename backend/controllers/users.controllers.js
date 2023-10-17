@@ -10,7 +10,7 @@ export const registerController = async (req, res, next) => {
   return res.cookie('access_token', result.access_token.toString(), { httpOnly: true, expires: expiryDate }).json({
     message: USER_MESSAGES.REGISTER_SUCCESS,
     access_token: result.access_token.toString(),
-    result: result.rest
+    result: result.user
   })
 }
 

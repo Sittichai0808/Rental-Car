@@ -8,6 +8,10 @@ import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
+
+import { useUserState } from "@/recoils/user.state";
+import { useLocalStorage } from "@/customHooks/useLocalStorage";
+
 const { Title } = Typography;
 
 const StyleInput = styled(Input)`
@@ -32,7 +36,8 @@ const ButtonSummit = styled(Button)`
 const RegisterPage = () => {
   const [form] = Form.useForm();
   const router = useRouter();
-
+  // const [user, setUser] = useUserState();
+  const [profile, setProfile, clearProfile] = useLocalStorage("profile");
   const onSubmit = async (values) => {
     try {
       const response = await axios.post(
@@ -45,6 +50,9 @@ const RegisterPage = () => {
       );
 
       if (response.status === 200) {
+        // setUser({ ...response.data.result });
+        setProfile({ ...response.data.result });
+        console.log(profile);
         router.push("/");
       } else {
         console.log(error.response.data.errors[0].msg);

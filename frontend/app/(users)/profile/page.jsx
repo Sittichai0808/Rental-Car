@@ -32,7 +32,7 @@ export default function ProfilePage() {
           backgroundColor: "#4ade80",
         }}
       >
-        <Title className=" flex justify-center font-medium text-basetext-slate-950 ">
+        <Title className=" flex justify-center font-medium text-basetext-slate-900 ">
           CRT
         </Title>
         <Menu

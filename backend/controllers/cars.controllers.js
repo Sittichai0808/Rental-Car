@@ -61,7 +61,7 @@ export const getCarById = async (req, res, next) => {
 
 export const getListCars = async (req, res, next) => {
     try {
-        const result = await carsService.getListCars()
+        const result = await carsService.getListCars(req.query);
         return res.status(HTTP_STATUS.OK).json({
             message: CARS_MESSAGE.GET_CARS_SUCCESS,
             result

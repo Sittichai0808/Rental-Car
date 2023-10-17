@@ -11,6 +11,7 @@ import OAuthGoogle from "@/components/OAuthGoogle.jsx";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { toast } from "react-toastify";
+import { useLocalStorage } from "@/customHooks/useLocalStorage";
 const { Title } = Typography;
 
 const StyleInput = styled(Input)`
@@ -38,7 +39,7 @@ const LoginPage = () => {
   };
   const [form] = Form.useForm();
   const router = useRouter();
-
+  const [profile, setProfile, clearProfile] = useLocalStorage("profile");
   const onSubmit = async (values) => {
     try {
       const response = await axios.post(
@@ -52,6 +53,7 @@ const LoginPage = () => {
       );
 
       if (response.status === 200) {
+        setProfile({ ...response.data.result });
         router.push("/");
       } else {
         toast.error(error.response.data.errors[0].msg, {

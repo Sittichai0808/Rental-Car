@@ -25,6 +25,49 @@ const ButtonSummit = styled(Button)`
 `;
 
 const RecoverPasswordPage = () => {
+  const [form] = Form.useForm();
+  const router = useRouter();
+
+  const onSubmit = async (values) => {
+    try {
+      const response = await axios.get(
+        "http://localhost:4000/users/generate-otp",
+
+        values
+      );
+
+      if (response.status === 200) {
+        const response1 = await axios.post(
+          "http://localhost:4000/users/get-user-by-email",
+          values
+        );
+
+        let text = `Your Password Recovery OTP is ${response.data.code}. Verify and recover your password.`;
+        await axios.post(
+          "http://localhost:4000/users/register-mail",
+
+          {
+            ...values,
+            name: response1.data.result.username,
+            text,
+            subject: "Password Recovery OTP",
+          },
+          {
+            headers: { "Content-Type": "application/json" },
+            withCredentials: true,
+          }
+        );
+
+        router.push(`/verify-otp-password?email=${values.email}`);
+      } else {
+        console.error("Failed to submit data");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
+  const { mutate } = useMutation(onSubmit);
   return (
     <div className="py-[30px] px-[20px] h-screen">
       <div className="flex flex-col justify-center items-center h-full ">
@@ -33,7 +76,7 @@ const RecoverPasswordPage = () => {
           alt="logo"
           width={50}
           height={50}
-          loader={loaderProp}
+          // loader={loaderProp}
         />
         <Title>Quên mật khẩu</Title>
         <Title level={5}>Nhập email để lấy lại mật khẩu</Title>

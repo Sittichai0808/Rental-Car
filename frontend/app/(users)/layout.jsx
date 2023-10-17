@@ -1,7 +1,7 @@
 "use client";
 import { UserFilledIcon } from "@/icons";
 import styled from "@emotion/styled";
-import { Divider, Layout, Menu } from "antd";
+import { Divider, Layout, Menu, Typography } from "antd";
 import { useUserState } from "@/recoils/user.state";
 const { Header, Content, Footer } = Layout;
 const { Title } = Typography;

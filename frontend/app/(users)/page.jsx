@@ -6,7 +6,8 @@ export default function HomePage() {
 
   return (
     <div>
-      Hello {profile(profile).role}
+      Hello
+      <h1>{profile(profile)?.username}</h1>
       <span className="text-green-400 font-bold">OK nha</span>
       <Button type="primary">Click</Button>
     </div>

@@ -25,6 +25,36 @@ const ButtonSummit = styled(Button)`
 `;
 
 const ResetPasswordPage = () => {
+  const [form] = Form.useForm();
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const email = searchParams.get("email");
+
+  const onSubmit = async (values) => {
+    try {
+      const { password } = values;
+      const response = await axios.put(
+        "http://localhost:4000/users/reset-password",
+
+        { email: email.toString(), password: password.toString() },
+        {
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+
+      if (response.status === 200) {
+        console.log(response.data);
+        router.push("/login");
+      } else {
+        console.log(error.response.data.errors[0].msg);
+      }
+    } catch (error) {
+      toast.error(error.response.data.errors[0].msg, {
+        position: toast.POSITION.TOP_CENTER,
+      });
+    }
+  };
+  const { mutate } = useMutation(onSubmit);
   return (
     <div className="py-[30px] px-[20px] h-screen">
       <div className="flex flex-col justify-center items-center h-full ">
@@ -33,7 +63,7 @@ const ResetPasswordPage = () => {
           alt="logo"
           width={50}
           height={50}
-          loader={loaderProp}
+          // loader={loaderProp}
         />
         <Title>Đặt lại mật khẩu mới</Title>
         <Title level={5} className="text-gray-400">

@@ -33,6 +33,9 @@ const ButtonSummit = styled(Button)`
 `;
 
 const LoginPage = () => {
+  const loaderProp = ({ src }) => {
+    return src;
+  };
   const [form] = Form.useForm();
   const router = useRouter();
 
@@ -66,7 +69,14 @@ const LoginPage = () => {
   return (
     <div className="py-[30px] px-[20px] h-screen">
       <div className="flex flex-col justify-center items-center h-full ">
-        <Image src={logo} alt="logo" width={50} height={50} />
+        <Image
+          src={logo}
+          alt="logo"
+          width={50}
+          height={50}
+          loader={loaderProp}
+          unoptimized={true}
+        />
         <Title>Đăng nhập</Title>
 
         <div>

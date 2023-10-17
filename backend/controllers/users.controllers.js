@@ -90,24 +90,6 @@ export const resetPasswordController = async (req, res, next) => {
   })
 }
 
-export const getUsersController = async (req, res, next) => {
-  const result = await usersService.getUsers()
-
-  return res.json({
-    message: USER_MESSAGES.GET_USERS_SUCCESS,
-    result: result
-  })
-}
-
-export const getUserByEmailController = async (req, res, next) => {
-  const result = await usersService.getUserByEmail(req.body)
-
-  return res.json({
-    message: USER_MESSAGES.GET_USERS_SUCCESS,
-    result: result
-  })
-}
-
 export const registerMailController = async (req, res, next) => {
   const { name, email, text, subject } = req.body
 
@@ -137,3 +119,42 @@ export const registerMailController = async (req, res, next) => {
     })
     .catch((error) => res.status(500).send({ error }))
 }
+
+export const getUserByEmailController = async (req, res, next) => {
+  const result = await usersService.getUserByEmail(req.body)
+
+  return res.json({
+    message: USER_MESSAGES.GET_USERS_SUCCESS,
+    result: result
+  })
+}
+
+// export const registerMailController = async (req, res, next) => {
+//   const { name, email, text, subject } = req.body
+
+//   // body of the email
+//   const bodyEmail = {
+//     body: {
+//       name: name,
+//       intro: text || "Welcome to Daily Tuition! We're very excited to have you on board.",
+//       outro: "Need help, or have questions? Just reply to this email, we'd love to help."
+//     }
+//   }
+
+//   const emailBody = MailGenerator.generate(bodyEmail)
+
+//   const message = {
+//     from: process.env.EMAIL,
+//     to: email,
+//     subject: subject || 'Signup Successful',
+//     html: emailBody
+//   }
+
+//   // send mail
+//   transporter
+//     .sendMail(message)
+//     .then(() => {
+//       return res.status(200).send({ msg: 'You should receive an email from us.' })
+//     })
+//     .catch((error) => res.status(500).send({ error }))
+// }

@@ -8,5 +8,8 @@ export const themeConfigs = {
     Button: {
       algorithm: true,
     },
+    Tag: {
+      borderRadius: "999px",
+    },
   },
 };

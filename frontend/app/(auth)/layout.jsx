@@ -9,6 +9,9 @@ import { usePathname } from "next/navigation";
 const { Title } = Typography;
 
 const LoginLayout = ({ children }) => {
+  const loaderProp = ({ src }) => {
+    return src;
+  };
   const pathname = usePathname();
   return (
     <Layout className="max-w-6xl mx-auto min-h-screen bg-white">
@@ -20,6 +23,8 @@ const LoginLayout = ({ children }) => {
               <Image
                 className="w-full h-full rounded-[10px]"
                 src={bgImage}
+                loader={loaderProp}
+                unoptimized={true}
                 priority
                 alt="Picture of the author"
               />

@@ -27,10 +27,19 @@ const ButtonSummit = styled(Button)`
 `;
 
 const ResetPasswordPage = () => {
+  const loaderProp = ({ src }) => {
+    return src;
+  };
   return (
     <div className="py-[30px] px-[20px] h-screen">
       <div className="flex flex-col justify-center items-center h-full ">
-        <Image src={forgotPassword} alt="logo" width={50} height={50} />
+        <Image
+          src={forgotPassword}
+          alt="logo"
+          width={50}
+          height={50}
+          loader={loaderProp}
+        />
         <Title>Đặt lại mật khẩu mới</Title>
         <Title level={5} className="text-gray-400">
           Nhập lại mật khẩu mới để đăng nhập

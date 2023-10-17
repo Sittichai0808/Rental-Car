@@ -22,10 +22,19 @@ const ButtonSummit = styled(Button)`
 `;
 
 const RecoverPasswordPage = () => {
+  const loaderProp = ({ src }) => {
+    return src;
+  };
   return (
     <div className="py-[30px] px-[20px] h-screen">
       <div className="flex flex-col justify-center items-center h-full ">
-        <Image src={forgotPassword} alt="logo" width={50} height={50} />
+        <Image
+          src={forgotPassword}
+          alt="logo"
+          width={50}
+          height={50}
+          loader={loaderProp}
+        />
         <Title>Quên mật khẩu</Title>
         <Title level={5}>Nhập email để lấy lại mật khẩu</Title>
 

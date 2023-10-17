@@ -1,10 +1,10 @@
 "use client";
 import { UserFilledIcon } from "@/icons";
 import styled from "@emotion/styled";
-import { Divider, Layout, Menu } from "antd";
-
+import { Divider, Layout, Menu, Tag, Typography } from "antd";
+import Image from "next/image";
 const { Header, Content, Footer } = Layout;
-
+const { Title } = Typography;
 const StyledMenu = styled(Menu)`
   li {
     &::after {
@@ -16,6 +16,9 @@ const StyledMenu = styled(Menu)`
     }
   }
 `;
+const loaderProp = ({ src }) => {
+  return src;
+};
 
 export default function UserWebLayout({ children }) {
   return (

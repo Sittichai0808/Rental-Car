@@ -29,6 +29,9 @@ const ButtonSummit = styled(Button)`
 `;
 
 const RegisterPage = () => {
+  const loaderProp = ({ src }) => {
+    return src;
+  };
   const [form] = Form.useForm();
 
   const onSubmit = async (values) => {
@@ -56,7 +59,13 @@ const RegisterPage = () => {
   return (
     <div className="py-[30px] px-[20px] h-screen">
       <div className="flex flex-col justify-center items-center h-full ">
-        <Image src={logo} alt="logo" width={50} height={50} />
+        <Image
+          src={logo}
+          alt="logo"
+          width={50}
+          height={50}
+          loader={loaderProp}
+        />
         <Title>Đăng ký thông tin</Title>
         {/* <Title level={5}>Đăng ký thông tin</Title> */}
 

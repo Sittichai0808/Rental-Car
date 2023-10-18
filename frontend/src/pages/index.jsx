@@ -1,5 +1,6 @@
 import { CarCard } from "@/components/CarCard";
-import { CalendarFilledIcon, LocationFilledIcon } from "@/icons";
+import { CalendarFilledIcon, LocationFilledIcon, SearchBrokenIcon } from "@/icons";
+import { Select } from "antd";
 import { Button, DatePicker, Form, Input } from "antd";
 import Image from "next/image";
 
@@ -12,30 +13,27 @@ export default function HomePage() {
         </div>
 
         <div className="bg-white rounded-lg -mt-10 w-4/5 mx-auto z-50 relative pt-6 px-4 shadow-lg">
-          <Form layout="vertical" className="flex gap-6 items-center h-full">
-            <Form.Item
-              className="grow"
-              label={
-                <div className="font-bold text-lg flex gap-2 items-center text-gray-800">
-                  <LocationFilledIcon />
-                  <span>Địa điểm</span>
-                </div>
-              }
-            >
-              <Input placeholder="Địa điểm" size="large" />
+          <Form layout="vertical" className="grid grid-cols-5 gap-6 h-full">
+            <Form.Item name="brand">
+              <Select size="large" placeholder="Hãng xe" options={[{ value: "Cambri" }, { value: "Mecedes" }]} />
+            </Form.Item>
+            <Form.Item name="brand">
+              <Select size="large" placeholder="Số ghế" options={[{ value: 4 }, { value: 7 }]} />
+            </Form.Item>
+            <Form.Item name="brand">
+              <Select
+                size="large"
+                placeholder="Truyền động"
+                options={[{ value: "Động cơ đốt trong" }, { value: "Mecedes" }]}
+              />
+            </Form.Item>
+            <Form.Item name="brand">
+              <Select size="large" placeholder="Giá" options={[{ value: "0 - 500K" }, { value: "501K - 1000K" }]} />
             </Form.Item>
 
-            <Form.Item
-              className="grow"
-              label={
-                <div className="font-bold text-lg flex gap-2 items-center text-gray-800">
-                  <CalendarFilledIcon />
-                  <span>Thời gian</span>
-                </div>
-              }
-            >
-              <DatePicker.RangePicker size="large" className="w-full" />
-            </Form.Item>
+            <Button type="primary" icon={<SearchBrokenIcon />} size="large">
+              Tìm kiếm
+            </Button>
           </Form>
         </div>
       </div>

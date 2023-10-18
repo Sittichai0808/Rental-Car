@@ -1,11 +1,11 @@
 // import { defaultErrorHandler } from './middlewares/error.middlewares'
 import usersRouter from './routes/users.routes.js'
+import brandsRoutes from './routes/brands.routes.js'
+import modelsRoutes from './routes/models.routes.js'
+import carsRoutes from './routes/cars.routes.js'
 import databaseServices from './services/database.services.js'
 import { defaultErrorHandler } from './middlewares/errors.middlewares.js'
 import pkg from 'lodash'
-const { omit } = pkg
-import { HTTP_STATUS } from './constants/httpStatus.js'
-import { ErrorWithStatus } from './models/error.js'
 
 import express from 'express'
 import mongoose from 'mongoose'
@@ -29,3 +29,7 @@ app.use(defaultErrorHandler)
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
 })
+
+app.use('/brands', brandsRoutes);
+app.use('/models', modelsRoutes);
+app.use('/cars', carsRoutes)

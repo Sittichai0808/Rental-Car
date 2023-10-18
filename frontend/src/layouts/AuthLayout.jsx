@@ -1,18 +1,16 @@
-"use client";
-import React from "react";
-import { Col, Divider, Row, Typography, Button } from "antd";
-import bgImage from "../../public/bgImage.jpg";
+import { Button, Col, Layout, Row, Typography } from "antd";
 import Image from "next/image";
 import Link from "next/link";
-import { Layout } from "antd";
-import { usePathname } from "next/navigation";
+import bgImage from "../../public/bgImage.jpg";
+import { useRouter } from "next/router";
 const { Title } = Typography;
 
-const LoginLayout = ({ children }) => {
+export const AuthLayout = ({ children }) => {
   const loaderProp = ({ src }) => {
     return src;
   };
-  const pathname = usePathname();
+  const { pathname } = useRouter();
+
   return (
     <Layout className="max-w-6xl mx-auto min-h-screen bg-white">
       <Row>
@@ -34,16 +32,11 @@ const LoginLayout = ({ children }) => {
                 CRT - Hành trình theo cách của bạn
               </Title>
             </div>
-            <div className="absolute inset-x-0 bottom-0 mx-[20px] my-[30px]  bottom-0 left-0    bg-green-900 bg-opacity-50 rounded-b-lg">
+            <div className="absolute inset-x-0 bottom-0 mx-[20px] my-[30px] left-0    bg-green-900 bg-opacity-50 rounded-b-lg">
               <div className="flex justify-center items-center h-24">
                 <Title level={5} className="text-white">
-                  {pathname === "/register"
-                    ? "Bạn đã có tài khoản?"
-                    : "Bạn chưa có tài khoản?"}
-                  <Button
-                    type="text"
-                    className="text-white font-bold text-base"
-                  >
+                  {pathname === "/register" ? "Bạn đã có tài khoản?" : "Bạn chưa có tài khoản?"}
+                  <Button type="text" className="text-white font-bold text-base">
                     {pathname === "/register" ? (
                       <Link href="/login"> Đăng nhập</Link>
                     ) : (
@@ -62,5 +55,3 @@ const LoginLayout = ({ children }) => {
     </Layout>
   );
 };
-
-export default LoginLayout;

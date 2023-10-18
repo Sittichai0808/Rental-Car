@@ -1,11 +1,9 @@
-"use client";
-import { Button } from "antd";
-import { GoogleAuthProvider, signInWithPopup, getAuth } from "firebase/auth";
-import { app } from "../firebase.js";
-import axios from "axios";
-import Link from "next/link";
-import { useRouter } from "next/navigation.js";
 import { GooglePlusOutlined } from "@ant-design/icons";
+import { Button } from "antd";
+import axios from "axios";
+import { GoogleAuthProvider, getAuth, signInWithPopup } from "firebase/auth";
+import { app } from "../../firebase";
+import { useRouter } from "next/router";
 function OAuthGoogle() {
   const router = useRouter();
 

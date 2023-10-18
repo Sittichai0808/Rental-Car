@@ -1,13 +1,11 @@
-"use client";
-import React from "react";
 import { Button, Form, Input, Typography } from "antd";
 import Image from "next/image";
 import forgotPassword from "../../../public/forgotPassword.png";
 import styled from "@emotion/styled";
-import { useRouter } from "next/navigation";
-import { useSearchParams } from "next/navigation";
+import { useRouter } from "next/router";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
+import { AuthLayout } from "@/layouts/AuthLayout";
 
 const { Title } = Typography;
 
@@ -26,9 +24,12 @@ const ButtonSummit = styled(Button)`
 
 const ResetPasswordPage = () => {
   const [form] = Form.useForm();
-  const searchParams = useSearchParams();
+  const { query: searchParams } = useRouter();
+
+  console.log(searchParams);
+
   const router = useRouter();
-  const email = searchParams.get("email");
+  const email = searchParams?.email;
 
   const onSubmit = async (values) => {
     try {
@@ -94,11 +95,7 @@ const ResetPasswordPage = () => {
               ]}
               hasFeedback
             >
-              <StyleInputPassword
-                type="password"
-                placeholder="Password"
-                size="large"
-              />
+              <StyleInputPassword type="password" placeholder="Password" size="large" />
             </Form.Item>
 
             <Form.Item
@@ -115,20 +112,12 @@ const ResetPasswordPage = () => {
                     if (!value || getFieldValue("password") === value) {
                       return Promise.resolve();
                     }
-                    return Promise.reject(
-                      new Error(
-                        "The new password that you entered do not match!"
-                      )
-                    );
+                    return Promise.reject(new Error("The new password that you entered do not match!"));
                   },
                 }),
               ]}
             >
-              <StyleInputPassword
-                type="password"
-                placeholder="Confirm Password"
-                size="large"
-              />
+              <StyleInputPassword type="password" placeholder="Confirm Password" size="large" />
             </Form.Item>
             <Form.Item>
               <ButtonSummit type="primary" htmlType="submit">
@@ -143,3 +132,5 @@ const ResetPasswordPage = () => {
 };
 
 export default ResetPasswordPage;
+
+ResetPasswordPage.Layout = AuthLayout;

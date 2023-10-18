@@ -1,13 +1,11 @@
-"use client";
-import React from "react";
 import { Button, Form, Input, Typography } from "antd";
 import Image from "next/image";
 import forgotPassword from "../../../public/forgotPassword.png";
 import styled from "@emotion/styled";
-import { useRouter } from "next/navigation";
+import { useRouter } from "next/router";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
-
+import { AuthLayout } from "@/layouts/AuthLayout";
 const { Title } = Typography;
 
 const StyleInput = styled(Input)`
@@ -24,41 +22,28 @@ const ButtonSummit = styled(Button)`
   padding: 30px auto;
 `;
 
-const RecoverPasswordPage = () => {
+const VerifyOTPPasswordPage = () => {
   const [form] = Form.useForm();
+  const { query: searchParams } = useRouter();
   const router = useRouter();
+  const email = searchParams?.email;
 
   const onSubmit = async (values) => {
     try {
       const response = await axios.get(
-        "http://localhost:4000/users/generate-otp",
+        `http://localhost:4000/users/verify-otp/${values.otp}`,
 
-        values
+        { email },
+
+        {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true,
+        }
       );
 
       if (response.status === 200) {
-        const response1 = await axios.post(
-          "http://localhost:4000/users/get-user-by-email",
-          values
-        );
-
-        let text = `Your Password Recovery OTP is ${response.data.code}. Verify and recover your password.`;
-        await axios.post(
-          "http://localhost:4000/users/register-mail",
-
-          {
-            ...values,
-            name: response1.data.result.username,
-            text,
-            subject: "Password Recovery OTP",
-          },
-          {
-            headers: { "Content-Type": "application/json" },
-            withCredentials: true,
-          }
-        );
-
-        router.push(`/verify-otp-password?email=${values.email}`);
+        console.log("Data submitted successfully");
+        router.push(`/reset-password?email=${email}`);
       } else {
         console.error("Failed to submit data");
       }
@@ -71,44 +56,36 @@ const RecoverPasswordPage = () => {
   return (
     <div className="py-[30px] px-[20px] h-screen">
       <div className="flex flex-col justify-center items-center h-full ">
-        <Image
-          src={forgotPassword}
-          alt="logo"
-          width={50}
-          height={50}
-          // loader={loaderProp}
-        />
+        <Image src={forgotPassword} alt="logo" width={50} height={50} />
         <Title>Quên mật khẩu</Title>
-        <Title level={5}>Nhập email để lấy lại mật khẩu</Title>
-
+        <div>CRT vừa gửi mã OTP vào email của bạn.</div>
+        <Title level={5} className="text-gray-500">
+          Vui lòng nhập mã gồm 6 số vào ô bên dưới để xác minh.
+        </Title>
         <div>
           <Form
-            form={form}
-            onFinish={(values) => {
-              mutate(values);
-            }}
             layout="vertical"
             name="basic"
             style={{
               maxWidth: 600,
             }}
+            form={form}
+            onFinish={(values) => {
+              mutate(values);
+            }}
             autoComplete="off"
             className="mt-5"
           >
             <Form.Item
-              name="email"
+              name="otp"
               rules={[
                 {
-                  type: "email",
-                  message: "The input is not valid E-mail!",
-                },
-                {
                   required: true,
-                  message: "Please input your E-mail!",
+                  message: "Please input your OTP!",
                 },
               ]}
             >
-              <StyleInput placeholder="Email" size="large" />
+              <StyleInput placeholder="Nhập mã OTP từ email" size="large" />
             </Form.Item>
 
             <Form.Item>
@@ -123,4 +100,6 @@ const RecoverPasswordPage = () => {
   );
 };
 
-export default RecoverPasswordPage;
+export default VerifyOTPPasswordPage;
+
+VerifyOTPPasswordPage.Layout = AuthLayout;

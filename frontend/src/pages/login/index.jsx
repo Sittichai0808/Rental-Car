@@ -1,17 +1,15 @@
-"use client";
-import React from "react";
-import { Button, Checkbox, Form, Input, Typography } from "antd";
-import Image from "next/image";
-import logo from "../../../public/logo.png";
-import styled from "@emotion/styled";
-import { GooglePlusOutlined } from "@ant-design/icons";
-import { useQuery, useMutation } from "@tanstack/react-query";
-import axios from "axios";
 import OAuthGoogle from "@/components/OAuthGoogle.jsx";
-import { useRouter } from "next/navigation";
+import { AuthLayout } from "@/layouts/AuthLayout";
+import styled from "@emotion/styled";
+import { useMutation } from "@tanstack/react-query";
+import { Button, Form, Input, Typography } from "antd";
+import axios from "axios";
+import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import { toast } from "react-toastify";
-import { useLocalStorage } from "@/customHooks/useLocalStorage";
+import logo from "../../../public/logo.png";
+import { useLocalStorage } from "@/hooks/useLocalStorage";
 const { Title } = Typography;
 
 const StyleInput = styled(Input)`
@@ -71,14 +69,7 @@ const LoginPage = () => {
   return (
     <div className="py-[30px] px-[20px] h-screen">
       <div className="flex flex-col justify-center items-center h-full ">
-        <Image
-          src={logo}
-          alt="logo"
-          width={50}
-          height={50}
-          loader={loaderProp}
-          unoptimized={true}
-        />
+        <Image src={logo} alt="logo" width={50} height={50} loader={loaderProp} unoptimized={true} />
         <Title>Đăng nhập</Title>
 
         <div>
@@ -122,17 +113,10 @@ const LoginPage = () => {
               ]}
               hasFeedback
             >
-              <StyleInputPassword
-                type="password"
-                placeholder="Password"
-                size="large"
-              />
+              <StyleInputPassword type="password" placeholder="Password" size="large" />
             </Form.Item>
             <div className="flex justify-end">
-              <Button
-                type="text"
-                className="  text-green-400 font-bold text-base  mb-3"
-              >
+              <Button type="text" className="  text-green-400 font-bold text-base  mb-3">
                 <Link href="/recover-password"> Quên mật khẩu?</Link>
               </Button>
             </div>
@@ -147,10 +131,7 @@ const LoginPage = () => {
             <div className="flex justify-end">
               <div level={5}>
                 Bạn chưa có tài khoản?{" "}
-                <Button
-                  type="text"
-                  className="font-bold text-base text-green-500"
-                >
+                <Button type="text" className="font-bold text-base text-green-500">
                   <Link href="/register"> Đăng ký</Link>
                 </Button>
               </div>
@@ -167,3 +148,5 @@ const LoginPage = () => {
 };
 
 export default LoginPage;
+
+LoginPage.Layout = AuthLayout;

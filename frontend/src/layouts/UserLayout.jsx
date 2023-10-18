@@ -16,7 +16,17 @@ const StyledMenu = styled(Menu)`
   }
 `;
 
-export default function UserWebLayout({ children }) {
+export function UserWebLayout({ children }) {
+  const [profile, setProfile, clearProfile] = useLocalStorage("profile");
+  const [user, setUser] = useState();
+  useEffect(() => {
+    let value;
+
+    // Get the value from local storage if it exists
+    value = profile(profile) || "";
+    setUser(value);
+  }, []);
+
   return (
     <Layout className="max-w-6xl mx-auto min-h-screen">
       <Header className="bg-white flex gap-2 items-center px-0">

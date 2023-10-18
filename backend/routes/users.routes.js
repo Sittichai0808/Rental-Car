@@ -6,7 +6,12 @@ import {
   loginController,
   googleController,
   getUserController,
-  updateUserController
+  updateUserController,
+  generateOTPController,
+  verifyOTPController,
+  resetPasswordController,
+  registerMailController,
+  getUserByEmailController
 } from '../controllers/users.controllers.js'
 const usersRoutes = express.Router()
 
@@ -43,18 +48,56 @@ usersRoutes.post('/google', wrapRequestHandler(googleController))
 usersRoutes.get('/get-user', accessTokenValidator, wrapRequestHandler(getUserController))
 
 /**
+ * Description: Get User
+ * Path: /get-user
+ * Method: GET
+ * body: {email: string}
+ */
+usersRoutes.post('/get-user-by-email', wrapRequestHandler(getUserByEmailController))
+
+/**
  * Description: Update User
  * Path: /update-user
  * Method: POST
  * Body:{ username: string, email: string, password: string,profilePicture: string,...}
  */
-usersRoutes.post('/update-user/:userId', accessTokenValidator, wrapRequestHandler(updateUserController))
+usersRoutes.put('/update-user/:userId', accessTokenValidator, wrapRequestHandler(updateUserController))
 
 /**
- * Description: reset password
- * Path: /reset-password
+ * Description: Generate OTP
+ * Path: /generate-otp
  * Method: GET
- * Headers: {Authorization: Bearer <access_token>}
+ * Body: {email: String}
  */
-// usersRoutes.get('/get-user', accessTokenValidator, wrapRequestHandler(getUserController))
+usersRoutes.get('/generate-otp', wrapRequestHandler(generateOTPController))
+
+/**
+ * Description: Verify OTP
+ * Path: /verify-otp
+ * Method: GET
+ */
+usersRoutes.get('/verify-otp/:code', wrapRequestHandler(verifyOTPController))
+
+/**
+ * Description: Reset Password
+ * Path: /reset-password
+ * Method: PUT
+ */
+usersRoutes.put('/reset-password', wrapRequestHandler(resetPasswordController))
+
+/**
+ * Description: Register Mail
+ * Path: /register-mail
+ * Method: POST
+ * Body: {email: String,name: string, text: String, subject: String}
+ */
+
+/**
+ * Description: Register Mail
+ * Path: /register-mail
+ * Method: POST
+ * Body: {email: String,name: string, text: String, subject: String}
+ */
+usersRoutes.post('/register-mail', wrapRequestHandler(registerMailController))
+
 export default usersRoutes

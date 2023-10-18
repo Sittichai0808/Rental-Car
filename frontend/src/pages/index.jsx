@@ -1,6 +1,6 @@
 import { CarCard } from "@/components/CarCard";
 import { CalendarFilledIcon, LocationFilledIcon } from "@/icons";
-import { DatePicker, Form, Input } from "antd";
+import { Button, DatePicker, Form, Input } from "antd";
 import Image from "next/image";
 
 export default function HomePage() {
@@ -44,7 +44,6 @@ export default function HomePage() {
         <h2 className="text-center text-2xl">Xe dành cho bạn</h2>
 
         <div className="grid grid-cols-4 gap-3">
-          <CarCard />
           <CarCard />
           <CarCard />
           <CarCard />
@@ -162,6 +161,39 @@ export default function HomePage() {
               <span>Trả xe & kết thúc chuyến đi</span>
             </div>
           </div>
+        </div>
+      </div>
+
+      <div className="mt-10 p-4 rounded-md bg-neutral-200 grid grid-cols-2 gap-6">
+        <div className="flex flex-col justify-center items-center">
+          <h3>Bạn muốn hợp tác với chúng tôi?</h3>
+          <div className="text-center">
+            Bạn muốn cho thuê xe? Bấm xem thêm để biết thêm thông tin chi tiết về việc hợp tác với chúng tôi
+          </div>
+          <Button className="mt-10" type="primary">
+            Xem thêm
+          </Button>
+        </div>
+
+        <div className="relative aspect-video rounded-md overflow-hidden">
+          <Image alt="hh" src="/images/car.jpg" layout="fill" />
+        </div>
+      </div>
+
+      <div className="mt-10 p-4 rounded-md bg-neutral-200 grid grid-cols-2 gap-6">
+        <div className="relative aspect-video rounded-md overflow-hidden">
+          <Image alt="hh" src="/images/car.jpg" layout="fill" />
+        </div>
+
+        <div className="flex flex-col justify-center items-center">
+          <h3>Bạn muốn biết thêm thông tin về chúng tôi?</h3>
+          <div className="text-center">
+            CRT là mang lại một ứng dụng cho thuê xe tự lái ở Đà Nẵng và sẽ mở rộng ra hơn khắp Việt Nam trong thời gian
+            tới. CRT mong rằng sẽ đem lại trải nghiệp thuê xe tự lái một cách an toàn và chuyên nghiệp nhất
+          </div>
+          <Button className="mt-10" type="primary">
+            Xem thêm
+          </Button>
         </div>
       </div>
     </div>

@@ -5,10 +5,13 @@ import { transporter, MailGenerator } from '../utils/nodemailerConfig.js'
 import { config } from 'dotenv'
 config()
 export const registerController = async (req, res, next) => {
-  console.log(req)
   const result = await usersService.register(req.body)
-
-  return res.json({ message: USER_MESSAGES.REGISTER_SUCCESS, result })
+  const expiryDate = new Date(Date.now() + 3600000) // 1 hour
+  return res.cookie('access_token', result.access_token.toString(), { httpOnly: true, expires: expiryDate }).json({
+    message: USER_MESSAGES.REGISTER_SUCCESS,
+    access_token: result.access_token.toString(),
+    result: result.user
+  })
 }
 
 export const loginController = async (req, res) => {
@@ -116,3 +119,42 @@ export const registerMailController = async (req, res, next) => {
     })
     .catch((error) => res.status(500).send({ error }))
 }
+
+export const getUserByEmailController = async (req, res, next) => {
+  const result = await usersService.getUserByEmail(req.body)
+
+  return res.json({
+    message: USER_MESSAGES.GET_USERS_SUCCESS,
+    result: result
+  })
+}
+
+// export const registerMailController = async (req, res, next) => {
+//   const { name, email, text, subject } = req.body
+
+//   // body of the email
+//   const bodyEmail = {
+//     body: {
+//       name: name,
+//       intro: text || "Welcome to Daily Tuition! We're very excited to have you on board.",
+//       outro: "Need help, or have questions? Just reply to this email, we'd love to help."
+//     }
+//   }
+
+//   const emailBody = MailGenerator.generate(bodyEmail)
+
+//   const message = {
+//     from: process.env.EMAIL,
+//     to: email,
+//     subject: subject || 'Signup Successful',
+//     html: emailBody
+//   }
+
+//   // send mail
+//   transporter
+//     .sendMail(message)
+//     .then(() => {
+//       return res.status(200).send({ msg: 'You should receive an email from us.' })
+//     })
+//     .catch((error) => res.status(500).send({ error }))
+// }

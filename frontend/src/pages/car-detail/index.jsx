@@ -19,6 +19,7 @@ import {
 import { Divider, Table, Tag } from "antd";
 import { DateRangePicker } from "@/components/antd";
 import Image from "next/image";
+import styled from "@emotion/styled";
 
 const carServices = [
   { icon: MapIcon, name: "Bản đồ" },
@@ -28,21 +29,27 @@ const carServices = [
   { icon: UsbIcon, name: "Khe cắm usb" },
 ];
 
+const BorderlessTable = styled(Table)`
+  .ant-table {
+    background-color: transparent;
+  }
+`;
+
 export default function CarDetailPage() {
   return (
     <div>
       <div className="grid h-[600px] gap-4 grid-cols-4 grid-rows-3 relative">
         <div className="relative col-span-3 row-span-3 rounded-md overflow-hidden">
-          <Image alt="car" src="/images/car-detail.jpg" fill />
+          <Image alt="car" src="/images/car-detail.jpg" layout="fill" />
         </div>
         <div className="relative rounded-md overflow-hidden">
-          <Image alt="car" src="/images/car-detail.jpg" fill />
+          <Image alt="car" src="/images/car-detail.jpg" layout="fill" />
         </div>
         <div className="relative rounded-md overflow-hidden">
-          <Image alt="car" src="/images/car-detail.jpg" fill />
+          <Image alt="car" src="/images/car-detail.jpg" layout="fill" />
         </div>
         <div className="relative rounded-md overflow-hidden">
-          <Image alt="car" src="/images/car-detail.jpg" fill />
+          <Image alt="car" src="/images/car-detail.jpg" layout="fill" />
         </div>
 
         <div className="absolute bg-white rounded-md px-4 py-2 bottom-4 right-4 flex items-center gap-2 text-gray-800">
@@ -170,7 +177,7 @@ export default function CarDetailPage() {
 
             <Divider />
 
-            <Table
+            <BorderlessTable
               columns={[{ dataIndex: "label" }, { dataIndex: "price", className: "text-right" }]}
               bordered={false}
               showHeader={false}

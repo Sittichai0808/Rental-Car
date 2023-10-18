@@ -3,7 +3,7 @@ import chalk from "chalk";
 import fs from "fs-extra";
 
 async function generateApi() {
-  const apiFolder = "./apis";
+  const apiFolder = "./src/apis";
 
   const { urlPath, apiName, method } = await inquirer.prompt([
     { type: "input", name: "apiName", message: "API Name (ex. updateUser):" },

@@ -4,7 +4,7 @@ import chalk from "chalk";
 import { capitalize } from "lodash-es";
 
 async function generateIcons() {
-  const iconsFolder = "./icons";
+  const iconsFolder = "./src/icons";
   const iconFilePath = path.join(iconsFolder, "index.js");
 
   try {

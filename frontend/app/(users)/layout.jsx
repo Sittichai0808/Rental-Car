@@ -1,10 +1,14 @@
 "use client";
 import { UserFilledIcon } from "@/icons";
 import styled from "@emotion/styled";
-import { Divider, Layout, Menu } from "antd";
+import { Divider, Layout, Menu, Typography } from "antd";
+import { useUserState } from "@/recoils/user.state";
+import { useState, useEffect } from "react";
+import { useLocalStorage } from "@/customHooks/useLocalStorage.js";
+import Link from "next/link";
 
 const { Header, Content, Footer } = Layout;
-
+const { Title } = Typography;
 const StyledMenu = styled(Menu)`
   li {
     &::after {
@@ -16,8 +20,21 @@ const StyledMenu = styled(Menu)`
     }
   }
 `;
+const loaderProp = ({ src }) => {
+  return src;
+};
 
 export default function UserWebLayout({ children }) {
+  const [profile, setProfile, clearProfile] = useLocalStorage("profile");
+  const [user, setUser] = useState();
+  useEffect(() => {
+    let value;
+
+    // Get the value from local storage if it exists
+    value = profile(profile) || "";
+    setUser(value);
+  }, []);
+
   return (
     <Layout className="max-w-6xl mx-auto min-h-screen">
       <Header className="bg-white flex gap-2 items-center px-0">
@@ -38,10 +55,12 @@ export default function UserWebLayout({ children }) {
         />
         <Divider type="vertical" className="bg-neutral-200" />
         <div className="flex items-center gap-2 shrink-0">
-          <div className="flex bg-neutral-200 rounded-full p-1">
-            <UserFilledIcon className="text-neutral-500" />
-          </div>
-          <span>Luong Cong Truong</span>
+          <Link href="/profile">
+            <div className="flex bg-neutral-200 rounded-full p-1">
+              <UserFilledIcon className="text-neutral-500" />
+            </div>
+          </Link>
+          <h4>{user?.username}</h4>
         </div>
       </Header>
       <Content className="bg-white py-2">{children}</Content>

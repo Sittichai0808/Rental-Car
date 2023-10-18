@@ -2,7 +2,7 @@ import { CarCard } from "@/components/CarCard";
 import { CalendarFilledIcon, LocationFilledIcon } from "@/icons";
 import { Button, DatePicker, Form, Input } from "antd";
 import Image from "next/image";
-
+import { Button } from "antd";
 export default function HomePage() {
   return (
     <div>
@@ -39,7 +39,6 @@ export default function HomePage() {
           </Form>
         </div>
       </div>
-
       <div className="mb-40">
         <h2 className="text-center text-2xl">Xe dành cho bạn</h2>
 
@@ -50,7 +49,6 @@ export default function HomePage() {
           <CarCard />
         </div>
       </div>
-
       <div className="mb-40">
         <h2 className="text-center text-2xl">Ưu Điểm Của Mioto</h2>
         <p className="text-center font-semibold text-neutral-700 mb-8">
@@ -114,7 +112,6 @@ export default function HomePage() {
           </div>
         </div>
       </div>
-
       <div>
         <h2 className="text-center text-2xl">Hướng Dẫn Thuê Xe</h2>
         <p className="text-center font-semibold text-neutral-700 mb-8">

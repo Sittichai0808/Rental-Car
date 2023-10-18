@@ -20,6 +20,7 @@ import { Divider, Table, Tag } from "antd";
 import { DateRangePicker } from "@/components/antd";
 import Image from "next/image";
 import styled from "@emotion/styled";
+import { Feedback } from "@/components/Feedback";
 
 const carServices = [
   { icon: MapIcon, name: "Bản đồ" },
@@ -151,6 +152,33 @@ export default function CarDetailPage() {
               </div>
             </div>
           </div>
+
+          <div className="mt-10">
+            <h3>Điều khoản</h3>
+            <ul>
+              <li>Sử dụng xe đúng mục đích.</li>
+              <li>Không sử dụng xe thuê vào mục đích phi pháp, trái pháp luật.</li>
+              <li>Không sử dụng xe thuê để cầm cố, thế chấp.</li>
+              <li>Không hút thuốc, nhả kẹo cao su, xả rác trong xe.</li>
+              <li>Không chở hàng quốc cấm dễ cháy nổ.</li>
+              <li>Không chở hoa quả, thực phẩm nặng mùi trong xe.</li>
+            </ul>
+          </div>
+
+          <div className="mt-10">
+            <h3>Chính sách hủy chuyến</h3>
+            <div>Miễn phí hủy chuyến trong vòng 1 giờ sau khi đặt cọc</div>
+          </div>
+
+          <Divider />
+
+          <div className="mt-10">
+            <h3>Đánh giá</h3>
+            <div className="flex flex-col gap-4">
+              <Feedback />
+              <Feedback />
+            </div>
+          </div>
         </div>
 
         <div className="col-span-2 ">
@@ -182,6 +210,7 @@ export default function CarDetailPage() {
               bordered={false}
               showHeader={false}
               pagination={false}
+              rowKey={(row) => row.label}
               dataSource={[
                 {
                   label: "Đơn giá thuê",
@@ -190,10 +219,6 @@ export default function CarDetailPage() {
                 {
                   label: "Phí dịch vụ",
                   price: "Phí bảo hiểm",
-                },
-                {
-                  label: "Đơn giá thuê",
-                  price: "780 000đ/ngày",
                 },
                 {
                   label: <span className="font-bold">Tổng phí thuê xe</span>,

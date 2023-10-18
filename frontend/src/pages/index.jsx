@@ -1,4 +1,3 @@
-"use client";
 import { CarCard } from "@/components/CarCard";
 import { CalendarFilledIcon, LocationFilledIcon } from "@/icons";
 import { DatePicker, Form, Input } from "antd";
@@ -9,7 +8,7 @@ export default function HomePage() {
     <div>
       <div className="mb-12">
         <div className="relative h-[50vh]">
-          <Image src="/images/bg-landingpage.png" alt="banner" fill className="object-cover rounded-md" />
+          <Image src="/images/bg-landingpage.png" alt="banner" layout="fill" className="object-cover rounded-md" />
         </div>
 
         <div className="bg-white rounded-lg -mt-10 w-4/5 mx-auto z-50 relative pt-6 px-4 shadow-lg">
@@ -62,7 +61,7 @@ export default function HomePage() {
         <div className="w-5/6 mx-auto grid grid-cols-3 gap-6">
           <div className="flex flex-col items-center">
             <div className="relative aspect-square w-60 h-60">
-              <Image src="/images/ad-1.svg" alt="ad" fill />
+              <Image src="/images/ad-1.svg" alt="ad" layout="fill" />
             </div>
             <h5 className="text-lg mb-0">An tâm đặt xe</h5>
             <p className="text-center">
@@ -73,7 +72,7 @@ export default function HomePage() {
 
           <div className="flex flex-col items-center">
             <div className="relative aspect-square w-60 h-60">
-              <Image src="/images/ad-2.svg" alt="ad" fill />
+              <Image src="/images/ad-2.svg" alt="ad" layout="fill" />
             </div>
             <h5 className="text-lg mb-0">Thủ tục đơn giản</h5>
             <p className="text-center">
@@ -83,7 +82,7 @@ export default function HomePage() {
 
           <div className="flex flex-col items-center">
             <div className="relative aspect-square w-60 h-60">
-              <Image src="/images/ad-3.svg" alt="ad" fill />
+              <Image src="/images/ad-3.svg" alt="ad" layout="fill" />
             </div>
             <h5 className="text-lg mb-0">Thanh toán dễ dàng</h5>
             <p className="text-center">
@@ -93,7 +92,7 @@ export default function HomePage() {
 
           <div className="flex flex-col items-center">
             <div className="relative aspect-square w-60 h-60">
-              <Image src="/images/ad-4.svg" alt="ad" fill />
+              <Image src="/images/ad-4.svg" alt="ad" layout="fill" />
             </div>
             <h5 className="text-lg mb-0">Giao xe tận nơi</h5>
             <p className="text-center">Bạn có thể lựa chọn giao xe tận nhà/sân bay... Phí tiết kiệm chỉ từ 15k/km.</p>
@@ -101,7 +100,7 @@ export default function HomePage() {
 
           <div className="flex flex-col items-center">
             <div className="relative aspect-square w-60 h-60">
-              <Image src="/images/ad-5.svg" alt="ad" fill />
+              <Image src="/images/ad-5.svg" alt="ad" layout="fill" />
             </div>
             <h5 className="text-lg mb-0">Dòng xe đa dạng</h5>
             <p className="text-center">Hơn 100 dòng xe cho bạn tuỳ ý lựa chọn: Mini, Sedan, CUV, SUV, MPV, Bán tải.</p>
@@ -109,7 +108,7 @@ export default function HomePage() {
 
           <div className="flex flex-col items-center">
             <div className="relative aspect-square w-60 h-60">
-              <Image src="/images/ad-6.svg" alt="ad" fill />
+              <Image src="/images/ad-6.svg" alt="ad" layout="fill" />
             </div>
             <h5 className="text-lg mb-0">Lái xe an toàn</h5>
             <p className="text-center">Vững tay lái với gói bảo hiểm thuê xe từ nhà bảo hiểm MIC & VNI.</p>
@@ -126,7 +125,7 @@ export default function HomePage() {
         <div className="grid grid-cols-4 gap-10">
           <div className="flex flex-col">
             <div className="relative aspect-square w-60 h-60">
-              <Image src="/images/guide-1.svg" alt="guide" fill />
+              <Image src="/images/guide-1.svg" alt="guide" layout="fill" />
             </div>
             <div className="flex gap-4 text-xl font-black justify-center">
               <span className="text-green-500 text-3xl">01</span>
@@ -136,7 +135,7 @@ export default function HomePage() {
 
           <div className="flex flex-col">
             <div className="relative aspect-square w-60 h-60">
-              <Image src="/images/guide-2.svg" alt="guide" fill />
+              <Image src="/images/guide-2.svg" alt="guide" layout="fill" />
             </div>
             <div className="flex gap-4 text-xl font-black justify-center">
               <span className="text-green-500 text-3xl">02</span>
@@ -146,7 +145,7 @@ export default function HomePage() {
 
           <div className="flex flex-col">
             <div className="relative aspect-square w-60 h-60">
-              <Image src="/images/guide-3.svg" alt="guide" fill />
+              <Image src="/images/guide-3.svg" alt="guide" layout="fill" />
             </div>
             <div className="flex gap-4 text-xl font-black justify-center">
               <span className="text-green-500 text-3xl">03</span>
@@ -156,7 +155,7 @@ export default function HomePage() {
 
           <div className="flex flex-col">
             <div className="relative aspect-square w-60 h-60">
-              <Image src="/images/guide-4.svg" alt="guide" fill />
+              <Image src="/images/guide-4.svg" alt="guide" layout="fill" />
             </div>
             <div className="flex gap-4 text-xl font-black justify-center">
               <span className="text-green-500 text-3xl">04</span>

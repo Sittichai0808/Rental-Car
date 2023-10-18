@@ -13,7 +13,7 @@ async function generateGlobalState() {
   ]);
 
   const key = answers.key;
-  const filePath = `./recoils/${key}.state.js`;
+  const filePath = `./src/recoils/${key}.state.js`;
 
   const fileContent = [
     `import { atom, useRecoilState } from "recoil";`,

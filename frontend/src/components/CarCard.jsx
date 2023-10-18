@@ -6,7 +6,7 @@ export const CarCard = ({}) => {
   return (
     <div className="border rounded-xl border-solid border-neutral-200 p-4">
       <div className="relative aspect-video mb-4">
-        <Image src="/images/car.jpg" alt="car" fill className="rounded-lg object-cover" />
+        <Image src="/images/car.jpg" alt="car" layout="fill" className="rounded-lg object-cover" />
       </div>
 
       <div>

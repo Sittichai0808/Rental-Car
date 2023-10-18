@@ -1,6 +1,6 @@
-"use client";
-import React from "react";
-import { Button } from "antd";
+import { Menu } from "antd";
+import { Typography } from "antd";
+import { Layout } from "antd";
 import {
   HeartOutlined,
   CarOutlined,
@@ -10,31 +10,17 @@ import {
   StrikethroughOutlined,
 } from "@ant-design/icons";
 
-import { Layout, Menu, theme, Typography } from "antd";
+const { Sider, Content } = Layout;
 
-import { link } from "fs-extra";
-import { usePathname } from "next/navigation";
-import Link from "next/link";
-
-const { Header, Sider, Content } = Layout;
-import { useRouter } from "next/navigation";
-
-import Account from "./Page/Account";
-const { Title } = Typography;
-
-export default function ProfilePage() {
-  const router = useRouter();
-
+export const ProfileLayout = ({ children }) => {
   return (
-    <Layout className="max-w-6xl mx-auto mt-10 bg-white  ">
+    <Layout className="max-w-6xl mx-auto bg-white">
       <Sider
         style={{
           backgroundColor: "#4ade80",
         }}
       >
-        <Title className=" flex justify-center font-medium text-basetext-slate-900 ">
-          CRT
-        </Title>
+        <Typography.Title className=" flex justify-center font-medium text-basetext-slate-900 ">CRT</Typography.Title>
         <Menu
           style={{
             backgroundColor: "#4ade80",
@@ -80,11 +66,7 @@ export default function ProfilePage() {
         />
       </Sider>
 
-      <Content className="bg-white h-full">
-        <Account />
-      </Content>
+      <Content className="bg-white h-full">{children}</Content>
     </Layout>
   );
-}
-
-ProfilePage.hideHeader = true;
+};

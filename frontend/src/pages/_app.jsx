@@ -6,7 +6,7 @@ import { ConfigProvider } from "antd";
 import { RecoilRoot } from "recoil";
 import { queryClient } from "@/apis/client";
 import { themeConfigs } from "@/configs/ant.config";
-import UserWebLayout from "@/layouts/UserLayout";
+import { UserWebLayout } from "@/layouts/UserLayout";
 
 export default function MyApp({ Component, pageProps }) {
   const { Layout = UserWebLayout, title = "Rental Car" } = Component;

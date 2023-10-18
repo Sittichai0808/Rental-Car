@@ -38,7 +38,6 @@ const carsSchema = new mongoose.Schema(
         },
         numberCar: {
             type: String,
-            required: true
         },
         status: {
             type: String,
@@ -47,7 +46,6 @@ const carsSchema = new mongoose.Schema(
         },
         cost: {
             type: Number,
-            required: true,
         },
     },
     { timestamps: true }

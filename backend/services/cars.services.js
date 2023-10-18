@@ -1,12 +1,15 @@
 import Cars from '../models/cars.model.js'
 
 class CarsService {
-    async createCar(payload) {
-        const newCar = new Cars({
-            ...payload,
-        })
+    async createCar(payloadBody, payloadFiles) {
         try {
-            const result = await newCar.save()
+            console.log(payloadFiles)
+            const thumb = payloadFiles?.thumb[0]?.path
+            const images = payloadFiles?.images?.map(el => el.path)
+            if (thumb) payloadBody.thumb = thumb
+            if (images) payloadBody.images = images
+
+            const result = await Cars.create({ ...payloadBody })
             console.log(result)
             return result
         } catch (error) {
@@ -80,6 +83,16 @@ class CarsService {
         }
     }
 
+    async uploadImagesCar(carId, payload) {
+        try {
+            console.log(payload)
+            if (!payload) throw new Error('Missing input')
+            const uploadImagesCar = await Cars.findByIdAndUpdate(carId, { $push: { images: { $each: payload.map(el => el.path) } } }, { new: true })
+            return uploadImagesCar
+        } catch (error) {
+            throw new Error('Error uploading images')
+        }
+    }
 
 }
 const carsService = new CarsService()

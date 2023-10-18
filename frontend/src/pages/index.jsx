@@ -2,7 +2,7 @@ import { CarCard } from "@/components/CarCard";
 import { CalendarFilledIcon, LocationFilledIcon } from "@/icons";
 import { Button, DatePicker, Form, Input } from "antd";
 import Image from "next/image";
-import { Button } from "antd";
+
 export default function HomePage() {
   return (
     <div>

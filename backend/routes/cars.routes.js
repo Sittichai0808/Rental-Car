@@ -7,7 +7,7 @@ const carsRoutes = express.Router()
 carsRoutes.post('/createCar', wrapRequestHandler(createCar))
 carsRoutes.put('/updateCar/:carId', wrapRequestHandler(updateCar))
 carsRoutes.get('/:carId', wrapRequestHandler(getCarById))
-carsRoutes.get('/', getListCars)
+carsRoutes.get('/', accessTokenValidator, wrapRequestHandler(getListCars))
 
 
 export default carsRoutes

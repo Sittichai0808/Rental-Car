@@ -13,33 +13,23 @@ class UsersService {
     return signToken({
       payload: { user_id: user_id, role, token_type: TokenType.AccessToken },
       privateKey: process.env.JWT_SECRET_ACCESS_TOKEN
-      // options: {
-      //   expiresIn: process.env.ACCESS_TOKEN_EXPIRES_IN
-      // }
     })
   }
 
   async register(payload) {
     const user_id = new ObjectId()
-    // const email_verify_token = await this.signEmailVerifyToken(user_id.toString())
-    // console.log('email_verify_token: ', email_verify_token)
     const newUser = new User({
       ...payload,
       _id: user_id,
-
       password: hashPassword(payload.password).toString()
     })
     try {
-      await newUser.save()
-      // const access_token = await this.signAccessToken(user_id.toString())
-      return { user_id, role }
+      const user = await newUser.save()
+      const access_token = await this.signAccessToken(user_id.toString())
+      return { user, access_token }
     } catch (error) {
-      console.log(error)
+      throw Error(error)
     }
-
-    // await databaseServices.refreshTokens.insertOne(
-    //   new RefreshToken({ user_id: new ObjectId(user_id), token: refresh_token })
-    // )
   }
 
   async checkExistEmail(email) {
@@ -98,6 +88,16 @@ class UsersService {
     } catch (error) {}
   }
 
+  async getUserByEmail(payload) {
+    const { email } = { ...payload }
+    console.log(email)
+
+    try {
+      const getUser = await User.findOne({ email: email.toString() })
+      return getUser
+    } catch (error) {}
+  }
+
   async updateUser(user_id, payload) {
     try {
       // if (payload.password) {
@@ -105,16 +105,38 @@ class UsersService {
       // }
       const updateUser = await User.findByIdAndUpdate(
         user_id.toString(),
-        { password: hashPassword(payload.password).toString(), ...payload },
+        { ...payload, password: hashPassword(payload.password).toString() },
         { new: true }
       )
+
       return updateUser
+    } catch (error) {
+      throw Error(error)
+    }
+  }
+
+  async resetPassword(payload) {
+    try {
+      const user = await User.findOne({ email: payload.email })
+
+      const resetPassword = await User.findByIdAndUpdate(
+        user._id.toString(),
+        { $set: { password: hashPassword(payload.password).toString() } },
+        { new: true }
+      )
+      return resetPassword
     } catch (error) {
       console.log(error)
     }
   }
+
+  async getUsers() {
+    try {
+      return await User.find()
+    } catch (error) {
+      throw Error(error)
+    }
+  }
 }
 
-const usersService = new UsersService()
-
-export default usersService
+export default new UsersService()

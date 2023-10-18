@@ -1,6 +1,8 @@
+import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { UserFilledIcon } from "@/icons";
 import styled from "@emotion/styled";
 import { Divider, Layout, Menu } from "antd";
+import { useEffect, useState } from "react";
 
 const { Header, Content, Footer } = Layout;
 

@@ -5,13 +5,13 @@ import { accessTokenValidator, adminValidator } from '../middlewares/users.middl
 import uploadCloud from '../utils/cloudinary.config.js'
 const carsRoutes = express.Router()
 
-carsRoutes.post('/createCar', uploadCloud.fields([
+carsRoutes.post('/createCar', accessTokenValidator, adminValidator, uploadCloud.fields([
     { name: 'images', maxCount: 10 },
     { name: 'thumb', maxCount: 1 }
 ]), wrapRequestHandler(createCar))
-carsRoutes.put('/updateCar/:carId', wrapRequestHandler(updateCar))
-carsRoutes.get('/:carId', wrapRequestHandler(getCarById))
-carsRoutes.get('/', wrapRequestHandler(getListCars))
+carsRoutes.put('/updateCar/:carId', accessTokenValidator, adminValidator, wrapRequestHandler(updateCar))
+carsRoutes.get('/:carId', accessTokenValidator, wrapRequestHandler(getCarById))
+carsRoutes.get('/', accessTokenValidator, wrapRequestHandler(getListCars))
 carsRoutes.put('/uploadimage/:carId', uploadCloud.array('images', 10), wrapRequestHandler(uploadImagesCar))
 
 

@@ -1,6 +1,5 @@
-import { Menu } from "antd";
-import { Typography } from "antd";
-import { Layout } from "antd";
+import React, { useState } from "react";
+import { Button } from "antd";
 import {
   HeartOutlined,
   CarOutlined,
@@ -10,63 +9,110 @@ import {
   StrikethroughOutlined,
 } from "@ant-design/icons";
 
+import { Layout, Menu, theme, Typography, Space, Tabs } from "antd";
+import { link } from "fs-extra";
+import { useUserState } from "@/recoils/user.state";
+import Account from "@/pages/profile/index";
+import useLocalStorage from "@/hooks/useLocalStorage";
+import HeaderComponent from "@/components/HeaderComponent";
+import FooterComponent from "@/components/FooterComponent";
+import { useRouter } from "next/router";
 const { Sider, Content } = Layout;
 
 export const ProfileLayout = ({ children }) => {
+  const router = useRouter();
+  const [user, setUser] = useUserState();
+  const [profile, setProfile, clearProfile] = useLocalStorage("profile", "");
+  const [accessToken, setAccessToken, clearAccessToken] = useLocalStorage(
+    "access_token",
+    ""
+  );
+  const [menudata, setMenudata] = useState(
+    "account",
+    "mycar",
+    "myfavoritecar",
+    "mytrip",
+    "mygift",
+    "logout"
+  );
   return (
-    <Layout className="max-w-6xl mx-auto bg-white">
-      <Sider
-        style={{
-          backgroundColor: "#4ade80",
-        }}
-      >
-        <Typography.Title className=" flex justify-center font-medium text-basetext-slate-900 ">CRT</Typography.Title>
+    <Layout className="max-w-6xl mx-auto">
+      <HeaderComponent />
+      <Layout className="pt-16 bg-gray-100 max-w-5xl" hasSider>
         <Menu
           style={{
-            backgroundColor: "#4ade80",
-            position: "fixed",
-            padding: "9px",
+            width: "33%",
+            display: "flex",
+            flexDirection: "column",
+            paddingTop: "35px",
+            fontSize: "1rem",
             fontWeight: "bold",
+            backgroundColor: "rgb(243 244 246)",
           }}
-          mode="vertical"
           defaultSelectedKeys={["account"]}
-          items={[
-            {
-              key: "/account",
-              icon: <UserOutlined />,
-              label: "Tài khoản của tôi",
-            },
-            {
-              key: "/mycar",
-              icon: <CarOutlined />,
-              label: "Xe của tôi",
-            },
-            {
-              key: "/myfavortiecar",
-              icon: <HeartOutlined />,
-              label: "Xe yêu thích",
-            },
-            {
-              key: "/mytrip",
-              icon: <StrikethroughOutlined />,
-              label: "Chuyến đi của tôi",
-            },
-            {
-              key: "/mygift",
-              icon: <GiftOutlined />,
-              label: "Quà tặng",
-            },
-            {
-              key: "signout",
-              icon: <PoweroffOutlined />,
-              label: "Sign out",
-              danger: true,
-            },
-          ]}
-        />
-      </Sider>
+          mode="vertical"
+        >
+          <Menu.Item
+            key="/account"
+            icon={<UserOutlined />}
+            onClick={() => setMenudata("account")}
+          >
+            Tài khoản của tôi
+          </Menu.Item>
+          <Menu.Item
+            key="/mycar"
+            icon={<CarOutlined />}
+            onClick={() => setMenudata("mycar")}
+          >
+            Xe của tôi
+          </Menu.Item>
+          <Menu.Item
+            key="/myfavoritecar"
+            icon={<HeartOutlined />}
+            onClick={() => setMenudata("myfavoritecar")}
+          >
+            Xe yêu thích
+          </Menu.Item>
+          <Menu.Item
+            key="/mytrip"
+            icon={<StrikethroughOutlined />}
+            onClick={() => setMenudata("mytrip")}
+          >
+            Chuyến đi của tôi
+          </Menu.Item>
+          <Menu.Item
+            key="/mygift"
+            icon={<GiftOutlined />}
+            onClick={() => setMenudata("mygift")}
+          >
+            Quà tặng
+          </Menu.Item>
+          <Menu.Item
+            key="/logout"
+            icon={<PoweroffOutlined />}
+            onClick={() => {
+              // setMenudata("logout");
+              console.log("log out");
+              clearProfile();
+              clearAccessToken();
+              setUser(null);
+              router.push("/");
+            }}
+          >
+            SignOut
+          </Menu.Item>
+        </Menu>
 
-      <Content className="bg-white h-full">{children}</Content>
+        <Content className="h-full">
+          {menudata == "account" && <Account />}
+          {/* {menudata == "mycar" && <Mycar />}
+          {menudata == "myfavoritecar" && <MyFavoriteCar />}
+          {menudata == "mytrip" && <MyTrip />}
+          {menudata == "mygift" && <Gift />}
+          {menudata == "logout" && <Logout />} */}
+        </Content>
+      </Layout>
+      <FooterComponent />
     </Layout>
   );
 };

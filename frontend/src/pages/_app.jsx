@@ -7,8 +7,11 @@ import { RecoilRoot } from "recoil";
 import { queryClient } from "@/apis/client";
 import { themeConfigs } from "@/configs/ant.config";
 import { UserWebLayout } from "@/layouts/UserLayout";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import dynamic from "next/dynamic";
 
-export default function MyApp({ Component, pageProps }) {
+function MyApp({ Component, pageProps }) {
   const { Layout = UserWebLayout, title = "Rental Car" } = Component;
 
   return (
@@ -16,6 +19,7 @@ export default function MyApp({ Component, pageProps }) {
       <QueryClientProvider client={queryClient}>
         <ConfigProvider theme={themeConfigs}>
           <Layout>
+            <ToastContainer />
             <Component {...pageProps} />
           </Layout>
         </ConfigProvider>
@@ -24,3 +28,7 @@ export default function MyApp({ Component, pageProps }) {
     </RecoilRoot>
   );
 }
+
+export default dynamic(() => Promise.resolve(MyApp), {
+  ssr: false,
+});

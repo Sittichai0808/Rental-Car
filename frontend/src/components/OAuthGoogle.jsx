@@ -3,17 +3,25 @@ import { Button } from "antd";
 import axios from "axios";
 import { GoogleAuthProvider, getAuth, signInWithPopup } from "firebase/auth";
 import { app } from "../../firebase";
+import { toast } from "react-toastify";
 import { useRouter } from "next/router";
+import useLocalStorage from "@/hooks/useLocalStorage";
+import { useUserState } from "@/recoils/user.state";
 function OAuthGoogle() {
   const router = useRouter();
-
+  const [user, setUser] = useUserState();
+  const [profile, setProfile, clearProfile] = useLocalStorage("profile", "");
+  const [accessToken, setAccessToken, clearAccessToken] = useLocalStorage(
+    "access_token",
+    ""
+  );
   const handleGoogleAuthClick = async () => {
     try {
       const provider = new GoogleAuthProvider();
       const auth = getAuth(app);
 
       const result = await signInWithPopup(auth, provider);
-      console.log(result);
+
       const res = await axios.post(
         "http://localhost:4000/users/google",
 
@@ -26,20 +34,18 @@ function OAuthGoogle() {
           headers: { "Content-Type": "application/json" },
         }
       );
-      // const res = await fetch('/api/auth/google', {
-      //   method: 'POST',
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //   },
-      //   body: JSON.stringify({
-      //     name: result.user.displayName,
-      //     email: result.user.email,
-      //     photo: result.user.photoURL,
-      //   }),
-      // });
-      router.push("/");
+      if (res.status === 200) {
+        setUser({ ...res.data.result });
+        setProfile({ ...res.data.result });
+        setAccessToken(res.data.access_token);
+        router.push("/");
+      } else {
+        console.log(error.res.data.errors[0].msg);
+      }
     } catch (error) {
-      console.log("couldn't not login with google", error);
+      toast.error(error, {
+        position: toast.POSITION.TOP_CENTER,
+      });
     }
   };
   return (

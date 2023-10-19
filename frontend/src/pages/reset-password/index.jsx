@@ -95,7 +95,11 @@ const ResetPasswordPage = () => {
               ]}
               hasFeedback
             >
-              <StyleInputPassword type="password" placeholder="Password" size="large" />
+              <StyleInputPassword
+                type="password"
+                placeholder="Password"
+                size="large"
+              />
             </Form.Item>
 
             <Form.Item
@@ -112,12 +116,20 @@ const ResetPasswordPage = () => {
                     if (!value || getFieldValue("password") === value) {
                       return Promise.resolve();
                     }
-                    return Promise.reject(new Error("The new password that you entered do not match!"));
+                    return Promise.reject(
+                      new Error(
+                        "The new password that you entered do not match!"
+                      )
+                    );
                   },
                 }),
               ]}
             >
-              <StyleInputPassword type="password" placeholder="Confirm Password" size="large" />
+              <StyleInputPassword
+                type="password"
+                placeholder="Confirm Password"
+                size="large"
+              />
             </Form.Item>
             <Form.Item>
               <ButtonSummit type="primary" htmlType="submit">

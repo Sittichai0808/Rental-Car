@@ -9,7 +9,8 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { toast } from "react-toastify";
 import logo from "../../../public/logo.png";
-import { useLocalStorage } from "@/hooks/useLocalStorage";
+import useLocalStorage from "@/hooks/useLocalStorage";
+import { useUserState } from "@/recoils/user.state";
 const { Title } = Typography;
 
 const StyleInput = styled(Input)`
@@ -37,7 +38,12 @@ const LoginPage = () => {
   };
   const [form] = Form.useForm();
   const router = useRouter();
-  const [profile, setProfile, clearProfile] = useLocalStorage("profile");
+  const [user, setUser] = useUserState();
+  const [profile, setProfile, clearProfile] = useLocalStorage("profile", "");
+  const [accessToken, setAccessToken, clearAccessToken] = useLocalStorage(
+    "access_token",
+    ""
+  );
   const onSubmit = async (values) => {
     try {
       const response = await axios.post(
@@ -51,7 +57,9 @@ const LoginPage = () => {
       );
 
       if (response.status === 200) {
+        setUser({ ...response.data.result });
         setProfile({ ...response.data.result });
+        setAccessToken(response.data.access_token);
         router.push("/");
       } else {
         toast.error(error.response.data.errors[0].msg, {
@@ -69,7 +77,14 @@ const LoginPage = () => {
   return (
     <div className="py-[30px] px-[20px] h-screen">
       <div className="flex flex-col justify-center items-center h-full ">
-        <Image src={logo} alt="logo" width={50} height={50} loader={loaderProp} unoptimized={true} />
+        <Image
+          src={logo}
+          alt="logo"
+          width={50}
+          height={50}
+          loader={loaderProp}
+          unoptimized={true}
+        />
         <Title>Đăng nhập</Title>
 
         <div>
@@ -113,10 +128,17 @@ const LoginPage = () => {
               ]}
               hasFeedback
             >
-              <StyleInputPassword type="password" placeholder="Password" size="large" />
+              <StyleInputPassword
+                type="password"
+                placeholder="Password"
+                size="large"
+              />
             </Form.Item>
             <div className="flex justify-end">
-              <Button type="text" className="  text-green-400 font-bold text-base  mb-3">
+              <Button
+                type="text"
+                className="  text-green-400 font-bold text-base  mb-3"
+              >
                 <Link href="/recover-password"> Quên mật khẩu?</Link>
               </Button>
             </div>
@@ -131,7 +153,10 @@ const LoginPage = () => {
             <div className="flex justify-end">
               <div level={5}>
                 Bạn chưa có tài khoản?{" "}
-                <Button type="text" className="font-bold text-base text-green-500">
+                <Button
+                  type="text"
+                  className="font-bold text-base text-green-500"
+                >
                   <Link href="/register"> Đăng ký</Link>
                 </Button>
               </div>

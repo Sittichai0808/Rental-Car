@@ -6,8 +6,8 @@ import { config } from 'dotenv'
 config()
 export const registerController = async (req, res, next) => {
   const result = await usersService.register(req.body)
-  const expiryDate = new Date(Date.now() + 3600000) // 1 hour
-  return res.cookie('access_token', result.access_token.toString(), { httpOnly: true, expires: expiryDate }).json({
+
+  return res.json({
     message: USER_MESSAGES.REGISTER_SUCCESS,
     access_token: result.access_token.toString(),
     result: result.user
@@ -16,8 +16,8 @@ export const registerController = async (req, res, next) => {
 
 export const loginController = async (req, res) => {
   const result = await usersService.login(req.user)
-  const expiryDate = new Date(Date.now() + 3600000) // 1 hour
-  return res.cookie('access_token', result.access_token.toString(), { httpOnly: true, expires: expiryDate }).json({
+
+  return res.json({
     message: USER_MESSAGES.LOGIN_SUCCESS,
     access_token: result.access_token.toString(),
     result: result.rest
@@ -28,10 +28,9 @@ export const googleController = async (req, res, next) => {
   console.log(req.body)
   const result = await usersService.google(req.body)
 
-  const expiryDate = new Date(Date.now() + 3600000) // 1 hour
-  console.log(result.access_token.toString())
-  return res.cookie('access_token', result.access_token.toString(), { httpOnly: true, expires: expiryDate }).json({
+  return res.json({
     message: USER_MESSAGES.LOGIN_SUCCESS,
+    access_token: result.access_token.toString(),
     result: result.rest
   })
 }

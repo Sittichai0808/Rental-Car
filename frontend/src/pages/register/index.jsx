@@ -8,7 +8,7 @@ import { toast } from "react-toastify";
 import { useRouter } from "next/router";
 
 import { useUserState } from "@/recoils/user.state";
-import { useLocalStorage } from "@/hooks/useLocalStorage";
+import useLocalStorage from "@/hooks/useLocalStorage";
 import { AuthLayout } from "@/layouts/AuthLayout";
 
 const { Title } = Typography;
@@ -38,8 +38,12 @@ const RegisterPage = () => {
   };
   const [form] = Form.useForm();
   const router = useRouter();
-  // const [user, setUser] = useUserState();
-  const [profile, setProfile, clearProfile] = useLocalStorage("profile");
+  const [user, setUser] = useUserState();
+  const [profile, setProfile, clearProfile] = useLocalStorage("profile", "");
+  const [accessToken, setAccessToken, clearAccessToken] = useLocalStorage(
+    "access_token",
+    ""
+  );
   const onSubmit = async (values) => {
     try {
       const response = await axios.post(
@@ -52,9 +56,9 @@ const RegisterPage = () => {
       );
 
       if (response.status === 200) {
-        // setUser({ ...response.data.result });
+        setUser({ ...response.data.result });
         setProfile({ ...response.data.result });
-        console.log(profile);
+        setAccessToken(response.data.access_token);
         router.push("/");
       } else {
         console.log(error.response.data.errors[0].msg);
@@ -70,7 +74,13 @@ const RegisterPage = () => {
   return (
     <div className="py-[30px] px-[20px] h-screen">
       <div className="flex flex-col justify-center items-center h-full ">
-        <Image src={logo} alt="logo" width={50} height={50} loader={loaderProp} />
+        <Image
+          src={logo}
+          alt="logo"
+          width={50}
+          height={50}
+          loader={loaderProp}
+        />
         <Title>Đăng ký thông tin</Title>
         {/* <Title level={5}>Đăng ký thông tin</Title> */}
 
@@ -131,7 +141,11 @@ const RegisterPage = () => {
               ]}
               hasFeedback
             >
-              <StyleInputPassword type="password" placeholder="Password" size="large" />
+              <StyleInputPassword
+                type="password"
+                placeholder="Password"
+                size="large"
+              />
             </Form.Item>
 
             <Form.Item
@@ -148,12 +162,20 @@ const RegisterPage = () => {
                     if (!value || getFieldValue("password") === value) {
                       return Promise.resolve();
                     }
-                    return Promise.reject(new Error("The new password that you entered do not match!"));
+                    return Promise.reject(
+                      new Error(
+                        "The new password that you entered do not match!"
+                      )
+                    );
                   },
                 }),
               ]}
             >
-              <StyleInputPassword type="password" placeholder="Confirm Password" size="large" />
+              <StyleInputPassword
+                type="password"
+                placeholder="Confirm Password"
+                size="large"
+              />
             </Form.Item>
 
             <Form.Item
@@ -170,7 +192,10 @@ const RegisterPage = () => {
           <div className=" 2xl:hidden xl:hidden lg:hidden md:hidden  justify-end  ">
             <Title level={5}>
               Bạn đã có tài khoản?{" "}
-              <Button type="text" className="font-bold text-base text-green-500">
+              <Button
+                type="text"
+                className="font-bold text-base text-green-500"
+              >
                 Đăng Nhập
               </Button>
             </Title>

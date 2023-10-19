@@ -39,17 +39,17 @@ export function UserWebLayout({ children }) {
           items={[
             {
               key: "about-us",
-              label: "Về Mioto",
+              label: "Về CRT",
             },
             {
-              key: "become-car-owner",
-              label: "Trở thành chủ xe",
+              key: "cars",
+              label: "Danh sách xe",
             },
           ]}
         />
         <Divider type="vertical" className="bg-neutral-200" />
         <div className="flex items-center gap-2 shrink-0">
-          <div className="flex bg-neutral-200 rounded-full p-1">
+          <div className="flex bg-neutral-200 rounded-full p-1 cursor-pointer">
             <UserFilledIcon className="text-neutral-500" />
           </div>
           <span>Luong Cong Truong</span>

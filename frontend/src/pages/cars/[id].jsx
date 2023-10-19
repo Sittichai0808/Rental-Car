@@ -16,7 +16,7 @@ import {
   TransmissionIcon,
   UsbIcon,
 } from "@/icons";
-import { Divider, Table, Tag } from "antd";
+import { Button, Divider, Table, Tag } from "antd";
 import { DateRangePicker } from "@/components/antd";
 import Image from "next/image";
 import styled from "@emotion/styled";
@@ -73,12 +73,16 @@ export default function CarDetailPage() {
               <span>27 chuyến</span>
             </div>
 
-            <div>Quận 7, TP. HCM</div>
+            <div>Ngũ Hành Sơn, Đà Nẵng</div>
           </div>
 
           <div className="flex gap-2 mt-4">
-            <Tag className="rounded-full border-none bg-green-100">Số tự động</Tag>
-            <Tag className="rounded-full border-none bg-rose-100">Đặt xe nhanh</Tag>
+            <Tag className="rounded-full border-none bg-green-100">
+              Số tự động
+            </Tag>
+            <Tag className="rounded-full border-none bg-rose-100">
+              Đặt xe nhanh
+            </Tag>
           </div>
 
           <Divider />
@@ -157,7 +161,9 @@ export default function CarDetailPage() {
             <h3>Điều khoản</h3>
             <ul>
               <li>Sử dụng xe đúng mục đích.</li>
-              <li>Không sử dụng xe thuê vào mục đích phi pháp, trái pháp luật.</li>
+              <li>
+                Không sử dụng xe thuê vào mục đích phi pháp, trái pháp luật.
+              </li>
               <li>Không sử dụng xe thuê để cầm cố, thế chấp.</li>
               <li>Không hút thuốc, nhả kẹo cao su, xả rác trong xe.</li>
               <li>Không chở hàng quốc cấm dễ cháy nổ.</li>
@@ -185,28 +191,41 @@ export default function CarDetailPage() {
           <div className="flex gap-4 border border-solid rounded-lg border-gray-300 p-4 items-center">
             <ShieldCheckOutlineIcon className="text-green-500" />
             <div className="flex flex-col gap-2">
-              <span className="text-lg text-green-500 font-bold">Hỗ trợ bảo hiểm với VNI</span>
-              <span className="font-medium text-xs text-gray-900">Xem chi tiết</span>
+              <span className="text-lg text-green-500 font-bold">
+                Hỗ trợ bảo hiểm với VNI
+              </span>
+              <span className="font-medium text-xs text-gray-900">
+                Xem chi tiết
+              </span>
             </div>
           </div>
 
           <div className="flex flex-col gap-4 border border-solid rounded-lg border-gray-300 p-4 bg-green-50 mt-10">
-            <h2>780K/ngày</h2>
-            <DateRangePicker size="large" picker="date" className="rounded-full" />
+            <h1>780K/ngày</h1>
+            <DateRangePicker
+              size="large"
+              picker="date"
+              className="rounded-full"
+            />
 
             <div className="border border-solid rounded-lg border-gray-300 bg-white p-4">
-              <h4 className="m-0 mb-3 font-medium text-gray-800">Địa điểm giao xe</h4>
-              <span className="text-xl font-bold">Quận 7, Hồ Chí Minh</span>
+              <h4 className="m-0 mb-3 font-medium text-gray-800">
+                Địa điểm giao xe
+              </h4>
+              <span className="text-xl font-bold">Ngũ Hành Sơn, Đà Nẵng</span>
               <p className="text-sm text-gray-500">
-                Bạn sẽ nhận trả xe tại địa chỉ xe do chủ xe không hỗ trợ giao nhận tận nơi. Địa chỉ cụ thể sẽ được hiển
-                thị sau khi đặt cọc.
+                Bạn sẽ nhận trả xe tại địa chỉ xe do chủ xe không hỗ trợ giao
+                nhận tận nơi. Địa chỉ cụ thể sẽ được hiển thị sau khi đặt cọc.
               </p>
             </div>
 
             <Divider />
 
             <BorderlessTable
-              columns={[{ dataIndex: "label" }, { dataIndex: "price", className: "text-right" }]}
+              columns={[
+                { dataIndex: "label" },
+                { dataIndex: "price", className: "text-right" },
+              ]}
               bordered={false}
               showHeader={false}
               pagination={false}
@@ -226,6 +245,9 @@ export default function CarDetailPage() {
                 },
               ]}
             />
+            <div className="flex justify-center p-2">
+              <Button type="primary">Chọn thuê</Button>
+            </div>
           </div>
         </div>
       </div>

@@ -35,7 +35,7 @@ const ResetPasswordPage = () => {
     try {
       const { password } = values;
       const response = await axios.put(
-        "http://localhost:4000/users/reset-password",
+        `${process.env.NEXT_PUBLIC_REACT_APP_BACKEND_URL}/users/reset-password`,
 
         { email: email.toString(), password: password.toString() },
         {

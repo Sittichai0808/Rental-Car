@@ -23,7 +23,7 @@ function OAuthGoogle() {
       const result = await signInWithPopup(auth, provider);
 
       const res = await axios.post(
-        "http://localhost:4000/users/google",
+        `${process.env.NEXT_PUBLIC_REACT_APP_BACKEND_URL}/users/google`,
 
         {
           username: result.user.displayName,

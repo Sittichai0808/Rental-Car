@@ -17,7 +17,7 @@ console.log('hello')
 databaseServices.connect()
 app.use(
   cors({
-    origin: 'http://localhost:3000', // Thay đổi nguồn gốc tại đây nếu cần
+    origin: 'https://crt-zj4w.onrender.com', // Thay đổi nguồn gốc tại đây nếu cần
     credentials: true // Cho phép sử dụng các credentials như cookie
   })
 )
@@ -30,6 +30,6 @@ app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
 })
 
-app.use('/brands', brandsRoutes);
-app.use('/models', modelsRoutes);
+app.use('/brands', brandsRoutes)
+app.use('/models', modelsRoutes)
 app.use('/cars', carsRoutes)

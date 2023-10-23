@@ -30,17 +30,20 @@ const RecoverPasswordPage = () => {
   const onSubmit = async (values) => {
     try {
       const response = await axios.get(
-        "http://localhost:4000/users/generate-otp",
+        `${process.env.NEXT_PUBLIC_REACT_APP_BACKEND_URL}/users/generate-otp`,
 
         values
       );
 
       if (response.status === 200) {
-        const response1 = await axios.post("http://localhost:4000/users/get-user-by-email", values);
+        const response1 = await axios.post(
+          `${process.env.NEXT_PUBLIC_REACT_APP_BACKEND_URL}/users/get-user-by-email`,
+          values
+        );
 
         let text = `Your Password Recovery OTP is ${response.data.code}. Verify and recover your password.`;
         await axios.post(
-          "http://localhost:4000/users/register-mail",
+          `${process.env.NEXT_PUBLIC_REACT_APP_BACKEND_URL}/users/register-mail`,
 
           {
             ...values,

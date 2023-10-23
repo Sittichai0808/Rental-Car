@@ -31,7 +31,7 @@ const VerifyOTPPasswordPage = () => {
   const onSubmit = async (values) => {
     try {
       const response = await axios.get(
-        `http://localhost:4000/users/verify-otp/${values.otp}`,
+        `${process.env.NEXT_PUBLIC_REACT_APP_BACKEND_URL}/users/verify-otp/${values.otp}`,
 
         { email },
 

@@ -17,7 +17,7 @@ console.log('hello')
 databaseServices.connect()
 app.use(
   cors({
-    origin: 'https://crt-zj4w.onrender.com', // Thay đổi nguồn gốc tại đây nếu cần
+    origin: 'https://rental-car-phi.vercel.app/', // Thay đổi nguồn gốc tại đây nếu cần
     credentials: true // Cho phép sử dụng các credentials như cookie
   })
 )

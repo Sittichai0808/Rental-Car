@@ -31,7 +31,6 @@ class CarsService {
     async getCarById(carId) {
         try {
             const getCarById = await Cars.findById(carId)
-
             return getCarById
         } catch (error) {
             console.log(error)
@@ -91,6 +90,14 @@ class CarsService {
             return uploadImagesCar
         } catch (error) {
             throw new Error('Error uploading images')
+        }
+    }
+
+    async ratings(payload) {
+        try {
+
+        } catch (error) {
+            throw new Error('Error uploading ratings')
         }
     }
 

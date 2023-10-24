@@ -3,6 +3,7 @@ import usersRouter from './routes/users.routes.js'
 import brandsRoutes from './routes/brands.routes.js'
 import modelsRoutes from './routes/models.routes.js'
 import carsRoutes from './routes/cars.routes.js'
+import driverLicensesRoutes from './routes/driverLicenses.routes.js'
 import databaseServices from './services/database.services.js'
 import { defaultErrorHandler } from './middlewares/errors.middlewares.js'
 import pkg from 'lodash'
@@ -32,4 +33,5 @@ app.listen(port, () => {
 
 app.use('/brands', brandsRoutes);
 app.use('/models', modelsRoutes);
-app.use('/cars', carsRoutes)
+app.use('/cars', carsRoutes);
+app.use('/drivers', driverLicensesRoutes)

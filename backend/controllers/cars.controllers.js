@@ -14,7 +14,7 @@ export const createCar = async (req, res, next) => {
 export const updateCar = async (req, res, next) => {
     const { carId } = req.params
     try {
-        const result = await carsService.updateCar(carId, req.body, { new: true });
+        const result = await carsService.updateCar(carId, req.body);
         if (!result) {
             return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
                 message: 'Something went wrong!'

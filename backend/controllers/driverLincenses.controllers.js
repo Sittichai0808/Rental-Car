@@ -16,3 +16,24 @@ export const regisLicensesDriver = async (req, res, next) => {
         })
     }
 }
+
+export const acceptLicensesDriver = async (req, res, next) => {
+    const { did } = req.params
+    const newStatus = req.body
+    try {
+        // console.log(typeof newStatus)
+        // if (newStatus !== 'Chưa xác thực' || newStatus !== 'Đã xác thực') {
+        //     return res.status(HTTP_STATUS.BAD_REQUEST).json({ error: 'Invalid Status' });
+        // }
+
+        const result = await driverLicensesService.acceptLicensesDriver(did, newStatus)
+        if (!result) return result.status(HTTP_STATUS.NOT_FOUND).json({ error: 'Can not found' })
+        return res.status(HTTP_STATUS.OK).json({
+            message: 'Accept Successfully',
+            result
+        })
+
+    } catch (error) {
+
+    }
+}

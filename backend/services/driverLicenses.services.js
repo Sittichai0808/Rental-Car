@@ -20,6 +20,15 @@ class DriverLicensesService {
             throw error
         }
     }
+
+    async acceptLicensesDriver(did, newStatus) {
+        try {
+            const acceptLicensesDriver = await DriverLicenses.findByIdAndUpdate(did, newStatus)
+            return acceptLicensesDriver
+        } catch (error) {
+            throw new Error(error)
+        }
+    }
 }
 
 const driverLicensesService = new DriverLicensesService()

@@ -15,12 +15,11 @@ const app = express()
 const port = 4000
 console.log('hello')
 databaseServices.connect()
-app.use(
-  cors({
-    origin: 'https://rental-car-phi.vercel.app/', // Thay đổi nguồn gốc tại đây nếu cần
-    credentials: true // Cho phép sử dụng các credentials như cookie
-  })
-)
+// {
+//   origin: 'https://rental-car-phi.vercel.app/', // Thay đổi nguồn gốc tại đây nếu cần
+//   credentials: true // Cho phép sử dụng các credentials như cookie
+// }
+app.use(cors())
 app.use(express.json())
 app.use(cookieParser())
 

@@ -14,7 +14,7 @@ export const createCar = async (req, res, next) => {
 export const updateCar = async (req, res, next) => {
     const { carId } = req.params
     try {
-        const result = await carsService.updateCar(carId, req.body, { new: true });
+        const result = await carsService.updateCar(carId, req.body);
         if (!result) {
             return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
                 message: 'Something went wrong!'
@@ -49,7 +49,7 @@ export const getCarById = async (req, res, next) => {
         if (!result) {
             return res.status(HTTP_STATUS.NOT_FOUND).json({ error: 'Car not found' })
         } else {
-            return res.json({
+            return res.status(HTTP_STATUS.OK).json({
                 message: CARS_MESSAGE.GET_CAR_SUCCESS,
                 result
             })
@@ -84,3 +84,18 @@ export const uploadImagesCar = async (req, res, next) => {
         return res.status(HTTP_STATUS.InternalServerError).json({ error: 'Can not upload images' })
     }
 }
+
+export const ratings = async (req, res) => {
+    try {
+        const { carId } = req.params;
+        const user_id = req.decoded_authorization.user_id;
+        const result = await carsService.ratings(user_id, carId, req.body);
+        return res.status(HTTP_STATUS.OK).json({
+            message: 'Ratings created',
+            result
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ message: 'Cannot rating' });
+    }
+};

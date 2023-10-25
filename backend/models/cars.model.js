@@ -41,8 +41,8 @@ const carsSchema = new mongoose.Schema(
         },
         status: {
             type: String,
-            enum: ['Chưa duyệt', 'Đã duyệt', 'Đã thuê', 'Chưa thuê'],
-            default: 'Chưa duyệt'
+            enum: ['Đã thuê', 'Chưa thuê'],
+            default: 'Chưa thuê'
         },
         cost: {
             type: Number,

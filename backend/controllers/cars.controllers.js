@@ -84,3 +84,18 @@ export const uploadImagesCar = async (req, res, next) => {
         return res.status(HTTP_STATUS.InternalServerError).json({ error: 'Can not upload images' })
     }
 }
+
+export const ratings = async (req, res) => {
+    try {
+        const { carId } = req.params;
+        const user_id = req.decoded_authorization.user_id;
+        const result = await carsService.ratings(user_id, carId, req.body);
+        return res.status(HTTP_STATUS.OK).json({
+            message: 'Ratings created',
+            result
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ message: 'Cannot rating' });
+    }
+};

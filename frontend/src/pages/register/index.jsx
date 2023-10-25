@@ -7,7 +7,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { useRouter } from "next/router";
 
-import { useUserState } from "@/recoils/user.state";
+import { useUserState } from "@/apis/updateUser.api";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import { AuthLayout } from "@/layouts/AuthLayout";
 

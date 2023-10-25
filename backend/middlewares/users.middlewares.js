@@ -168,73 +168,73 @@ export const loginValidator = validate(
   )
 )
 
-// export const accessTokenValidator = validate(
-//   checkSchema(
-//     {
-//       authorization: {
-//         trim: true,
-//         custom: {
-//           options: async (value, { req }) => {
-//             if (!value) {
-//               throw new ErrorWithStatus({
-//                 message: USER_MESSAGES.ACCESS_TOKEN_IS_REQUESTED,
-//                 status: HTTP_STATUS.UNAUTHORIZED
-//               })
-//             }
-//             const access_token = (value || '').split(' ')[1]
+export const accessTokenValidator = validate(
+  checkSchema(
+    {
+      authorization: {
+        trim: true,
+        custom: {
+          options: async (value, { req }) => {
+            if (!value) {
+              throw new ErrorWithStatus({
+                message: USER_MESSAGES.ACCESS_TOKEN_IS_REQUESTED,
+                status: HTTP_STATUS.UNAUTHORIZED
+              })
+            }
+            const access_token = (value || '').split(' ')[1]
 
-//             if (!access_token) {
-//               throw new ErrorWithStatus({
-//                 message: USER_MESSAGES.ACCESS_TOKEN_IS_REQUESTED,
-//                 status: HTTP_STATUS.UNAUTHORIZED
-//               })
-//             }
+            if (!access_token) {
+              throw new ErrorWithStatus({
+                message: USER_MESSAGES.ACCESS_TOKEN_IS_REQUESTED,
+                status: HTTP_STATUS.UNAUTHORIZED
+              })
+            }
 
-//             try {
-//               const decoded_authorization = await verifyToken({
-//                 token: access_token,
-//                 secretOrPublickey: process.env.JWT_SECRET_ACCESS_TOKEN
-//               })
-//               const { user_id } = decoded_authorization
-//               console.log(user_id)
-//               req.decoded_authorization = decoded_authorization
-//             } catch (error) {
-//               throw new ErrorWithStatus({
-//                 message: capitalize(error.message),
-//                 status: HTTP_STATUS.UNAUTHORIZED
-//               })
-//             }
+            try {
+              const decoded_authorization = await verifyToken({
+                token: access_token,
+                secretOrPublickey: process.env.JWT_SECRET_ACCESS_TOKEN
+              })
+              const { user_id } = decoded_authorization
+              console.log(user_id)
+              req.decoded_authorization = decoded_authorization
+            } catch (error) {
+              throw new ErrorWithStatus({
+                message: capitalize(error.message),
+                status: HTTP_STATUS.UNAUTHORIZED
+              })
+            }
 
-//             return true
-//           }
-//         }
-//       }
-//     },
-//     ['headers']
-//   )
-// )
+            return true
+          }
+        }
+      }
+    },
+    ['headers']
+  )
+)
 
-export const accessTokenValidator = async (req, res, next) => {
-  const token = req.cookies.access_token
+// export const accessTokenValidator = async (req, res, next) => {
+//   const token = req.access_token
 
-  if (!token) {
-    next(new ErrorWithStatus(USER_MESSAGES.ACCESS_TOKEN_IS_REQUESTED, HTTP_STATUS.UNAUTHORIZED).errorHandler())
-  }
-  try {
-    const decoded_authorization = await verifyToken({
-      token: token,
-      secretOrPublickey: process.env.JWT_SECRET_ACCESS_TOKEN
-    })
+//   if (!token) {
+//     next(new ErrorWithStatus(USER_MESSAGES.ACCESS_TOKEN_IS_REQUESTED, HTTP_STATUS.UNAUTHORIZED).errorHandler())
+//   }
+//   try {
+//     const decoded_authorization = await verifyToken({
+//       token: token,
+//       secretOrPublickey: process.env.JWT_SECRET_ACCESS_TOKEN
+//     })
 
-    req.decoded_authorization = decoded_authorization
-    next()
-  } catch (error) {
-    if (typeof error === JsonWebTokenError) {
-      const error = new ErrorWithStatus(error?.message, HTTP_STATUS.UNAUTHORIZED)
-      next(error.errorHandler())
-    }
-  }
-}
+//     req.decoded_authorization = decoded_authorization
+//     next()
+//   } catch (error) {
+//     if (typeof error === JsonWebTokenError) {
+//       const error = new ErrorWithStatus(error?.message, HTTP_STATUS.UNAUTHORIZED)
+//       next(error.errorHandler())
+//     }
+//   }
+// }
 
 export const adminValidator = async (req, res, next) => {
   const token = req.cookies.access_token

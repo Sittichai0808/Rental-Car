@@ -29,7 +29,10 @@ app.use(bodyParser.urlencoded({ extended: false }))
 //   next()
 // })
 app.options('/payments/create_payment_url', cors())
-app.use(cors())
+app.use(cors({
+  origin: 'http://localhost:3000', // Thay đổi nguồn gốc tại đây nếu cần
+  credentials: true // Cho phép sử dụng các credentials như cookie
+}))
 app.use(express.json())
 app.use(cookieParser())
 

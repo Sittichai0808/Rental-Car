@@ -9,7 +9,9 @@ export const CarCard = ({}) => {
         <Image
           src="/images/car.jpg"
           alt="car"
-          layout="fill"
+          height={250}
+          width={300}
+          // layout="fill"
           className="rounded-lg object-cover"
         />
       </div>

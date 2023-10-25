@@ -10,7 +10,7 @@ import { useRouter } from "next/router";
 import { toast } from "react-toastify";
 import logo from "../../../public/logo.png";
 import useLocalStorage from "@/hooks/useLocalStorage";
-import { useUserState } from "@/recoils/user.state";
+import { useUserState } from "@/apis/updateUser.api";
 const { Title } = Typography;
 
 const StyleInput = styled(Input)`

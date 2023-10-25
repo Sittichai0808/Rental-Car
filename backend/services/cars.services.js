@@ -1,4 +1,5 @@
 import Cars from '../models/cars.model.js'
+import Ratings from '../models/ratings.model.js'
 
 class CarsService {
     async createCar(payloadBody, payloadFiles) {
@@ -31,7 +32,6 @@ class CarsService {
     async getCarById(carId) {
         try {
             const getCarById = await Cars.findById(carId)
-
             return getCarById
         } catch (error) {
             console.log(error)
@@ -94,6 +94,36 @@ class CarsService {
         }
     }
 
+    async ratings(user_id, carId, payload) {
+        try {
+            const { star, comment } = payload;
+
+            // const existingRating = await Ratings.findOne({ postBy: user_id, car: carId });
+
+            // if (existingRating) {
+            //     existingRating.star = star;
+            //     existingRating.comment = comment;
+            //     await existingRating.save();
+            //     return 'Đánh giá đã được cập nhật.';
+            // } else {
+            const newRatings = new Ratings({
+                postBy: user_id,
+                carId: carId,
+                star,
+                comment
+            });
+            await newRatings.save();
+
+            const ratings = await Ratings.find({ carId: carId });
+            const totalStars = ratings.reduce((total, rating) => total + rating.star, 0);
+            const newTotalRatings = ratings.length > 0 ? totalStars / ratings.length : 0;
+
+            await Cars.updateOne({ _id: carId }, { totalRatings: newTotalRatings });
+            // }
+        } catch (error) {
+            throw error;
+        }
+    }
 }
 const carsService = new CarsService()
 export default carsService

@@ -49,7 +49,7 @@ export const getCarById = async (req, res, next) => {
         if (!result) {
             return res.status(HTTP_STATUS.NOT_FOUND).json({ error: 'Car not found' })
         } else {
-            return res.json({
+            return res.status(HTTP_STATUS.OK).json({
                 message: CARS_MESSAGE.GET_CAR_SUCCESS,
                 result
             })

@@ -38,13 +38,10 @@ app.use('/cars', carsRoutes)
 app.use('/brands', brandsRoutes)
 app.use('/models', modelsRoutes)
 app.use('/payments', paymentsRoutes)
+app.use('/drivers', driverLicensesRoutes)
 
 app.use(defaultErrorHandler)
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
 })
 
-app.use('/brands', brandsRoutes);
-app.use('/models', modelsRoutes);
-app.use('/cars', carsRoutes);
-app.use('/drivers', driverLicensesRoutes)

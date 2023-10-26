@@ -6,7 +6,7 @@ import { app } from "../../firebase";
 import { toast } from "react-toastify";
 import { useRouter } from "next/router";
 import useLocalStorage from "@/hooks/useLocalStorage";
-import { useUserState } from "@/apis/updateUser.api";
+import { useUserState } from "@/recoils/user.state.js";
 function OAuthGoogle() {
   const router = useRouter();
   const [user, setUser] = useUserState();

@@ -1,4 +1,4 @@
-import { CarCard } from "@/components/CarCard";
+import CarCard from "@/components/CarCard";
 import { SearchBrokenIcon } from "@/icons";
 import { Select } from "antd";
 import { Button, Form } from "antd";
@@ -58,10 +58,10 @@ export default function HomePage() {
         <h2 className="text-center text-2xl">Xe dành cho bạn</h2>
 
         <div className="grid grid-cols-4 gap-3">
+          {/* <CarCard />
           <CarCard />
           <CarCard />
-          <CarCard />
-          <CarCard />
+          <CarCard /> */}
         </div>
       </div>
       <div className="mb-40">

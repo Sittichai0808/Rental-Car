@@ -23,7 +23,7 @@ carsRoutes.post(
   wrapRequestHandler(createCar)
 )
 carsRoutes.put('/updateCar/:carId', accessTokenValidator, adminValidator, wrapRequestHandler(updateCar))
-carsRoutes.get('/:carId', accessTokenValidator, wrapRequestHandler(getCarById))
+carsRoutes.get('/:carId', wrapRequestHandler(getCarById))
 carsRoutes.get('/', wrapRequestHandler(getListCars))
 carsRoutes.put('/uploadimage/:carId', uploadCloud.array('images', 10), wrapRequestHandler(uploadImagesCar))
 carsRoutes.post('/:carId/rating', accessTokenValidator, wrapRequestHandler(ratings))

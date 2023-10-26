@@ -2,7 +2,7 @@ import useLocalStorage from "@/hooks/useLocalStorage";
 import { UserFilledIcon } from "@/icons";
 import styled from "@emotion/styled";
 import { Divider, Layout, Menu } from "antd";
-import { useUserState } from "@/apis/updateUser.api";
+import { useUserState } from "@/recoils/user.state.js";
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";

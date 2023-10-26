@@ -11,7 +11,7 @@ import {
 
 import { Layout, Menu, theme, Typography, Space, Tabs } from "antd";
 import { link } from "fs-extra";
-import { useUserState } from "@/apis/updateUser.api";
+import { useUserState } from "@/recoils/user.state.js";
 import Account from "@/pages/profile/index";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import HeaderComponent from "@/components/HeaderComponent";

@@ -1,20 +1,22 @@
 import { LocationFilledIcon, StarFilledIcon } from "@/icons";
 import { Button, Divider, Tag } from "antd";
 import Image from "next/image";
-
+import Link from "next/link";
 export const CarCard = ({ dataCar }) => {
   return (
     <div className="border rounded-xl border-solid border-neutral-200 p-4">
-      <div className="relative aspect-video mb-4">
-        <Image
-          src={dataCar?.thumb}
-          alt="car"
-          height={250}
-          width={300}
-          // layout="fill"
-          className="rounded-lg object-cover"
-        />
-      </div>
+      <Link href={`/cars/${dataCar?._id}`}>
+        <div className="relative aspect-video mb-4 cursor-pointer">
+          <Image
+            src={dataCar?.thumb}
+            alt="car"
+            height={250}
+            width={300}
+            // layout="fill"
+            className="rounded-lg object-cover"
+          />
+        </div>
+      </Link>
 
       <div>
         <Tag className="rounded-full" color="green">

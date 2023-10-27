@@ -15,7 +15,6 @@ const carsRoutes = express.Router()
 carsRoutes.post(
   '/createCar',
   accessTokenValidator,
-  adminValidator,
   uploadCloud.fields([
     { name: 'images', maxCount: 10 },
     { name: 'thumb', maxCount: 1 }

@@ -21,7 +21,10 @@ import { DateRangePicker } from "@/components/antd";
 import Image from "next/image";
 import styled from "@emotion/styled";
 import { Feedback } from "@/components/Feedback";
-
+import { useRouter } from "next/router";
+import { useQuery } from "@tanstack/react-query";
+import Link from "next/link";
+import axios from "axios";
 const carServices = [
   { icon: MapIcon, name: "Bản đồ" },
   { icon: BluetoothIcon, name: "Bluetooth" },
@@ -37,20 +40,41 @@ const BorderlessTable = styled(Table)`
 `;
 
 export default function CarDetailPage() {
+  const router = useRouter();
+  const carId = router.query.id;
+  const { isLoading, isError, data, error } = useQuery({
+    queryKey: ["getCar", carId],
+    queryFn: async () => {
+      try {
+        const response = await axios.get(
+          `${process.env.NEXT_PUBLIC_REACT_APP_BACKEND_URL}/cars/${carId}`,
+
+          {
+            headers: { "Content-Type": "application/json" },
+            withCredentials: true,
+          }
+        );
+        console.log(response.data.result);
+        return response.data.result;
+      } catch (error) {
+        console.log(error);
+      }
+    },
+  });
   return (
     <div>
       <div className="grid h-[600px] gap-4 grid-cols-4 grid-rows-3 relative">
         <div className="relative col-span-3 row-span-3 rounded-md overflow-hidden">
-          <Image alt="car" src="/images/car-detail.jpg" layout="fill" />
+          <Image alt="car" src={data?.thumb} layout="fill" />
         </div>
         <div className="relative rounded-md overflow-hidden">
-          <Image alt="car" src="/images/car-detail.jpg" layout="fill" />
+          <Image alt="car" src={data?.images[0]} layout="fill" />
         </div>
         <div className="relative rounded-md overflow-hidden">
-          <Image alt="car" src="/images/car-detail.jpg" layout="fill" />
+          <Image alt="car" src={data?.images[1]} layout="fill" />
         </div>
         <div className="relative rounded-md overflow-hidden">
-          <Image alt="car" src="/images/car-detail.jpg" layout="fill" />
+          <Image alt="car" src={data?.images[2]} layout="fill" />
         </div>
 
         <div className="absolute bg-white rounded-md px-4 py-2 bottom-4 right-4 flex items-center gap-2 text-gray-800">
@@ -61,11 +85,13 @@ export default function CarDetailPage() {
 
       <div className="grid grid-cols-5 mt-10 gap-4">
         <div className="col-span-3">
-          <h2 className="text-3xl m-0 font-bold">MITSUBISHI XPANDER 2019</h2>
+          <h2 className="text-3xl m-0 font-bold">
+            {data?.brand.name} {data?.yearManufacture}
+          </h2>
           <div className="flex gap-4 mt-2 text-gray-800">
             <div className="flex items-center gap-1">
               <StarFilledIcon className="text-yellow-500" />
-              <span>4.8</span>
+              <span>{data?.totalRatings}</span>
             </div>
 
             <div className="flex items-center gap-1">
@@ -78,41 +104,41 @@ export default function CarDetailPage() {
 
           <div className="flex gap-2 mt-4">
             <Tag className="rounded-full border-none bg-green-100">
-              Số tự động
+              {data?.transmissions}
             </Tag>
-            <Tag className="rounded-full border-none bg-rose-100">
+            {/* <Tag className="rounded-full border-none bg-rose-100">
               Đặt xe nhanh
-            </Tag>
+            </Tag> */}
           </div>
 
           <Divider />
 
           <div>
             <h3>Đặc điểm</h3>
-            <div className="grid grid-cols-3 gap-4">
-              <div className="flex items-center gap-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="flex items-center gap-6">
                 <SeatIcon className="shrink-0 text-2xl text-green-500" />
                 <div className="flex flex-col items-center text-base">
                   <span className="text-gray-800">Số ghê</span>
-                  <span className="font-bold">7 chỗ</span>
+                  <span className="font-bold">{data?.numberSeat}</span>
                 </div>
               </div>
 
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-6">
                 <TransmissionIcon className="shrink-0 text-2xl text-green-500" />
                 <div className="flex flex-col items-center text-base">
                   <span className="text-gray-800">Truyền động</span>
-                  <span className="font-bold">Số tự động</span>
+                  <span className="font-bold"> {data?.transmissions}</span>
                 </div>
               </div>
 
-              <div className="flex items-center gap-4">
+              {/* <div className="flex items-center gap-4">
                 <GasIcon className="shrink-0 text-2xl text-green-500" />
                 <div className="flex flex-col items-center text-base">
                   <span className="text-gray-800">Nhiên liệu</span>
                   <span className="font-bold">Xăng</span>
                 </div>
-              </div>
+              </div> */}
             </div>
           </div>
 
@@ -120,7 +146,7 @@ export default function CarDetailPage() {
 
           <div>
             <h3>Mô tả</h3>
-            <p>MITSUBISHI XPANDER 2019</p>
+            <p>{data?.description}</p>
           </div>
 
           <Divider />
@@ -201,7 +227,13 @@ export default function CarDetailPage() {
           </div>
 
           <div className="flex flex-col gap-4 border border-solid rounded-lg border-gray-300 p-4 bg-green-50 mt-10">
-            <h1>780K/ngày</h1>
+            <h1>
+              {data?.cost.toLocaleString("it-IT", {
+                style: "currency",
+                currency: "VND",
+              })}
+              /ngày
+            </h1>
             <DateRangePicker
               size="large"
               picker="date"
@@ -246,7 +278,9 @@ export default function CarDetailPage() {
               ]}
             />
             <div className="flex justify-center p-2">
-              <Button type="primary">Chọn thuê</Button>
+              <Link href={`/booking/${data?._id}`}>
+                <Button type="primary">Chọn thuê</Button>
+              </Link>
             </div>
           </div>
         </div>

@@ -14,6 +14,7 @@ import cookieParser from 'cookie-parser'
 import cors from 'cors'
 import paymentsRoutes from './routes/payments.routes.js'
 import { config } from 'dotenv'
+import bookingRoutes from './routes/booking.routes.js'
 config()
 const app = express()
 const port = 4000
@@ -43,6 +44,7 @@ app.use('/brands', brandsRoutes)
 app.use('/models', modelsRoutes)
 app.use('/payments', paymentsRoutes)
 app.use('/drivers', driverLicensesRoutes)
+app.use('/bookings', bookingRoutes)
 
 app.use(defaultErrorHandler)
 app.listen(port, () => {

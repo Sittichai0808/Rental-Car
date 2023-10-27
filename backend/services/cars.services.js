@@ -71,7 +71,6 @@ class CarsService {
       // pagination
 
       const skip = (page - 1) * limit
-      console.log(page, limit, skip)
       getListCars = getListCars.skip(skip).limit(limit)
       if (page) {
         const carCount = await Cars.countDocuments()

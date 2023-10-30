@@ -78,7 +78,7 @@ export default function AdminManageUsers() {
             { key: "address", title: "Address", dataIndex: "address" },
             {
               key: "action",
-              title: "Address",
+              title: "Action",
               render: (_, user) => (
                 <div className="flex gap-2">
                   <Button

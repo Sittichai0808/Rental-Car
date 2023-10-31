@@ -41,49 +41,53 @@ class CarsService {
   }
   async getListCars(payload) {
     try {
-      // Filtering
-      const queryObj = { ...payload }
-      const { sort, fields, page, limit } = payload
-      const excludeFields = ['page', 'sort', 'limit', 'fields']
-      excludeFields.forEach((el) => delete queryObj[el])
-      let queryStr = JSON.stringify(queryObj)
-      queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`)
+      const { page, limit, sort, fields, ...otherParams } = payload;
+
+      // Xác định giá trị mặc định nếu page hoặc limit không được chỉ định
+      const skip = (page - 1) * limit;
+
+      if (page < 1) {
+        throw new Error('Invalid page number');
+      }
+
+      const queryObj = { ...otherParams };
+      const excludeFields = ['page', 'sort', 'limit', 'fields'];
+      excludeFields.forEach((el) => delete queryObj[el]);
+
+      let queryStr = JSON.stringify(queryObj);
+      queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
 
       let getListCars = Cars.find(JSON.parse(queryStr))
         .populate('brand', 'name')
         .populate('model', 'name')
-        .populate('user', 'username')
+        .populate('user', 'username');
 
-      // Sorting
       if (sort) {
-        const sortBy = sort.split(',').join(' ')
-        getListCars = getListCars.sort(sortBy)
+        const sortBy = sort.split(',').join(' ');
+        getListCars = getListCars.sort(sortBy);
       } else {
-        getListCars = getListCars.sort('-createdAt')
+        getListCars = getListCars.sort('-createdAt');
       }
 
-      // Limiting the fields
       if (fields) {
-        const field = fields.split(',').join(' ')
-        getListCars = getListCars.select(field)
-      } else {
-        getListCars = getListCars
+        const field = fields.split(',').join(' ');
+        getListCars = getListCars.select(field);
       }
 
-      // pagination
-
-      const skip = (page - 1) * limit
-      getListCars = getListCars.skip(skip).limit(limit)
-      if (page) {
-        const carCount = await Cars.countDocuments()
-        if (skip >= carCount) throw new Error('This Page does not exist')
+      const carCount = await Cars.countDocuments();
+      if (skip >= carCount) {
+        throw new Error('This Page does not exist');
       }
-      const cars = await getListCars
-      return cars
+
+      getListCars = getListCars.skip(skip).limit(limit);
+      const cars = await getListCars;
+      return cars;
     } catch (error) {
-      console.log(error)
+      console.log(error);
+      throw error; // Re-throw the error to handle it at the API call site
     }
   }
+
 
   async uploadImagesCar(carId, payload) {
     try {

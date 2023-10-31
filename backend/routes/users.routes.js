@@ -1,14 +1,25 @@
 import express from 'express'
-import { registerValidator, loginValidator } from '../middlewares/users.middlewares.js'
+import { registerValidator, loginValidator, accessTokenValidator } from '../middlewares/users.middlewares.js'
 import { wrapRequestHandler } from '../utils/handlers.js'
-import { registerController, loginController } from '../controllers/users.controllers.js'
+import {
+  registerController,
+  loginController,
+  googleController,
+  getUserController,
+  updateUserController,
+  generateOTPController,
+  verifyOTPController,
+  resetPasswordController,
+  registerMailController,
+  getUserByEmailController
+} from '../controllers/users.controllers.js'
 const usersRoutes = express.Router()
 
 /**
  * Description: Register a user
  * Path: /register
  * Method: POST
- * Body:{ name: string, email: string, password: string, confirm_password: string, date_of_birth: ISO8601}
+ * Body:{ username: string, email: string, password: string, confirm_password: string, date_of_birth: ISO8601}
  */
 usersRoutes.post('/register', registerValidator, wrapRequestHandler(registerController))
 
@@ -16,13 +27,77 @@ usersRoutes.post('/register', registerValidator, wrapRequestHandler(registerCont
  * Description: Login a user
  * Path: /login
  * Method: POST
- * Body:{ name: string, email: string, password: string}
+ * Body:{ username: string, email: string, password: string}
  */
 usersRoutes.post('/login', loginValidator, wrapRequestHandler(loginController))
 
-usersRoutes.get('/lay-cookie', (req, res) => {
-  const tenCookie = req.cookies.access_token
-  const tenCookie1 = req.cookies.ten_cookie
-  res.send(`Giá trị của cookie là: ${tenCookie}  and ${tenCookie1}`)
-})
+/**
+ * Description: OAuth Google Account
+ * Path: /google
+ * Method: POST
+ * Body:{ username: string, email: string, password: string,profilePicture: string}
+ */
+usersRoutes.post('/google', wrapRequestHandler(googleController))
+
+/**
+ * Description: Get User
+ * Path: /get-user
+ * Method: GET
+ * Headers: {Authorization: Bearer <access_token>}
+ */
+usersRoutes.get('/get-user', accessTokenValidator, wrapRequestHandler(getUserController))
+
+/**
+ * Description: Get User
+ * Path: /get-user
+ * Method: GET
+ * body: {email: string}
+ */
+usersRoutes.post('/get-user-by-email', wrapRequestHandler(getUserByEmailController))
+
+/**
+ * Description: Update User
+ * Path: /update-user
+ * Method: POST
+ * Body:{ username: string, email: string, password: string,profilePicture: string,...}
+ */
+usersRoutes.put('/update-user/:userId', accessTokenValidator, wrapRequestHandler(updateUserController))
+
+/**
+ * Description: Generate OTP
+ * Path: /generate-otp
+ * Method: GET
+ * Body: {email: String}
+ */
+usersRoutes.get('/generate-otp', wrapRequestHandler(generateOTPController))
+
+/**
+ * Description: Verify OTP
+ * Path: /verify-otp
+ * Method: GET
+ */
+usersRoutes.get('/verify-otp/:code', wrapRequestHandler(verifyOTPController))
+
+/**
+ * Description: Reset Password
+ * Path: /reset-password
+ * Method: PUT
+ */
+usersRoutes.put('/reset-password', wrapRequestHandler(resetPasswordController))
+
+/**
+ * Description: Register Mail
+ * Path: /register-mail
+ * Method: POST
+ * Body: {email: String,name: string, text: String, subject: String}
+ */
+
+/**
+ * Description: Register Mail
+ * Path: /register-mail
+ * Method: POST
+ * Body: {email: String,name: string, text: String, subject: String}
+ */
+usersRoutes.post('/register-mail', wrapRequestHandler(registerMailController))
+
 export default usersRoutes

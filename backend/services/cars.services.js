@@ -31,9 +31,7 @@ class CarsService {
   async getCarById(carId) {
     console.log(carId)
     try {
-      const getCarById = await Cars.findById(carId.toString() || '6332151ff01c77b98e74364a')
-        .populate('brand', 'name')
-        .populate('model', 'name')
+      const getCarById = await Cars.findById(carId).populate('brand', 'name').populate('model', 'name')
       return getCarById
     } catch (error) {
       console.log(error)
@@ -41,53 +39,49 @@ class CarsService {
   }
   async getListCars(payload) {
     try {
-      const { page, limit, sort, fields, ...otherParams } = payload;
-
-      // Xác định giá trị mặc định nếu page hoặc limit không được chỉ định
-      const skip = (page - 1) * limit;
-
-      if (page < 1) {
-        throw new Error('Invalid page number');
-      }
-
-      const queryObj = { ...otherParams };
-      const excludeFields = ['page', 'sort', 'limit', 'fields'];
-      excludeFields.forEach((el) => delete queryObj[el]);
-
-      let queryStr = JSON.stringify(queryObj);
-      queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
+      // Filtering
+      const queryObj = { ...payload }
+      const { sort, fields, page, limit } = payload
+      const excludeFields = ['page', 'sort', 'limit', 'fields']
+      excludeFields.forEach((el) => delete queryObj[el])
+      let queryStr = JSON.stringify(queryObj)
+      queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`)
 
       let getListCars = Cars.find(JSON.parse(queryStr))
         .populate('brand', 'name')
         .populate('model', 'name')
-        .populate('user', 'username');
+        .populate('user', 'username')
 
+      // Sorting
       if (sort) {
-        const sortBy = sort.split(',').join(' ');
-        getListCars = getListCars.sort(sortBy);
+        const sortBy = sort.split(',').join(' ')
+        getListCars = getListCars.sort(sortBy)
       } else {
-        getListCars = getListCars.sort('-createdAt');
+        getListCars = getListCars.sort('-createdAt')
       }
 
+      // Limiting the fields
       if (fields) {
-        const field = fields.split(',').join(' ');
-        getListCars = getListCars.select(field);
+        const field = fields.split(',').join(' ')
+        getListCars = getListCars.select(field)
+      } else {
+        getListCars = getListCars
       }
 
-      const carCount = await Cars.countDocuments();
-      if (skip >= carCount) {
-        throw new Error('This Page does not exist');
-      }
+      // pagination
 
-      getListCars = getListCars.skip(skip).limit(limit);
-      const cars = await getListCars;
-      return cars;
+      const skip = (page - 1) * limit
+      getListCars = getListCars.skip(skip).limit(limit)
+      if (page) {
+        const carCount = await Cars.countDocuments()
+        if (skip >= carCount) throw new Error('This Page does not exist')
+      }
+      const cars = await getListCars
+      return cars
     } catch (error) {
-      console.log(error);
-      throw error; // Re-throw the error to handle it at the API call site
+      console.log(error)
     }
   }
-
 
   async uploadImagesCar(carId, payload) {
     try {

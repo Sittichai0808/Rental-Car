@@ -1,3 +1,6 @@
+import pkg from 'jsonwebtoken'
+const { JsonWebTokenError } = pkg
+
 import { HTTP_STATUS } from '../constants/httpStatus.js'
 import { USER_MESSAGES } from '../constants/messages.js'
 
@@ -5,9 +8,15 @@ export class ErrorWithStatus {
   message
   status
 
-  constructor({ message, status }) {
+  constructor(message, status) {
     this.message = message
     this.status = status
+  }
+  errorHandler() {
+    const error = new Error()
+    error.message = this.message || 'Error'
+    error.status = this.status
+    return error
   }
 }
 

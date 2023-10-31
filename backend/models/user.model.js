@@ -1,3 +1,4 @@
+import { ObjectId } from 'mongodb'
 import mongoose from 'mongoose'
 
 const userSchema = new mongoose.Schema(
@@ -15,15 +16,31 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true
     },
-    phone: {
-      type: Number,
-      unique: true
-    }
+    phoneNumber: {
+      type: String
+    },
+    role: {
+      type: String,
+      enum: ['user', 'admin', 'staff'],
+      default: 'user'
+    },
+    date_of_birth: {
+      type: String
+    },
+    userCars: {
+      type: Array
+    },
+    driverLicenses: {
+      type: ObjectId
+    },
 
-    // profilePicture: {
-    //   type: String,
-    //   default: 'https://img.freepik.com/premium-vector/man-avatar-profile-picture-vector-illustration_268834-538.jpg'
-    // }
+    profilePicture: {
+      type: String,
+      default: 'https://img.freepik.com/premium-vector/man-avatar-profile-picture-vector-illustration_268834-538.jpg'
+    },
+    address: {
+      type: String
+    }
   },
   { timestamps: true }
 )

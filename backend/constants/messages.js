@@ -53,5 +53,6 @@ export const CARS_MESSAGE = {
   GET_CAR_SUCCESS: 'GetList car successfully',
   CREATE_CAR_SUCCESS: 'Create car successfully',
   UPDATE_CAR_SUCCESS: 'Update car successfully',
-  DELETE_CAR_SUCCESS: 'Delete car successfully'
+  GET_CAR_SUCCESS: 'Get car successfully',
+  GET_CARS_SUCCESS: 'Get list cars successfully'
 }

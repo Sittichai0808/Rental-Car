@@ -25,14 +25,17 @@ export default function ListCarsPage() {
   const products = data || [];
 
   const handleBrandChange = (selected) => {
+    setParams({ ...params, brand: selected });
     router.push({ pathname, query: { ...query, brand: selected } });
   };
 
   const handleNumberSeatChange = (selected) => {
+    setParams({ ...params, numberSeat: selected });
     router.push({ pathname, query: { ...query, numberSeat: selected } });
   };
 
   const handleTransmissionsChange = (selected) => {
+    setParams({ ...params, transmissions: selected });
     router.push({ pathname, query: { ...query, transmissions: selected } });
   };
   const handleChange = (value) => {
@@ -55,7 +58,7 @@ export default function ListCarsPage() {
     if (transmissions) {
       setParams({ ...params, transmissions });
     }
-  }, [numberSeat, brand, transmissions, pathname]);
+  }, [brand, numberSeat, transmissions, pathname]);
 
   const { isLoading, isError, data, error } = useQuery({
     queryKey: ["getListCars", params],

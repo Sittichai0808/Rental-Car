@@ -16,7 +16,9 @@ import {
   TransmissionIcon,
   UsbIcon,
 } from "@/icons";
-import { Button, Divider, Table, Tag } from "antd";
+import moment from "moment";
+import dayjs from "dayjs";
+import { Button, Divider, Table, Tag, DatePicker } from "antd";
 import { DateRangePicker } from "@/components/antd";
 import Image from "next/image";
 import styled from "@emotion/styled";
@@ -25,6 +27,10 @@ import { useRouter } from "next/router";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import axios from "axios";
+import useLocalStorage from "@/hooks/useLocalStorage";
+import { useState } from "react";
+import { useDatesState } from "@/recoils/dates.state";
+
 const carServices = [
   { icon: MapIcon, name: "Bản đồ" },
   { icon: BluetoothIcon, name: "Bluetooth" },
@@ -42,6 +48,53 @@ const BorderlessTable = styled(Table)`
 export default function CarDetailPage() {
   const router = useRouter();
   const carId = router.query.id;
+  const [accessToken, setAccessToken, clearAccessToken] = useLocalStorage(
+    "access_token",
+    ""
+  );
+  const [dates, setDates] = useDatesState();
+  const [bookedTimeSlots, setBookedTimeSlots] = useState([]);
+
+  const [validationMessage, setValidationMessage] = useState("");
+  function isDateBooked(startDate, endDate) {
+    for (const slot of bookedTimeSlots) {
+      const bookedStart = new Date(slot.from);
+      const bookedEnd = new Date(slot.to);
+
+      console.log(bookedStart >= startDate, bookedEnd <= endDate);
+      if (bookedStart >= startDate && bookedEnd <= endDate) return true;
+    }
+
+    return false; // Khoảng ngày không được đặt
+  }
+
+  const handleDateChange = (dates) => {
+    if (dates && dates.length === 2) {
+      const [startDate, endDate] = dates;
+
+      if (isDateBooked(startDate, endDate)) {
+        setValidationMessage("Khoảng ngày đã được thuê.");
+      } else {
+        setValidationMessage("");
+      }
+    }
+
+    setDates(dates);
+  };
+
+  const disabledDate = (current) => {
+    // Kiểm tra nếu ngày là ngày quá khứ
+    const isPastDate = current && current < moment().startOf("day");
+
+    // Kiểm tra nếu ngày hiện tại nằm trong mảng bookedTimeSlots
+    const isBookedDate = bookedTimeSlots.some((slot) => {
+      const slotStart = moment(slot.from);
+      const slotEnd = moment(slot.to);
+      return current && current >= slotStart && current <= slotEnd;
+    });
+
+    return isPastDate || isBookedDate;
+  };
   const { isLoading, isError, data, error } = useQuery({
     queryKey: ["getCar", carId],
     queryFn: async () => {
@@ -55,6 +108,29 @@ export default function CarDetailPage() {
           }
         );
         console.log(response.data.result);
+        return response.data.result;
+      } catch (error) {
+        console.log(error);
+      }
+    },
+  });
+
+  const result = useQuery({
+    queryKey: ["getScheduleCar", carId],
+    queryFn: async () => {
+      try {
+        const response = await axios.get(
+          `${process.env.NEXT_PUBLIC_REACT_APP_BACKEND_URL}/bookings/${carId}`,
+
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+              "Content-Type": "application/json",
+            },
+            withCredentials: true,
+          }
+        );
+        setBookedTimeSlots(response.data.result);
         return response.data.result;
       } catch (error) {
         console.log(error);
@@ -235,10 +311,20 @@ export default function CarDetailPage() {
               /ngày
             </h1>
             <DateRangePicker
-              size="large"
-              picker="date"
+              showTime={{ format: "HH mm" }}
+              format="DD MM YYYY HH mm"
+              // defaultValue={[
+              //   dayjs(from, "DD-MM-YYYY HH:mm"),
+              //   dayjs(to, "DD-MM-YYYY HH:mm"),
+              // ]}
+              disabledDate={disabledDate}
               className="rounded-full"
+              value={dates}
+              onChange={handleDateChange}
             />
+            {validationMessage && (
+              <p className="text-red-500 ml-2">{validationMessage}</p>
+            )}
 
             <div className="border border-solid rounded-lg border-gray-300 bg-white p-4">
               <h4 className="m-0 mb-3 font-medium text-gray-800">
@@ -252,7 +338,7 @@ export default function CarDetailPage() {
             </div>
 
             <Divider />
-
+            {/* 
             <BorderlessTable
               columns={[
                 { dataIndex: "label" },
@@ -276,8 +362,8 @@ export default function CarDetailPage() {
                   price: <span className="font-bold">971 880đ</span>,
                 },
               ]}
-            />
-            <div className="flex justify-center p-2">
+            /> */}
+            <div className="flex justify-center ">
               <Link href={`/booking/${data?._id}`}>
                 <Button type="primary">Chọn thuê</Button>
               </Link>

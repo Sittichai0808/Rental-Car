@@ -29,14 +29,16 @@ class CarsService {
   }
 
   async getCarById(carId) {
+    console.log(carId)
     try {
-      const getCarById = await Cars.findById(carId)
+      const getCarById = await Cars.findById(carId.toString() || '6332151ff01c77b98e74364a')
+        .populate('brand', 'name')
+        .populate('model', 'name')
       return getCarById
     } catch (error) {
       console.log(error)
     }
   }
-
   async getListCars(payload) {
     try {
       // Filtering

@@ -11,8 +11,8 @@ config()
 // });
 
 // router.get('/create_payment_url', function (req, res, next) {
-//   res.render('order', {title: 'Tạo mới đơn hàng', amount: 10000})
-// });
+//   res.render('order', { title: 'Tạo mới đơn hàng', amount: 10000 })
+// })
 
 // router.get('/querydr', function (req, res, next) {
 
@@ -27,43 +27,47 @@ config()
 // });
 
 export const createOrderPaymentController = async (req, res, next) => {
-  var ipAddr =
-    req.headers['x-forwarded-for'] ||
-    req.connection.remoteAddress ||
-    req.socket.remoteAddress ||
-    req.connection.socket.remoteAddress ||
-    ''
-
-  // var config = require('config')
-
-  var tmnCode = 'LBI3KB9A'
-  var secretKey = 'BPYFJJZXZGFNTZOXRZLIXZCVLKENIJME'
-  var vnpUrl = 'https://sandbox.vnpayment.vn/paymentv2/vpcpay.html'
-  var returnUrl = `${process.env.FRONTEND_URL}/booking/123`
+  process.env.TZ = 'Asia/Ho_Chi_Minh'
 
   let date = new Date()
   let createDate = moment(date).format('YYYYMMDDHHmmss')
-  var orderId = dateFormat(date, 'HHmmss')
-  var amount = req.body.amount
-  var bankCode = req.body.bankCode
 
-  var orderInfo = req.body.orderDescription || 'Xe honda'
-  var orderType = req.body.orderType || 'Thue xe'
-  var locale = req.body.language
+  let ipAddr =
+    req.headers['x-forwarded-for'] ||
+    req.connection.remoteAddress ||
+    req.socket.remoteAddress ||
+    req.connection.socket.remoteAddress
+
+  let tmnCode = 'LBI3KB9A'
+  let secretKey = 'BPYFJJZXZGFNTZOXRZLIXZCVLKENIJME'
+  let vnpUrl = 'https://sandbox.vnpayment.vn/paymentv2/vpcpay.html'
+  let returnUrl = `${process.env.FRONTEND_URL}/booking/${req.body.id}`
+  let orderId = moment(date).format('DDHHmmss')
+  let amount = req.body.amount
+  let bankCode = req.body.bankCode
+  let fullname = req.body.fullname
+  let phone = req.body.phone
+  let address = req.body.address
+
+  let from = req.body.from
+  let to = req.body.to
+
+  let locale = req.body.language
   if (locale === null || locale === '') {
     locale = 'vn'
   }
-  var currCode = 'VND'
-  var vnp_Params = {}
+  let currCode = 'VND'
+  let vnp_Params = {}
   vnp_Params['vnp_Version'] = '2.1.0'
   vnp_Params['vnp_Command'] = 'pay'
   vnp_Params['vnp_TmnCode'] = tmnCode
-  // vnp_Params['vnp_Merchant'] = ''
   vnp_Params['vnp_Locale'] = locale
   vnp_Params['vnp_CurrCode'] = currCode
   vnp_Params['vnp_TxnRef'] = orderId
-  vnp_Params['vnp_OrderInfo'] = orderInfo
-  vnp_Params['vnp_OrderType'] = orderType
+
+  vnp_Params['vnp_OrderInfo'] = `${fullname},${phone},${address},${from},${to}`
+
+  vnp_Params['vnp_OrderType'] = 'other'
   vnp_Params['vnp_Amount'] = amount * 100
   vnp_Params['vnp_ReturnUrl'] = returnUrl
   vnp_Params['vnp_IpAddr'] = ipAddr
@@ -74,14 +78,14 @@ export const createOrderPaymentController = async (req, res, next) => {
 
   vnp_Params = sortObject(vnp_Params)
 
-  var signData = querystring.stringify(vnp_Params, { encode: false })
+  let signData = querystring.stringify(vnp_Params, { encode: false })
 
-  var hmac = crypto.createHmac('sha512', secretKey)
-  var signed = hmac.update(new Buffer(signData, 'utf-8')).digest('hex')
+  let hmac = crypto.createHmac('sha512', secretKey)
+  let signed = hmac.update(new Buffer(signData, 'utf-8')).digest('hex')
   vnp_Params['vnp_SecureHash'] = signed
   vnpUrl += '?' + querystring.stringify(vnp_Params, { encode: false })
 
-  return res.json(vnpUrl)
+  res.json(vnpUrl)
 }
 function sortObject(obj) {
   let sorted = {}
@@ -175,20 +179,21 @@ export const createOrderPaymentMOMOController = async (req, res, next) => {
       'Content-Length': Buffer.byteLength(requestBody)
     }
   }
-
+  var dataUrl = ''
   const req1 = https.request(options, (res) => {
     console.log(`Status: ${res.statusCode}`)
     console.log(`Headers: ${JSON.stringify(res.headers)}`)
     res.setEncoding('utf8')
+
     res.on('data', (body) => {
       console.log('Body: ')
       console.log(body)
       console.log('payUrl: ')
-      console.log(JSON.parse(body).payUrl)
+      dataUrl = JSON.parse(body).payUrl
+      console.log(dataUrl)
     })
-    // res.on('end', () => {
-    //   console.log('No more data in response.')
-    // })
+
+    res.on('end', () => {})
   })
 
   req1.on('error', (e) => {
@@ -197,6 +202,7 @@ export const createOrderPaymentMOMOController = async (req, res, next) => {
   // write data to request body
   console.log('Sending....')
   req1.write(requestBody)
+  res.json(dataUrl)
   req1.end()
 }
 

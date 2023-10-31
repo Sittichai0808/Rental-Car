@@ -1,8 +1,13 @@
 "use client";
+// import locale from "antd/en/date-picker/locale/zh_CN";
+
+// import "dayjs/locale/zh-cn";
+import moment from "moment";
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { CheckCircleOutlined, CloseCircleOutlined } from "@ant-design/icons";
 import styled from "@emotion/styled";
+import dayjs from "dayjs";
 import { useMutation } from "@tanstack/react-query";
 import {
   Button,
@@ -15,15 +20,100 @@ import {
   DateRangePicker,
   Divider,
   BorderlessTable,
+  DatePicker,
 } from "antd";
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import Image from "next/image";
+import { useAccessTokenState } from "@/recoils/accessToken.state";
+import useLocalStorage from "@/hooks/useLocalStorage";
+import { useDatesState } from "@/recoils/dates.state";
 const { Title } = Typography;
+const { RangePicker } = DatePicker;
 const BookingPage = () => {
   const router = useRouter();
-  const carId = router.query.id;
+  const { query, pathname } = useRouter();
+  const carId = query?.id || "653912b7f01c77b98e74364c";
+  const [from, setFrom] = useState();
+  const [to, setTo] = useState();
+
+  const [amount, setAmount] = useState();
+  const [value, setValue] = useState(1);
+  const [costGetCar, setCostGetCar] = useState(0);
+
+  const [dates, setDates] = useDatesState();
+
+  const onChange = (e) => {
+    setCostGetCar(e.target.value);
+  };
+  const status = ["process", "wait", "finish"];
+  const [result, setResult] = useState("");
+  const [current, setCurrent] = useState(0);
+  const [paymentMethod, setPaymentMethod] = useState("");
+  const [form] = Form.useForm();
+
+  const codeTransaction = router.query?.vnp_TxnRef;
+  const totalCost = router.query?.vnp_Amount;
+  const timeTransaction = router?.query?.vnp_PayDate;
+
+  const [startDate, endDate] = dates;
+
+  const [totalDays, setTotalDays] = useState(endDate?.diff(startDate, "days"));
+  const order = router.query?.vnp_OrderInfo;
+  console.log(order);
+  const orderInfo = order?.split(",");
+  const [accessToken, setAccessToken, clearAccessToken] = useLocalStorage(
+    "access_token",
+    ""
+  );
+  useEffect(() => {
+    if (router.query.vnp_TransactionStatus) {
+      if (router.query.vnp_TransactionStatus === "00") {
+        const bookedCar = async () => {
+          try {
+            const response = await axios.post(
+              `${process.env.NEXT_PUBLIC_REACT_APP_BACKEND_URL}/bookings/${carId}`,
+              {
+                codeTransaction,
+                totalCost,
+                timeTransaction,
+
+                phone: orderInfo[1],
+                address: orderInfo[2],
+                timeBookingStart: orderInfo[3],
+                timeBookingEnd: orderInfo[4],
+              },
+              {
+                headers: {
+                  Authorization: `Bearer ${accessToken}`,
+                  "Content-Type": "application/json",
+                },
+                withCredentials: true,
+              }
+            );
+            console.log(response.data.result);
+            return response.data.result;
+          } catch (error) {
+            console.log(error);
+          }
+        };
+        bookedCar();
+        setResult("Giao Dịch thành công");
+      } else if (router.query.vnp_TransactionStatus === "01") {
+        setResult("Giao dịch chưa hoàn tất");
+      } else if (router.query.vnp_TransactionStatus === "02") {
+        setResult("Giao dịch bị lỗi");
+      } else if (router.query.vnp_TransactionStatus === "03") {
+        setResult(
+          "Giao dịch đảo (Khách hàng đã bị trừ tiền tại Ngân hàng nhưng GD chưa thành công ở VNPAY)"
+        );
+      } else {
+        setResult("Giao dịch bị nghi ngờ gian lận");
+      }
+      setCurrent(2);
+    }
+  }, [router?.query?.vnp_TransactionStatus]);
   const { isLoading, isError, data, error } = useQuery({
     queryKey: ["getCar", carId],
     queryFn: async () => {
@@ -43,30 +133,6 @@ const BookingPage = () => {
       }
     },
   });
-  const status = ["process", "wait", "finish"];
-  const [result, setResult] = useState("");
-  const [current, setCurrent] = useState(0);
-  const [paymentMethod, setPaymentMethod] = useState("");
-  const [form] = Form.useForm();
-
-  useEffect(() => {
-    if (router.query.vnp_TransactionStatus) {
-      if (router.query.vnp_TransactionStatus === "00") {
-        setResult("Giao Dịch thành công");
-      } else if (router.query.vnp_TransactionStatus === "01") {
-        setResult("Giao dịch chưa hoàn tất");
-      } else if (router.query.vnp_TransactionStatus === "02") {
-        setResult("Giao dịch bị lỗi");
-      } else if (router.query.vnp_TransactionStatus === "03") {
-        setResult(
-          "Giao dịch đảo (Khách hàng đã bị trừ tiền tại Ngân hàng nhưng GD chưa thành công ở VNPAY)"
-        );
-      } else {
-        setResult("Giao dịch bị nghi ngờ gian lận");
-      }
-      setCurrent(2);
-    }
-  });
   const handleCheckoutVNPAY = () => {
     setCurrent(1);
     setPaymentMethod("vnpay");
@@ -78,13 +144,17 @@ const BookingPage = () => {
   //   vnp_TransactionStatus;
   const onSubmit = async (values) => {
     try {
+      if (from === undefined || to === undefined) {
+        moment(value[0]?.format("DD MM YYYY HH mm"))._i;
+        from = moment(startDate?.format("DD MM YYYY HH mm"))._i;
+        to = moment(endDate?.format("DD MM YYYY HH mm"))._i;
+      }
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_REACT_APP_BACKEND_URL}/payments/create_payment_url`,
 
-        values,
+        { ...values, from, to, id: data?._id },
         {
           headers: { "Content-Type": "application/json" },
-          //   withCredentials: true,
         }
       );
 
@@ -92,15 +162,9 @@ const BookingPage = () => {
         window.location.assign(response.data);
       } else {
         console.log(error);
-        // toast.error(error.response.data.errors[0].msg, {
-        //   position: toast.POSITION.TOP_CENTER,
-        // });
       }
     } catch (error) {
       console.log(error);
-      //   toast.error(error.response.data.errors[0].msg, {
-      //     position: toast.POSITION.TOP_CENTER,
-      //   });
     }
   };
 
@@ -120,68 +184,126 @@ const BookingPage = () => {
         window.location.assign(response.data);
       } else {
         console.log(error);
-        // toast.error(error.response.data.errors[0].msg, {
-        //   position: toast.POSITION.TOP_CENTER,
-        // });
       }
     } catch (error) {
       console.log(error);
-      //   toast.error(error.response.data.errors[0].msg, {
-      //     position: toast.POSITION.TOP_CENTER,
-      //   });
     }
   };
 
+  const [bookedTimeSlots, setBookedTimeSlots] = useState([]);
+
+  const [validationMessage, setValidationMessage] = useState("");
+  function isDateBooked(startDate, endDate) {
+    for (const slot of bookedTimeSlots) {
+      const bookedStart = new Date(slot.from);
+      const bookedEnd = new Date(slot.to);
+
+      console.log(bookedStart >= startDate, bookedEnd <= endDate);
+      if (bookedStart >= startDate && bookedEnd <= endDate) return true;
+    }
+
+    return false; // Khoảng ngày không được đặt
+  }
+
+  const disabledDate = (current) => {
+    // Kiểm tra nếu ngày là ngày quá khứ
+    const isPastDate = current && current < moment().startOf("day");
+
+    // Kiểm tra nếu ngày hiện tại nằm trong mảng bookedTimeSlots
+    const isBookedDate = bookedTimeSlots.some((slot) => {
+      const slotStart = moment(slot.from);
+      const slotEnd = moment(slot.to);
+      return current && current >= slotStart && current <= slotEnd;
+    });
+
+    return isPastDate || isBookedDate;
+  };
+
+  const result1 = useQuery({
+    queryKey: ["getScheduleCar", carId],
+    queryFn: async () => {
+      try {
+        const response = await axios.get(
+          `${process.env.NEXT_PUBLIC_REACT_APP_BACKEND_URL}/bookings/${carId}`,
+
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+              "Content-Type": "application/json",
+            },
+            withCredentials: true,
+          }
+        );
+        setBookedTimeSlots(response.data.result);
+        return response.data.result;
+      } catch (error) {
+        console.log(error);
+      }
+    },
+  });
+  useEffect(() => {
+    // Tính toán giá trị mới cho amount dựa trên totalDays
+    const newAmount = totalDays * (data?.cost || 0) + (costGetCar || 0);
+
+    // Cập nhật initialValues
+    form.setFieldsValue({
+      amount: newAmount, // Định dạng số tiền theo ý muốn
+    });
+  }, [totalDays, data?.cost, costGetCar]);
+
+  const handleBack = () => {
+    setTotalDays(endDate?.diff(startDate, "days"));
+    setCurrent(0);
+  };
+  const selectTimeSlots = (value) => {
+    if (value && value.length === 2) {
+      const [startDate, endDate] = value;
+
+      if (isDateBooked(startDate, endDate)) {
+        setValidationMessage("Khoảng ngày đã được thuê.");
+      } else {
+        setValidationMessage("");
+      }
+    }
+
+    setFrom(moment(value[0]?.format("DD MM YYYY HH mm"))._i);
+    setTo(moment(value[1]?.format("DD MM YYYY HH mm"))._i);
+    setTotalDays(value[1]?.diff(value[0], "days"));
+  };
   const { mutate } = useMutation(onSubmit);
   const { mutate1 } = useMutation(onSubmitMOMO);
+  const handleCheckout = (value) => {
+    setTotalDays(totalDays);
+    console.log(totalDays);
+    setCurrent(1);
+  };
+  console.log(current);
   return (
     <div>
-      {/* {current === 0 && (
-        <div className="mt-5">
-          <Space direction="vertical">
-            <Button
-              type="primary"
-              className="font-bold"
-              onClick={handleCheckoutVNPAY}
-            >
-              Thanh toán VNPAY
-            </Button>
-            <Button
-              type="primary"
-              className="font-bold"
-              onClick={handleCheckoutMOMO}
-            >
-              Thanh toán MOMO
-            </Button>
-          </Space>
-        </div>
-      )} */}
-
-      {current === 0 && (
-        <>
-          {" "}
-          <div class="flex flex-col items-center justify-center border-b bg-slate-100 py-4 sm:flex-row sm:px-5 lg:px-5 xl:px-12">
-            {/* <a href="#" class="text-2xl font-bold text-gray-800 w-1/3">
+      <>
+        {" "}
+        <div class="flex flex-col mt-10 items-center justify-center border-b bg-slate-100 py-4 sm:flex-row sm:px-5 lg:px-5 xl:px-12">
+          {/* <a href="#" class="text-2xl font-bold text-gray-800 w-1/3">
               My Checkout
             </a> */}
-            <div class="flex  w-full mt-4 py-2 text-xs sm:mt-0 sm:ml-auto sm:text-base ">
-              <Steps
-                className="mt-5"
-                current={current}
-                items={[
-                  {
-                    title: "Thủ tục thanh toán",
-                  },
+          <div class="flex  w-full mt-4 py-2 text-xs sm:mt-0 sm:ml-auto sm:text-base ">
+            <Steps
+              className="mt-5"
+              current={current}
+              items={[
+                {
+                  title: "Thủ tục thanh toán",
+                },
 
-                  {
-                    title: "Thanh toán",
-                  },
-                  {
-                    title: "Kết quả",
-                  },
-                ]}
-              />
-              {/* <div class="relative">
+                {
+                  title: "Thanh toán",
+                },
+                {
+                  title: "Kết quả",
+                },
+              ]}
+            />
+            {/* <div class="relative">
                 <ul class="relative flex w-full items-center justify-between space-x-2 sm:space-x-4">
                   <li class="flex items-center space-x-3 text-left sm:space-x-4">
                     <a
@@ -253,334 +375,217 @@ const BookingPage = () => {
                   </li>
                 </ul>
               </div> */}
-            </div>
           </div>
-          <div class="grid sm:px-10 lg:grid-cols-2  bg-slate-100">
+        </div>
+        {current === 0 && (
+          <div class="grid sm:px-10 lg:grid-cols-2 p-5  bg-slate-100">
             <div class="px-10 pt-8 ">
               <p class="text-xl font-medium">Tổng kết đơn hàng</p>
               <p class="text-gray-400"></p>
               <div class="mt-8 space-y-3 rounded-lg border bg-white px-2 py-4 sm:px-6">
-                <div class="flex flex-col rounded-lg bg-white sm:flex-row">
-                  <img
-                    class="m-2 h-24 w-28 rounded-md border object-cover object-center"
-                    src="https://images.unsplash.com/flagged/photo-1556637640-2c80d3201be8?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8M3x8c25lYWtlcnxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=500&q=60"
-                    alt=""
-                  />
-                  <div class="flex w-full flex-col px-4 py-4">
-                    <span class="font-semibold">
-                      Nike Air Max Pro 8888 - Super Light
-                    </span>
-                    <span class="float-right text-gray-400">42EU - 8.5US</span>
-                    <p class="text-lg font-bold">$138.99</p>
+                <div class="flex flex-col rounded-lg bg-white sm:flex-row relative">
+                  <div className="relative rounded-lg w-1/2">
+                    <Image
+                      alt="car"
+                      src={data?.thumb}
+                      layout="fill"
+                      className="rounded-lg"
+                    />
                   </div>
-                </div>
-                <div class="flex flex-col rounded-lg bg-white sm:flex-row">
-                  <img
-                    class="m-2 h-24 w-28 rounded-md border object-cover object-center"
-                    src="https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8OHx8c25lYWtlcnxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=500&q=60"
-                    alt=""
-                  />
+
                   <div class="flex w-full flex-col px-4 py-4">
-                    <span class="font-semibold">
-                      Nike Air Max Pro 8888 - Super Light
+                    <span class="font-semibold text-lg">
+                      {data?.model?.name} {data?.yearManufacture}
                     </span>
-                    <span class="float-right text-gray-400">42EU - 8.5US</span>
-                    <p class="mt-auto text-lg font-bold">$238.99</p>
+                    <span class="float-right text-gray-400">
+                      {data?.transmissions} - {data?.numberSeat}
+                    </span>
+                    <p class="text-lg font-bold ">
+                      {" "}
+                      {data?.cost.toLocaleString("it-IT", {
+                        style: "currency",
+                        currency: "VND",
+                      })}
+                      /ngày
+                    </p>
                   </div>
                 </div>
               </div>
 
-              <p class="mt-8 text-lg font-medium">Shipping Methods</p>
-              <form class="mt-5 grid gap-6">
-                <div class="relative">
-                  <input
-                    class="peer hidden"
-                    id="radio_1"
-                    type="radio"
-                    name="radio"
-                    checked
-                  />
-                  <span class="peer-checked:border-gray-700 absolute right-4 top-1/2 box-content block h-3 w-3 -translate-y-1/2 rounded-full border-8 border-gray-300 bg-white"></span>
-                  <label
-                    class="peer-checked:border-2 peer-checked:border-gray-700 peer-checked:bg-gray-50 flex cursor-pointer select-none rounded-lg border border-gray-300 p-4"
-                    for="radio_1"
-                  >
-                    <img
-                      class="w-14 object-contain"
-                      src="/images/naorrAeygcJzX0SyNI4Y0.png"
-                      alt=""
-                    />
-                    <div class="ml-5">
-                      <span class="mt-2 font-semibold">Fedex Delivery</span>
-                      <p class="text-slate-500 text-sm leading-6">
-                        Delivery: 2-4 Days
-                      </p>
-                    </div>
-                  </label>
-                </div>
-                <div class="relative">
-                  <input
-                    class="peer hidden"
-                    id="radio_2"
-                    type="radio"
-                    name="radio"
-                    checked
-                  />
-                  <span class="peer-checked:border-gray-700 absolute right-4 top-1/2 box-content block h-3 w-3 -translate-y-1/2 rounded-full border-8 border-gray-300 bg-white"></span>
-                  <label
-                    class="peer-checked:border-2 peer-checked:border-gray-700 peer-checked:bg-gray-50 flex cursor-pointer select-none rounded-lg border border-gray-300 p-4"
-                    for="radio_2"
-                  >
-                    <img
-                      class="w-14 object-contain"
-                      src="/images/oG8xsl3xsOkwkMsrLGKM4.png"
-                      alt=""
-                    />
-                    <div class="ml-5">
-                      <span class="mt-2 font-semibold">Fedex Delivery</span>
-                      <p class="text-slate-500 text-sm leading-6">
-                        Delivery: 2-4 Days
-                      </p>
-                    </div>
-                  </label>
-                </div>
+              <p class="mt-8 text-lg font-medium">Phương thức nhận xe</p>
+              <form class="mt-5 mb-5 grid gap-6">
+                <Radio.Group onChange={onChange} value={costGetCar}>
+                  <Space direction="vertical">
+                    <Radio value={0}>Công ty CRT</Radio>
+                    <Radio value={150000}>
+                      Giao Tận nơi trong Thành phố Đà Nẵng (thêm 150k)
+                    </Radio>
+                  </Space>
+                </Radio.Group>
               </form>
             </div>
-            <div class="mt-10 bg-gray-50 px-10 pt-8 lg:mt-0">
-              <p class="text-xl font-medium">Payment Details</p>
-              <p class="text-gray-400">
-                Complete your order by providing your payment details.
-              </p>
-              <div class="">
-                <label for="email" class="mt-4 mb-2 block text-sm font-medium">
-                  Email
-                </label>
-                <div class="relative">
-                  <input
-                    type="text"
-                    id="email"
-                    name="email"
-                    class="w-full rounded-md border border-gray-200 px-4 py-3 pl-11 text-sm shadow-sm outline-none focus:z-10 focus:border-blue-500 focus:ring-blue-500"
-                    placeholder="your.email@gmail.com"
-                  />
-                  <div class="pointer-events-none absolute inset-y-0 left-0 inline-flex items-center px-3">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      class="h-4 w-4 text-gray-400"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      stroke-width="2"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"
-                      />
-                    </svg>
-                  </div>
-                </div>
-                <label
-                  for="card-holder"
-                  class="mt-4 mb-2 block text-sm font-medium"
-                >
-                  Card Holder
-                </label>
-                <div class="relative">
-                  <input
-                    type="text"
-                    id="card-holder"
-                    name="card-holder"
-                    class="w-full rounded-md border border-gray-200 px-4 py-3 pl-11 text-sm uppercase shadow-sm outline-none focus:z-10 focus:border-blue-500 focus:ring-blue-500"
-                    placeholder="Your full name here"
-                  />
-                  <div class="pointer-events-none absolute inset-y-0 left-0 inline-flex items-center px-3">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      class="h-4 w-4 text-gray-400"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      stroke-width="2"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="M15 9h3.75M15 12h3.75M15 15h3.75M4.5 19.5h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5zm6-10.125a1.875 1.875 0 11-3.75 0 1.875 1.875 0 013.75 0zm1.294 6.336a6.721 6.721 0 01-3.17.789 6.721 6.721 0 01-3.168-.789 3.376 3.376 0 016.338 0z"
-                      />
-                    </svg>
-                  </div>
-                </div>
-                <label
-                  for="card-no"
-                  class="mt-4 mb-2 block text-sm font-medium"
-                >
-                  Card Details
-                </label>
-                <div class="flex">
-                  <div class="relative w-7/12 flex-shrink-0">
-                    <input
-                      type="text"
-                      id="card-no"
-                      name="card-no"
-                      class="w-full rounded-md border border-gray-200 px-2 py-3 pl-11 text-sm shadow-sm outline-none focus:z-10 focus:border-blue-500 focus:ring-blue-500"
-                      placeholder="xxxx-xxxx-xxxx-xxxx"
-                    />
-                    <div class="pointer-events-none absolute inset-y-0 left-0 inline-flex items-center px-3">
-                      <svg
-                        class="h-4 w-4 text-gray-400"
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="16"
-                        height="16"
-                        fill="currentColor"
-                        viewBox="0 0 16 16"
-                      >
-                        <path d="M11 5.5a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5v-1z" />
-                        <path d="M2 2a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H2zm13 2v5H1V4a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1zm-1 9H2a1 1 0 0 1-1-1v-1h14v1a1 1 0 0 1-1 1z" />
-                      </svg>
-                    </div>
-                  </div>
-                  <input
-                    type="text"
-                    name="credit-expiry"
-                    class="w-full rounded-md border border-gray-200 px-2 py-3 text-sm shadow-sm outline-none focus:z-10 focus:border-blue-500 focus:ring-blue-500"
-                    placeholder="MM/YY"
-                  />
-                  <input
-                    type="text"
-                    name="credit-cvc"
-                    class="w-1/6 flex-shrink-0 rounded-md border border-gray-200 px-2 py-3 text-sm shadow-sm outline-none focus:z-10 focus:border-blue-500 focus:ring-blue-500"
-                    placeholder="CVC"
-                  />
-                </div>
-                <label
-                  for="billing-address"
-                  class="mt-4 mb-2 block text-sm font-medium"
-                >
-                  Billing Address
-                </label>
-                <div class="flex flex-col sm:flex-row">
-                  <div class="relative flex-shrink-0 sm:w-7/12">
-                    <input
-                      type="text"
-                      id="billing-address"
-                      name="billing-address"
-                      class="w-full rounded-md border border-gray-200 px-4 py-3 pl-11 text-sm shadow-sm outline-none focus:z-10 focus:border-blue-500 focus:ring-blue-500"
-                      placeholder="Street Address"
-                    />
-                    <div class="pointer-events-none absolute inset-y-0 left-0 inline-flex items-center px-3">
-                      <img
-                        class="h-4 w-4 object-contain"
-                        src="https://flagpack.xyz/_nuxt/4c829b6c0131de7162790d2f897a90fd.svg"
-                        alt=""
-                      />
-                    </div>
-                  </div>
-                  <select
-                    type="text"
-                    name="billing-state"
-                    class="w-full rounded-md border border-gray-200 px-4 py-3 text-sm shadow-sm outline-none focus:z-10 focus:border-blue-500 focus:ring-blue-500"
-                  >
-                    <option value="State">State</option>
-                  </select>
-                  <input
-                    type="text"
-                    name="billing-zip"
-                    class="flex-shrink-0 rounded-md border border-gray-200 px-4 py-3 text-sm shadow-sm outline-none sm:w-1/6 focus:z-10 focus:border-blue-500 focus:ring-blue-500"
-                    placeholder="ZIP"
-                  />
-                </div>
+            <div class="mt-14 bg-gray-50 px-10 pt-8 lg:mt-5">
+              <p class="text-xl font-medium">Thông tin thuê chi tiết</p>
+              <p class="text-gray-400">Thời gian thuê xe</p>
+              <Space direction="vertical" size={12}>
+                <RangePicker
+                  showTime={{ format: "HH mm" }}
+                  format="DD MM YYYY HH mm"
+                  onChange={selectTimeSlots}
+                  size="large"
+                  disabledDate={disabledDate}
+                  defaultValue={[startDate, endDate]}
+                  // locale={locale}
+                />
+                {validationMessage && (
+                  <p className="text-red-500">{validationMessage}</p>
+                )}
+              </Space>
 
-                <div class="mt-6 border-t border-b py-2">
-                  <div class="flex items-center justify-between">
-                    <p class="text-sm font-medium text-gray-900">Subtotal</p>
-                    <p class="font-semibold text-gray-900">$399.00</p>
-                  </div>
-                  <div class="flex items-center justify-between">
-                    <p class="text-sm font-medium text-gray-900">Shipping</p>
-                    <p class="font-semibold text-gray-900">$8.00</p>
-                  </div>
-                </div>
-                <div class="mt-6 flex items-center justify-between">
-                  <p class="text-sm font-medium text-gray-900">Total</p>
-                  <p class="text-2xl font-semibold text-gray-900">$408.00</p>
-                </div>
-              </div>
-              <button class="mt-4 mb-8 w-full rounded-md bg-gray-900 px-6 py-3 font-medium text-white">
-                Place Order
+              <p class="text-gray-400">Tổng Số ngày thuê: {totalDays} </p>
+              <p class="text-gray-400">
+                Giá 1 ngày thuê:{" "}
+                {data?.cost.toLocaleString("it-IT", {
+                  style: "currency",
+                  currency: "VND",
+                })}
+              </p>
+              <p className="text-lg">
+                Tổng giá thuê:{" "}
+                {(totalDays * data?.cost + costGetCar).toLocaleString("it-IT", {
+                  style: "currency",
+                  currency: "VND",
+                })}
+              </p>
+
+              <button
+                onClick={handleCheckout}
+                className="mt-4 mb-2 w-full border-none  rounded-md bg-green-400 hover:bg-green-600 px-6 py-2 text-lg font-bold text-white cursor-pointer"
+              >
+                Tiếp tục
               </button>
             </div>
           </div>
-        </>
-      )}
+        )}
+        {current === 1 && (
+          <div class="flex  justify-center  bg-slate-100">
+            <div className="flex mt-5 mb-10 w-3/5 bg-slate-200 justify-center">
+              <Form
+                form={form}
+                onFinish={(values) => {
+                  mutate(values);
+                }}
+                layout="vertical"
+                name="basic"
+                initialValues={{
+                  bankCode: "",
+                  language: "vn",
+                  amount: "0",
+                }}
+                style={{
+                  width: 500,
+                }}
+                size="large"
+                className="mt-5"
+              >
+                <Form.Item
+                  name="fullname"
+                  label="Họ và tên:"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Họ và tên không được để trống",
+                    },
+                  ]}
+                >
+                  <Input />
+                </Form.Item>
+                <Form.Item
+                  name="phone"
+                  label="Số điện thoại:"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Số điện thoại không được để trống",
+                    },
+                  ]}
+                >
+                  <Input />
+                </Form.Item>
+                <Form.Item
+                  name="address"
+                  label="Địa chỉ:"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Địa chỉ không được để trống",
+                    },
+                  ]}
+                >
+                  <Input />
+                </Form.Item>
+                <Form.Item name="date" label="Thời gian thuê xe">
+                  <RangePicker
+                    showTime={{ format: "HH mm" }}
+                    format="DD MM YYYY HH mm"
+                    onChange={selectTimeSlots}
+                    defaultValue={[
+                      dayjs(from || startDate, "DD MM YYYY HH mm"),
+                      dayjs(to || endDate, "DD MM YYYY HH mm"),
+                    ]}
+                    disabled
+                    style={{ width: "500px", color: "white" }}
+                  />
+                </Form.Item>
+                <Form.Item name="amount" label="Số tiền:">
+                  <Input readOnly />
+                </Form.Item>
 
-      {/* {current === 1 && paymentMethod === "vnpay" && (
-        <div className="mt-5">
-          <Form
-            form={form}
-            onFinish={(values) => {
-              mutate(values);
-            }}
-            layout="vertical"
-            name="basic"
-            initialValues={{ bankCode: "", language: "vn" }}
-            style={{
-              maxWidth: 600,
-            }}
-            size="large"
-            className="mt-5"
-          >
-            <Form.Item
-              name="amount"
-              label="Số tiền:"
-              rules={[
-                {
-                  required: true,
-                  message: "Số tiền không được để trống",
-                },
-              ]}
-            >
-              <Input />
-            </Form.Item>
+                <Form.Item name="bankCode" label="Chọn Phương thức thanh toán:">
+                  <Radio.Group name="bankCode">
+                    <Space direction="vertical">
+                      <Radio value="" checked={true}>
+                        Cổng thanh toán VNPAYQR
+                      </Radio>
+                      <Radio name="bankCode" value="VNPAYQR">
+                        Thanh toán qua ứng dụng hỗ trợ VNPAYQR
+                      </Radio>
+                      <Radio name="bankCode" value="VNBANK">
+                        Thanh toán qua ATM-Tài khoản ngân hàng nội địa
+                      </Radio>
+                      <Radio name="bankCode" value="INTCARD">
+                        Thanh toán qua thẻ quốc tế
+                      </Radio>
+                    </Space>
+                  </Radio.Group>
+                </Form.Item>
 
-            <Form.Item name="bankCode" label="Chọn Phương thức thanh toán:">
-              <Radio.Group name="bankCode">
-                <Space direction="vertical">
-                  <Radio value="" checked={true}>
-                    Cổng thanh toán VNPAYQR
-                  </Radio>
-                  <Radio name="bankCode" value="VNPAYQR">
-                    Thanh toán qua ứng dụng hỗ trợ VNPAYQR
-                  </Radio>
-                  <Radio name="bankCode" value="VNBANK">
-                    Thanh toán qua ATM-Tài khoản ngân hàng nội địa
-                  </Radio>
-                  <Radio name="bankCode" value="INTCARD">
-                    Thanh toán qua thẻ quốc tế
-                  </Radio>
-                </Space>
-              </Radio.Group>
-            </Form.Item>
+                <Form.Item name="language" label="Ngôn ngữ:">
+                  <Radio.Group name="language">
+                    <Space direction="vertical">
+                      <Radio value="vn">Tiếng việt</Radio>
+                      <Radio value="en">Tiếng anh</Radio>
+                    </Space>
+                  </Radio.Group>
+                </Form.Item>
 
-            <Form.Item name="language" label="Ngôn ngữ:">
-              <Radio.Group name="language">
-                <Space direction="vertical">
-                  <Radio value="vn">Tiếng việt</Radio>
-                  <Radio value="en">Tiếng anh</Radio>
-                </Space>
-              </Radio.Group>
-            </Form.Item>
+                <Form.Item>
+                  <Space direction="horizontal">
+                    <Button type="primary" htmlType="submit">
+                      Thanh Toán
+                    </Button>
+                    <Button type="primary" onClick={handleBack}>
+                      Trở về thủ tục thanh toán
+                    </Button>
+                  </Space>
+                </Form.Item>
+              </Form>
+            </div>
+          </div>
+        )}
+      </>
 
-            <Form.Item>
-              <Button type="primary" htmlType="submit">
-                Thanh Toán
-              </Button>
-            </Form.Item>
-          </Form>
-        </div>
-      )}
-
-      {current === 1 && paymentMethod === "momo" && (
+      {/* {current === 1 && paymentMethod === "momo" && (
         <div className="mt-5">
           <Form
             form={form}
@@ -607,7 +612,7 @@ const BookingPage = () => {
               ]}
             >
               <Input />
-            </Form.Item> */}
+            </Form.Item>  */}
 
       {/* <Form.Item name="bankCode" label="Chọn Phương thức thanh toán:">
               <Radio.Group name="bankCode">
@@ -644,7 +649,7 @@ const BookingPage = () => {
             </Form.Item>
           </Form>
         </div>
-      )}
+      )}*/}
 
       {current === 2 && (
         <div className="flex justify-center items-start mt-5 text-gray-700">
@@ -663,10 +668,13 @@ const BookingPage = () => {
               />
 
               <h1>{result}</h1>
+              <Link href="/">
+                <Button type="primary">Trang chủ</Button>
+              </Link>
             </div>
           )}
         </div>
-      )} */}
+      )}
     </div>
   );
 };

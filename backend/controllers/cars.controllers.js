@@ -65,7 +65,7 @@ export const getListCars = async (req, res, next) => {
       result
     })
   } catch (error) {
-    return res.status(HTTP_STATUS.NOT_FOUND).json({ error: 'Can not get list cars' })
+    return res.status(HTTP_STATUS.NOT_FOUND).json({ error: 'Can not get list cars', result })
   }
 }
 

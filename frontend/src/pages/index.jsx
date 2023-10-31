@@ -1,10 +1,94 @@
-import CarCard from "@/components/CarCard";
+import { CarCard } from "@/components/CarCard";
 import { SearchBrokenIcon } from "@/icons";
 import { Select } from "antd";
 import { Button, Form } from "antd";
 import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/router";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
 
 export default function HomePage() {
+  const router = useRouter();
+
+  const handleSearch = (values) => {
+    const { brand, numberSeat, transmissions, cost } = values;
+    const params = {};
+
+    if (brand) {
+      params.brand = brand;
+    }
+
+    if (numberSeat) {
+      params.numberSeat = numberSeat;
+    }
+
+    if (transmissions) {
+      params.transmissions = transmissions;
+    }
+
+    if (cost) {
+      let minCost, maxCost;
+
+      switch (cost) {
+        case "0 - 500K":
+          minCost = "0";
+          maxCost = "500000";
+          break;
+        case "501K - 1000K":
+          minCost = "501000";
+          maxCost = "1000000";
+          break;
+      }
+
+      if (minCost) {
+        params["cost[gte]"] = minCost;
+      }
+
+      if (maxCost) {
+        params["cost[lte]"] = maxCost;
+      }
+    }
+
+    router.push({
+      pathname: "/cars",
+      query: params,
+    });
+  };
+
+  const fetchBrands = async () => {
+    try {
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_REACT_APP_BACKEND_URL}/brands`,
+        {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true,
+        }
+      );
+      return response.data.result;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const { data: brandsData } = useQuery(["brands"], fetchBrands);
+
+  const fetchCars = async () => {
+    try {
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_REACT_APP_BACKEND_URL}/cars?limit=8`,
+        {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true,
+        }
+      );
+      return response.data.result;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const { isLoading, error, data } = useQuery(["cars"], fetchCars);
+
   return (
     <div>
       <div className="mb-12">
@@ -18,29 +102,47 @@ export default function HomePage() {
         </div>
 
         <div className="bg-white rounded-lg -mt-10 w-4/5 mx-auto z-50 relative pt-6 px-4 shadow-lg">
-          <Form layout="vertical" className="grid grid-cols-5 gap-6 h-full">
+          <Form
+            layout="vertical"
+            onFinish={handleSearch}
+            className="grid grid-cols-5 gap-6 h-full"
+          >
             <Form.Item name="brand">
               <Select
                 size="large"
                 placeholder="Hãng xe"
-                options={[{ value: "Cambri" }, { value: "Mecedes" }]}
+                options={[
+                  {
+                    value: "all",
+                    label: "Hãng xe",
+                  },
+                  ...(brandsData || []).map((brand) => ({
+                    value: brand._id,
+                    label: brand.name,
+                  })),
+                ]}
               />
             </Form.Item>
-            <Form.Item name="brand">
+            <Form.Item name="numberSeat">
               <Select
                 size="large"
                 placeholder="Số ghế"
-                options={[{ value: "4 chỗ" }, { value: "7 chỗ" }]}
+                options={[
+                  { value: "4 chỗ" },
+                  { value: "7 chỗ" },
+                  { value: "5 chỗ" },
+                  { value: "8 chỗ" },
+                ]}
               />
             </Form.Item>
-            <Form.Item name="brand">
+            <Form.Item name="transmissions">
               <Select
                 size="large"
                 placeholder="Truyền động"
                 options={[{ value: "Số sàn" }, { value: "Số tự động" }]}
               />
             </Form.Item>
-            <Form.Item name="brand">
+            <Form.Item name="cost">
               <Select
                 size="large"
                 placeholder="Giá"
@@ -48,7 +150,12 @@ export default function HomePage() {
               />
             </Form.Item>
 
-            <Button type="primary" icon={<SearchBrokenIcon />} size="large">
+            <Button
+              type="primary"
+              htmlType="submit"
+              icon={<SearchBrokenIcon />}
+              size="large"
+            >
               Tìm kiếm
             </Button>
           </Form>
@@ -56,13 +163,19 @@ export default function HomePage() {
       </div>
       <div className="mb-40">
         <h2 className="text-center text-2xl">Xe dành cho bạn</h2>
-
-        <div className="grid grid-cols-4 gap-3">
-          {/* <CarCard />
-          <CarCard />
-          <CarCard />
-          <CarCard /> */}
-        </div>
+        {isLoading ? (
+          <div>Loading...</div>
+        ) : error ? (
+          <div>Error: {error.message}</div>
+        ) : (
+          <div className="grid grid-cols-4 gap-3">
+            {data.map((car, CarIndex) => (
+              <Link href={`/cars/${car?._id}`}>
+                <CarCard key={CarIndex} dataCar={car} />
+              </Link>
+            ))}
+          </div>
+        )}
       </div>
       <div className="mb-40">
         <h2 className="text-center text-2xl">Ưu Điểm Của CRT</h2>

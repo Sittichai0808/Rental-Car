@@ -1,91 +1,113 @@
 import { CarCard } from "@/components/CarCard";
-import { SearchItem } from "@/components/SearchItem";
-
+import React from "react";
 import { FilterFilledIcon, SearchBrokenIcon } from "@/icons";
-import { Tag } from "antd";
-import { Button, Input, Space, Select, Slider } from "antd";
-
-import { useQuery } from "@tanstack/react-query";
+import { Button, Input, Space, Select, Spin, Slider, Modal, Radio } from "antd";
+import { useQuery, useInfiniteQuery } from "@tanstack/react-query";
+import { useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
 import Link from "next/link";
+
 export default function ListCarsPage() {
   const { query, pathname } = useRouter();
   const router = useRouter();
-  const [disabled, setDisabled] = useState(false);
-  const brand = query.brand;
-  const numberSeat = query.numberSeat;
-  const transmissions = query.transmissions;
+  const {
+    brand,
+    numberSeat,
+    transmissions,
+    ["cost[gte]"]: costGte,
+    ["cost[lte]"]: costLte,
+    sort,
+  } = query;
 
-  // const { data, error, isLoading } = useSearch({ category, numberSeat, sort });
+  const newQuery = { ...query };
+  const [sortModalVisible, setSortModalVisible] = useState(false);
 
-  const [params, setParams] = useState({});
-
-  const products = data || [];
-
-  const handleBrandChange = (selected) => {
-    router.push({ pathname, query: { ...query, brand: selected } });
+  const showSortModal = () => {
+    setSortModalVisible(true);
   };
 
-  const handleNumberSeatChange = (selected) => {
-    router.push({ pathname, query: { ...query, numberSeat: selected } });
+  const handleSortOk = () => {
+    setSortModalVisible(false);
   };
 
-  const handleTransmissionsChange = (selected) => {
-    router.push({ pathname, query: { ...query, transmissions: selected } });
-  };
-  const handleChange = (value) => {
-    console.log(`selected ${value}`);
-  };
-  const onChange = (value) => {
-    console.log("onChange: ", value);
-  };
-  const onAfterChange = (value) => {
-    console.log("onAfterChange: ", value);
+  const handleSortCancel = () => {
+    setSortModalVisible(false);
   };
 
-  useEffect(() => {
-    if (brand) {
-      setParams({ ...params, brand });
+  const handleQueryChange = (key, selected) => {
+    if (selected !== "all") {
+      newQuery[key] = selected;
+    } else {
+      delete newQuery[key];
     }
-    if (numberSeat) {
-      setParams({ ...params, numberSeat });
-    }
-    if (transmissions) {
-      setParams({ ...params, transmissions });
-    }
-  }, [numberSeat, brand, transmissions, pathname]);
+    router.push({ pathname, query: newQuery });
+  };
 
-  const { isLoading, isError, data, error } = useQuery({
-    queryKey: ["getListCars", params],
-    queryFn: async () => {
-      try {
-        if (params?.brand === "all") {
-          delete params.brand;
-        }
-        if (params?.numberSeat === "all") {
-          delete params.numberSeat;
-        }
-        if (params?.transmissions === "all") {
-          delete params.transmissions;
-        }
-        const response = await axios.get(
-          `${process.env.NEXT_PUBLIC_REACT_APP_BACKEND_URL}/cars`,
-          { params: params },
+  const handleCostChange = (values) => {
+    const [minCost, maxCost] = values;
+    if (minCost === 0 && maxCost === 3000000) {
+      delete newQuery["cost[gte]"];
+      delete newQuery["cost[lte]"];
+    } else {
+      newQuery["cost[gte]"] = minCost;
+      newQuery["cost[lte]"] = maxCost;
+    }
 
-          {
-            headers: { "Content-Type": "application/json" },
-            withCredentials: true,
-          }
-        );
-        console.log(response.data.result);
-        return response.data.result;
-      } catch (error) {
-        console.log(error);
-      }
-    },
-  });
+    router.push({ pathname, query: newQuery });
+  };
+
+  const fetchCars = async ({ pageParam }) => {
+    const params = {
+      brand,
+      numberSeat,
+      transmissions,
+      "cost[gte]": costGte,
+      "cost[lte]": costLte,
+      page: pageParam,
+      sort,
+    };
+
+    // Remove keys with "all" values
+    Object.keys(params).forEach(
+      (key) => params[key] === "all" && delete params[key]
+    );
+
+    try {
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_REACT_APP_BACKEND_URL}/cars`,
+        {
+          params,
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true,
+        }
+      );
+      return response.data.result;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const { isLoading, data, fetchNextPage, hasNextPage, isFetchingNextPage } =
+    useInfiniteQuery(["getListCars", query], fetchCars, {
+      getNextPageParam: (lastPage) => lastPage.nextCursor,
+    });
+
+  const fetchBrands = async () => {
+    try {
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_REACT_APP_BACKEND_URL}/brands`,
+        {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true,
+        }
+      );
+      return response.data.result;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const { data: brandsData } = useQuery(["brands"], fetchBrands);
 
   return (
     <div>
@@ -104,39 +126,28 @@ export default function ListCarsPage() {
             <Space wrap>
               <Select
                 placeholder="Hãng xe"
-                style={{
-                  width: 130,
-                }}
-                onChange={handleBrandChange}
+                style={{ width: 130 }}
+                onChange={(selected) => handleQueryChange("brand", selected)}
+                value={brand || "Hãng xe"}
                 options={[
                   {
                     value: "all",
                     label: "Hãng xe",
                   },
-                  {
-                    value: "652fd84e051a5a9426cb7e50",
-                    label: "Chevrolet",
-                  },
-                  {
-                    value: "651c2d68df427b5ab0f0b1b3",
-                    label: "Toyota",
-                  },
-                  {
-                    value: "652fd857051a5a9426cb7e52",
-                    label: "Ford",
-                  },
-                  {
-                    value: "652d66e7d26a40775861890f",
-                    label: "BMW",
-                  },
+                  ...(brandsData || []).map((brand) => ({
+                    value: brand._id,
+                    label: brand.name,
+                  })),
                 ]}
               />
+
               <Select
                 placeholder="Số chỗ"
-                style={{
-                  width: 130,
-                }}
-                onChange={handleNumberSeatChange}
+                style={{ width: 130 }}
+                onChange={(selected) =>
+                  handleQueryChange("numberSeat", selected)
+                }
+                value={numberSeat || "Số chỗ"}
                 options={[
                   {
                     value: "all",
@@ -162,10 +173,11 @@ export default function ListCarsPage() {
               />
               <Select
                 placeholder="Truyền Động"
-                style={{
-                  width: 130,
-                }}
-                onChange={handleTransmissionsChange}
+                style={{ width: 130 }}
+                onChange={(selected) =>
+                  handleQueryChange("transmissions", selected)
+                }
+                value={transmissions || "Truyền động"}
                 options={[
                   {
                     value: "all",
@@ -181,40 +193,77 @@ export default function ListCarsPage() {
                   },
                 ]}
               />
+            </Space>
+          </div>
+          <Button onClick={showSortModal} icon={<FilterFilledIcon />}>
+            Sắp xếp theo
+          </Button>
+
+          <Modal
+            title="Sắp xếp theo"
+            visible={sortModalVisible}
+            onOk={handleSortOk}
+            onCancel={handleSortCancel}
+          >
+            <div>
+              <h4>Giá</h4>
               <Slider
-                style={{
-                  width: 200,
-                }}
+                style={{ width: 200 }}
                 range
                 step={100}
                 min={0}
-                max={3000}
-                defaultValue={[300, 900]}
-                onChange={onChange}
-                onAfterChange={onAfterChange}
+                max={3000000}
+                value={[costGte || 0, costLte || 3000000]}
+                onChange={handleCostChange}
               />
-            </Space>
-          </div>
-
-          <div>
-            <Button className="h-max" icon={<FilterFilledIcon />}>
-              Bộ lọc
-            </Button>
-          </div>
+            </div>
+            <div>
+              <h4>Sắp xếp theo</h4>
+              <Radio.Group
+                onChange={(e) => handleQueryChange("sort", e.target.value)}
+                value={newQuery.sort || "all"}
+              >
+                <Space direction="vertical">
+                  <Radio value="all">Tất cả</Radio>
+                  <Radio value="cost">Giá tăng dần</Radio>
+                  <Radio value="-cost">Giá giảm dần</Radio>
+                </Space>
+              </Radio.Group>
+            </div>
+          </Modal>
         </div>
       </div>
-
       <div className="grid grid-cols-4 gap-x-4 gap-y-6 mt-10">
         {isLoading ? (
-          <span>Loading...</span>
+          <div className="example">
+            <Spin />
+          </div>
         ) : (
-          data.map((idx, index) => (
-            <Link href={`/cars/${idx?._id}`}>
-              <CarCard key={index} dataCar={idx} />
-            </Link>
+          data?.pages.map((page) => (
+            <React.Fragment key={page.nextCursor}>
+              {page.map((car, carIndex) => (
+                <Link key={carIndex} href={`/cars/${car?._id}`}>
+                  <CarCard dataCar={car} />
+                </Link>
+              ))}
+            </React.Fragment>
           ))
         )}
       </div>
+      {hasNextPage && (
+        <div>
+          <Button
+            onClick={() => fetchNextPage()}
+            disabled={!hasNextPage || isFetchingNextPage}
+          >
+            {isFetchingNextPage
+              ? "Loading more..."
+              : hasNextPage
+              ? "Load More"
+              : "Nothing more to load"}
+          </Button>
+        </div>
+      )}
     </div>
   );
 }

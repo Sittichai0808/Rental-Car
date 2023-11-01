@@ -1,4 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import useLocalStorage from "@/hooks/useLocalStorage";
+import { useUserState } from "@/recoils/user.state.js";
+import { Tabs } from "antd";
+
 import { Button } from "antd";
 import {
   HeartOutlined,
@@ -7,109 +11,109 @@ import {
   GiftOutlined,
   UserOutlined,
   StrikethroughOutlined,
+  SettingOutlined,
 } from "@ant-design/icons";
 
-import { Layout, Menu, theme, Typography, Space, Tabs } from "antd";
-import { link } from "fs-extra";
-import { useUserState } from "@/recoils/user.state.js";
+import { Layout, Avatar } from "antd";
 import Account from "@/pages/profile/index";
-import useLocalStorage from "@/hooks/useLocalStorage";
+import CarRental from "@/pages/profile/car-rental/index";
+// import CarFavorite from "@/pages/profile/car-favorite/index";
 import HeaderComponent from "@/components/HeaderComponent";
 import FooterComponent from "@/components/FooterComponent";
 import { useRouter } from "next/router";
-const { Sider, Content } = Layout;
+import Image from "next/image";
 
+const { Sider, Content } = Layout;
+const onChange = (key) => {
+  console.log(key);
+};
+const items = [
+  {
+    key: "1",
+    label: "Profile",
+    children: <Account />,
+  },
+  {
+    key: "2",
+    label: "Lịch sử thuê xe",
+    children: <CarRental />,
+  },
+  {
+    key: "3",
+    label: "Xe yêu thích",
+  },
+];
 export const ProfileLayout = ({ children }) => {
   const router = useRouter();
-  const [user, setUser] = useUserState();
+
+  const loaderProp = ({ src }) => {
+    return src;
+  };
   const [profile, setProfile, clearProfile] = useLocalStorage("profile", "");
-  const [accessToken, setAccessToken, clearAccessToken] = useLocalStorage(
-    "access_token",
-    ""
-  );
-  const [menudata, setMenudata] = useState(
-    "account",
-    "mycar",
-    "myfavoritecar",
-    "mytrip",
-    "mygift",
-    "logout"
-  );
+  const [user, setUser] = useUserState();
+  useEffect(() => {
+    setUser(profile);
+  }, [user]);
   return (
-    <Layout className="max-w-6xl mx-auto">
+    <Layout className="flex max-w-6xl  mx-auto  bg-white  ">
       <HeaderComponent />
-      <Layout className="pt-16 bg-gray-100 max-w-5xl" hasSider>
-        <Menu
+
+      <Layout
+        className=" flex max-w-6xl min-h-screen relative  mt-10 bg-white"
+        style={{
+          minHeight: "100vh",
+        }}
+        hasSider
+      >
+        <div
+          className="flex mt-5 relative flex-col   m-auto ml-5 mr-5 border rounded-xl border-solid border-neutral-200   p-4 "
           style={{
-            width: "33%",
-            display: "flex",
-            flexDirection: "column",
-            paddingTop: "35px",
-            fontSize: "1rem",
-            fontWeight: "bold",
-            backgroundColor: "rgb(243 244 246)",
+            width: "23%",
+            // boxShadow: "0px 0px 3px 1px #E2E8F0",
+            // borderRadius: "10px",
           }}
-          defaultSelectedKeys={["account"]}
-          mode="vertical"
         >
-          <Menu.Item
-            key="/account"
-            icon={<UserOutlined />}
-            onClick={() => setMenudata("account")}
-          >
-            Tài khoản của tôi
-          </Menu.Item>
-          <Menu.Item
-            key="/mycar"
-            icon={<CarOutlined />}
-            onClick={() => setMenudata("mycar")}
-          >
-            Xe của tôi
-          </Menu.Item>
-          <Menu.Item
-            key="/myfavoritecar"
-            icon={<HeartOutlined />}
-            onClick={() => setMenudata("myfavoritecar")}
-          >
-            Xe yêu thích
-          </Menu.Item>
-          <Menu.Item
-            key="/mytrip"
-            icon={<StrikethroughOutlined />}
-            onClick={() => setMenudata("mytrip")}
-          >
-            Chuyến đi của tôi
-          </Menu.Item>
-          <Menu.Item
-            key="/mygift"
-            icon={<GiftOutlined />}
-            onClick={() => setMenudata("mygift")}
-          >
-            Quà tặng
-          </Menu.Item>
-          <Menu.Item
-            key="/logout"
-            icon={<PoweroffOutlined />}
-            onClick={() => {
-              // setMenudata("logout");
-              console.log("log out");
-              clearProfile();
-              clearAccessToken();
-              setUser(null);
-              router.push("/");
+          <div
+            className="flex w-full flex-col justify-center items-center  p-4 "
+            style={{
+              minHeight: "50vh",
+              backgroundColor: "#fff",
             }}
           >
-            SignOut
-          </Menu.Item>
-        </Menu>
+            <Avatar
+              className="flex justify-center items-center "
+              size={130}
+              loader={loaderProp}
+              src="/images/thinh.jpg"
+            />
+            <div className="mt-0">
+              <h5 className="text-lg font-bold text-center ">
+                {user?.username}
+              </h5>
 
-        <Content className="h-full">
-          {menudata == "account" && <Account />}
-          {/* {menudata == "mycar" && <Mycar />}
-          {menudata == "myfavoritecar" && <MyFavoriteCar />}
-          {menudata == "mytrip" && <MyTrip />}
-          {menudata == "mygift" && <Gift />}
-          {menudata == "logout" && <Logout />} */}
+              <p className="">Tham gia: {Date(user?.createdAt)}</p>
+            </div>
+          </div>
+        </div>
+        <Content
+          className=" w-[calc(100%-23%)]  mt-5 mb-5  overflow-y-scroll  h-0  border rounded-xl border-solid border-neutral-200 p-4 "
+          style={{
+            display: "flex",
+            minHeight: "100vh",
+            flexDirection: "column",
+            // borderRadius: " 10px",
+            // boxShadow: "0px 0px 3px 1px #E2E8F0",
+          }}
+        >
+          <Tabs
+            className="font-semibold w-full mb-3 flex   "
+            defaultActiveKey="1"
+            centered
+            items={items}
+            onChange={onChange}
+            style={{ padding: "16px 0" }}
+          />
+          ;
         </Content>
       </Layout>
       <FooterComponent />

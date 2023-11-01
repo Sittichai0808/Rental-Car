@@ -17,7 +17,7 @@
     "@emotion/css": "^11.11.2",
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
-<<<<<<< HEAD
+
     "@material-ui/core": "^4.12.4",
     "@material-ui/icons": "^4.11.3",
     "@material-ui/system": "^4.12.2",
@@ -27,14 +27,13 @@
     "@mui/x-data-grid": "^6.14.0",
     "@mui/x-data-grid-generator": "^6.14.0",
     "@reduxjs/toolkit": "^1.9.5",
-    "axios": "^1.5.0",
+   
     "formik": "^2.4.5",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
+  
     "react-redux": "^8.1.2",
     "react-router-dom": "^6.16.0",
-    "redux-persist": "^6.0.0"
-=======
+    "redux-persist": "^6.0.0",
+
     "@tanstack/react-query": "^4.36.1",
     "@tanstack/react-query-devtools": "^4.36.1",
     "antd": "^5.9.4",
@@ -57,7 +56,7 @@
     "fs": false,
     "path": false,
     "os": false
->>>>>>> e96d1b2f9af1c3fde7fb1b1dd3d6f44fb4eb2d83
+
   },
   "devDependencies": {
     "@svgr/webpack": "^8.1.0",

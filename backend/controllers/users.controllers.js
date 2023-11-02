@@ -51,6 +51,18 @@ export const updateUserController = async (req, res, next) => {
     result: result
   })
 }
+export const uploadImagesUser = async (req, res, next) => {
+  const user_id = req.params.userId
+  try {
+    const result = await usersService.uploadImagesUser(user_id, req.files)
+    return res.status(HTTP_STATUS.OK).json({
+      message: 'Upload images successfully',
+      result
+    })
+  } catch (error) {
+    return res.status(HTTP_STATUS.InternalServerError).json({ error: 'Can not upload images' })
+  }
+}
 
 export const generateOTPController = async (req, res, next) => {
   const email = req.body.email

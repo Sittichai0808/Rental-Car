@@ -2,118 +2,126 @@ import React, { useState, useEffect } from "react";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import { useUserState } from "@/recoils/user.state.js";
 import { Tabs } from "antd";
-
-import { Button } from "antd";
-import {
-  HeartOutlined,
-  CarOutlined,
-  PoweroffOutlined,
-  GiftOutlined,
-  UserOutlined,
-  StrikethroughOutlined,
-  SettingOutlined,
-} from "@ant-design/icons";
-
-import { Layout, Avatar } from "antd";
+import moment from "moment";
+import { Layout, Avatar, Button } from "antd";
 import Account from "@/pages/profile/index";
 import CarRental from "@/pages/profile/car-rental/index";
 // import CarFavorite from "@/pages/profile/car-favorite/index";
 import HeaderComponent from "@/components/HeaderComponent";
 import FooterComponent from "@/components/FooterComponent";
 import { useRouter } from "next/router";
+import { LogoutOutlined } from "@ant-design/icons";
 import Image from "next/image";
-
+const { TabPane } = Tabs;
 const { Sider, Content } = Layout;
 const onChange = (key) => {
   console.log(key);
 };
+
 const items = [
   {
     key: "1",
-    label: "Profile",
+    label: <span className="text-lg font-semibold text-center ">Profile</span>,
     children: <Account />,
   },
   {
     key: "2",
-    label: "Lịch sử thuê xe",
+    label: (
+      <span className="text-lg font-semibold text-center">
+        Lịch sử thuê xe{" "}
+      </span>
+    ),
     children: <CarRental />,
   },
   {
     key: "3",
-    label: "Xe yêu thích",
+    label: (
+      <span className="text-lg font-semibold text-center">Xe yêu thích</span>
+    ),
   },
 ];
+
 export const ProfileLayout = ({ children }) => {
   const router = useRouter();
-
-  const loaderProp = ({ src }) => {
-    return src;
-  };
   const [profile, setProfile, clearProfile] = useLocalStorage("profile", "");
   const [user, setUser] = useUserState();
   useEffect(() => {
     setUser(profile);
   }, [user]);
+  const [accessToken, setAccessToken, clearAccessToken] = useLocalStorage(
+    "access_token",
+    ""
+  );
   return (
-    <Layout className="flex max-w-6xl  mx-auto  bg-white  ">
+    <Layout className="flex max-w-6xl  mx-auto border-b bg-slate-100  ">
       <HeaderComponent />
 
       <Layout
-        className=" flex max-w-6xl min-h-screen relative  mt-10 bg-white"
+        className=" flex max-w-6xl min-h-screen relative  mt-10 mb-10 border-b bg-slate-100 "
         style={{
           minHeight: "100vh",
         }}
         hasSider
       >
         <div
-          className="flex mt-5 relative flex-col   m-auto ml-5 mr-5 border rounded-xl border-solid border-neutral-200   p-4 "
+          className="flex mt-5 relative flex-col   m-auto ml-5 mr-5  bg-gray-50   p-4 "
           style={{
             width: "23%",
-            // boxShadow: "0px 0px 3px 1px #E2E8F0",
-            // borderRadius: "10px",
           }}
         >
           <div
-            className="flex w-full flex-col justify-center items-center  p-4 "
+            className="flex w-full flex-col justify-center items-center bg-gray-50 p-4 "
             style={{
-              minHeight: "50vh",
+              minHeight: "0vh",
               backgroundColor: "#fff",
             }}
           >
+            <Button
+              className="absolute top-0 right-0 text-red-600 "
+              onClick={() => {
+                console.log("log out");
+                clearProfile();
+                clearAccessToken();
+                setUser(null);
+                router.push("/");
+              }}
+            >
+              <LogoutOutlined />
+            </Button>
+
             <Avatar
-              className="flex justify-center items-center "
-              size={130}
-              loader={loaderProp}
-              src="/images/thinh.jpg"
+              className="flex justify-center items-center   "
+              size={150}
+              layout="fill"
+              src={user?.profilePicture}
             />
-            <div className="mt-0">
-              <h5 className="text-lg font-bold text-center ">
+            <div className="flex flex-col  ">
+              <h5 className="text-lg font-semibold text-center mt-1 mb-2 ">
                 {user?.username}
               </h5>
 
-              <p className="">Tham gia: {Date(user?.createdAt)}</p>
+              <p className="mt-0">
+                Tham gia: {moment(user?.createdAt).format("DD/MM/YYYY")}
+              </p>
             </div>
           </div>
         </div>
+
         <Content
-          className=" w-[calc(100%-23%)]  mt-5 mb-5  overflow-y-scroll  h-0  border rounded-xl border-solid border-neutral-200 p-4 "
+          className=" w-[calc(100%-23%)]  mt-5 mb-5  overflow-y-scroll  h-0 bg-gray-50 p-4  "
           style={{
             display: "flex",
             minHeight: "100vh",
             flexDirection: "column",
-            // borderRadius: " 10px",
-            // boxShadow: "0px 0px 3px 1px #E2E8F0",
           }}
         >
           <Tabs
-            className="font-semibold w-full mb-3 flex   "
+            className=" w-full mb-3 flex mt-0     "
             defaultActiveKey="1"
             centered
             items={items}
             onChange={onChange}
-            style={{ padding: "16px 0" }}
           />
-          ;
         </Content>
       </Layout>
       <FooterComponent />

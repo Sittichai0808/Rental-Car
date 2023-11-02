@@ -100,9 +100,6 @@ class UsersService {
 
   async updateUser(user_id, payload) {
     try {
-      // if (payload.password) {
-      //   password =
-      // }
       const updateUser = await User.findByIdAndUpdate(
         user_id.toString(),
         { ...payload, password: hashPassword(payload.password).toString() },
@@ -112,6 +109,20 @@ class UsersService {
       return updateUser
     } catch (error) {
       throw Error(error)
+    }
+  }
+  async uploadImagesUser(user_id, payload) {
+    try {
+      console.log(payload)
+      if (!payload) throw new Error('Missing input')
+      const uploadImagesUser = await User.findByIdAndUpdate(
+        user_id.toString(),
+        { $push: { images: { $each: payload.map((el) => el.path) } } },
+        { new: true }
+      )
+      return uploadImagesUser
+    } catch (error) {
+      throw new Error('Error uploading images')
     }
   }
 

@@ -1,6 +1,7 @@
 import express from 'express'
 import { registerValidator, loginValidator, accessTokenValidator } from '../middlewares/users.middlewares.js'
 import { wrapRequestHandler } from '../utils/handlers.js'
+import uploadCloud from '../utils/cloudinary.config.js'
 import {
   registerController,
   loginController,
@@ -11,7 +12,8 @@ import {
   verifyOTPController,
   resetPasswordController,
   registerMailController,
-  getUserByEmailController
+  getUserByEmailController,
+  uploadImagesUser
 } from '../controllers/users.controllers.js'
 const usersRoutes = express.Router()
 
@@ -29,7 +31,12 @@ usersRoutes.post('/register', registerValidator, wrapRequestHandler(registerCont
  * Method: POST
  * Body:{ username: string, email: string, password: string}
  */
-usersRoutes.post('/login', loginValidator, wrapRequestHandler(loginController))
+usersRoutes.post(
+  '/login',
+  loginValidator,
+  uploadCloud.fields([{ name: 'profilePicture', maxCount: 10 }]),
+  wrapRequestHandler(loginController)
+)
 
 /**
  * Description: OAuth Google Account
@@ -62,6 +69,7 @@ usersRoutes.post('/get-user-by-email', wrapRequestHandler(getUserByEmailControll
  * Body:{ username: string, email: string, password: string,profilePicture: string,...}
  */
 usersRoutes.put('/update-user/:userId', accessTokenValidator, wrapRequestHandler(updateUserController))
+usersRoutes.put('/uploadimage/:userId', uploadCloud.array('profilePicture', 10), wrapRequestHandler(uploadImagesUser))
 
 /**
  * Description: Generate OTP

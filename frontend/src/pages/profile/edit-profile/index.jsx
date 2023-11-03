@@ -47,23 +47,20 @@ export default function EditPage() {
 
   const [profile, setProfile, clearProfile] = useLocalStorage("profile", "");
   const [user, setUser] = useUserState();
-  useEffect(() => {
-    setUser(profile);
-  }, [user]);
+  // useEffect(() => {
+  //   setUser(profile);
+  // }, [user]);
   const onSubmit = async (values) => {
+    console.log("User Object:", user);
+    console.log("user._id:", user._id);
     try {
-      const { username, password } = values;
       const response = await axios.put(
         `${process.env.NEXT_PUBLIC_REACT_APP_BACKEND_URL}/users/update-user/${user._id}`,
 
-        {
-          ...values,
-          username: username.toString(),
-          password: password.toString(),
-        },
+        values,
+
         {
           headers: { "Content-Type": "application/json" },
-          withCredentials: true,
         }
       );
 
@@ -147,7 +144,7 @@ export default function EditPage() {
             name="phoneNumber"
             rules={[
               {
-                type: "number",
+                type: "text",
                 message: "The input is not valid phonenumber!",
               },
               {

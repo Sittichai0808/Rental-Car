@@ -1,8 +1,8 @@
-import { api } from "./client";
+import { apiClient } from "./client";
 import queryString from "query-string";
 
 export async function updateUser({ params, queries, body = {} } = {}) {
-  const { data } = await api.request({
+  const { data } = await apiClient.request({
     method: "PUT",
     url: `/users/${id}`,
     data: body,

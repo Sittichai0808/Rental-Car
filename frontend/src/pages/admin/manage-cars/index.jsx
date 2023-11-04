@@ -1,5 +1,9 @@
+import { getCars } from "@/apis/admin-cars.api";
+import { GET_CARS_KEY } from "@/constants/react-query-key.constant";
 import { AdminLayout } from "@/layouts/AdminLayout";
+import { formatCurrency } from "@/utils/number.utils";
 import { CloudUploadOutlined, PlusOutlined, SearchOutlined, UserAddOutlined } from "@ant-design/icons";
+import { useQuery } from "@tanstack/react-query";
 import { Avatar, Button, Form, Image, Input, InputNumber, Modal, Popconfirm, Select, Table, Upload } from "antd";
 import { useState } from "react";
 
@@ -57,6 +61,26 @@ function UpsertCarForm({ carId }) {
 export default function AdminManageCars() {
   const [upsertCarModal, setUpsertCarModal] = useState();
 
+  const { data } = useQuery({
+    queryFn: getCars,
+    queryKey: [GET_CARS_KEY],
+  });
+
+  console.log(data.result);
+
+  const dataSource = data?.result.map((item, idx) => ({
+    id: idx + 1,
+    _id: item._id,
+    thumb: item.thumb,
+    brand: item.brand.name,
+    numberSeat: item.numberSeat,
+    transmissions: item.transmissions,
+    numberCar: item.numberCar,
+    description: item.description,
+    cost: formatCurrency(item.cost),
+    owner: item.user.username,
+  }));
+
   const handleInsertCar = () => {
     setUpsertCarModal({ actionType: "insert" });
   };
@@ -84,7 +108,7 @@ export default function AdminManageCars() {
               key: "thumb",
               title: "Thumbnail",
               dataIndex: "thumb",
-              render: (url) => <Image className="h-32 aspect-video rounded-md" src={url} />,
+              render: (url) => <Image className="h-32 aspect-video rounded-md object-cover" src={url} />,
             },
             { key: "brand", title: "Brand", dataIndex: "brand" },
             { key: "numberSeat", title: "No. Seat", dataIndex: "numberSeat" },
@@ -111,19 +135,7 @@ export default function AdminManageCars() {
               ),
             },
           ]}
-          dataSource={[
-            {
-              id: 1,
-              thumb: "http://localhost:3000/images/car.jpg",
-              brand: "Audi",
-              numberSeat: 7,
-              transmissions: "Auto",
-              numberCar: "92 - F1 878376",
-              description: "Xe ngon nhu ngoc trinh",
-              cost: "120vnd",
-              owner: "Luong Cong Truong",
-            },
-          ]}
+          dataSource={dataSource}
           rowKey="id"
         />
       </div>

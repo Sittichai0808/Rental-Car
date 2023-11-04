@@ -7,12 +7,14 @@ const { Sider, Header, Content } = Layout;
 export const AdminLayout = ({ children }) => {
   const { pathname, push } = useRouter();
 
+  const selectedKeys = [pathname.replace("/admin/", "")];
+
   return (
     <Layout hasSider className="h-screen">
       <Sider theme="light" className="border-r shadow bg-white p-6" width={300}>
         <div className="w-full bg-green-100 h-32 flex justify-center items-center mb-10">LOGO</div>
         <Menu
-          activeKey={pathname.replace("/admin/", "")}
+          selectedKeys={selectedKeys}
           items={[
             { key: "manage-users", label: "Manager Users", icon: <UsergroupAddOutlined /> },
             { key: "manage-cars", label: "Manager Cars", icon: <CarOutlined /> },

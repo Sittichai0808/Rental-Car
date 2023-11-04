@@ -47,16 +47,15 @@ export default function EditPage() {
 
   const [profile, setProfile, clearProfile] = useLocalStorage("profile", "");
   const [user, setUser] = useUserState();
-  // useEffect(() => {
-  //   setUser(profile);
-  // }, [user]);
+  useEffect(() => {
+    setUser(profile);
+  }, [user]);
   const onSubmit = async (values) => {
     console.log("User Object:", user);
     console.log("user._id:", user._id);
     try {
       const response = await axios.put(
         `${process.env.NEXT_PUBLIC_REACT_APP_BACKEND_URL}/users/update-user/${user._id}`,
-
         values,
 
         {
@@ -65,7 +64,9 @@ export default function EditPage() {
       );
 
       if (response.status === 200) {
-        console.log(response.data);
+        setUser({ ...response.data.result });
+        setProfile({ ...response.data.result });
+        setAccessToken(response.data.access_token);
         router.push("/profile");
       } else {
         console.log(error.response.data.errors[0].msg);

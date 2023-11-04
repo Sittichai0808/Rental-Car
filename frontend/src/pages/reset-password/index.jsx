@@ -5,6 +5,7 @@ import styled from "@emotion/styled";
 import { useRouter } from "next/router";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
+import { toast } from "react-toastify";
 import { AuthLayout } from "@/layouts/AuthLayout";
 
 const { Title } = Typography;

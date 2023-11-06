@@ -10,6 +10,15 @@ class ModelsService {
         } catch (error) {
         }
     }
+
+    async getModelByBrand(brandId) {
+        try {
+            const getModelByBrand = await Models.find({ brand: brandId })
+            return getModelByBrand
+        } catch (error) {
+            throw error
+        }
+    }
 }
 const modelsService = new ModelsService()
 export default modelsService

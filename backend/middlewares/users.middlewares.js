@@ -335,28 +335,93 @@ export const adminValidator = validate(
 //   }
 // }
 
-// export const adminValidator = async (req, res, next) => {
-//   const token = req.cookies.access_token
-//   if (!token) {
-//     next(new ErrorWithStatus(USER_MESSAGES.ACCESS_TOKEN_IS_REQUESTED, HTTP_STATUS.UNAUTHORIZED).errorHandler())
-//   }
+export const staffValidator = validate(
+  checkSchema(
+    {
+      authorization: {
+        trim: true,
+        custom: {
+          options: async (value, { req }) => {
+            if (!value) {
+              throw new ErrorWithStatus({
+                message: USER_MESSAGES.ACCESS_TOKEN_IS_REQUESTED,
+                status: HTTP_STATUS.UNAUTHORIZED
+              })
+            }
+            const access_token = (value || '').split(' ')[1]
 
-//   try {
-//     const decoded_authorization = await verifyToken({
-//       token: token,
-//       secretOrPublickey: process.env.JWT_SECRET_ACCESS_TOKEN
-//     })
-//     const { role } = decoded_authorization
-//     if (role === 'admin') {
-//       req.decoded_authorization = decoded_authorization
-//       next()
-//     } else {
-//       next(new ErrorWithStatus('You not admin', HTTP_STATUS.UNAUTHORIZED).errorHandler())
-//     }
-//   } catch (error) {
-//     if (typeof error === JsonWebTokenError) {
-//       const error = new ErrorWithStatus(error?.message, HTTP_STATUS.UNAUTHORIZED)
-//       next(error.errorHandler())
-//     }
-//   }
-// }
+            if (!access_token) {
+              throw new ErrorWithStatus({
+                message: USER_MESSAGES.ACCESS_TOKEN_IS_REQUESTED,
+                status: HTTP_STATUS.UNAUTHORIZED
+              })
+            }
+
+            try {
+              const decoded_authorization = await verifyToken({
+                token: token,
+                secretOrPublickey: process.env.JWT_SECRET_ACCESS_TOKEN
+              })
+              const { role } = decoded_authorization
+              if (role === 'staff') {
+                req.decoded_authorization = decoded_authorization
+                next()
+              } else {
+                next(new ErrorWithStatus('You not staff', HTTP_STATUS.UNAUTHORIZED).errorHandler())
+              }
+            } catch (error) {
+              if (typeof error === JsonWebTokenError) {
+                const error = new ErrorWithStatus(error?.message, HTTP_STATUS.UNAUTHORIZED)
+                next(error.errorHandler())
+              }
+            }
+
+            return true
+          }
+        }
+      }
+    },
+    ['headers']
+  )
+)
+export const adminValidator = validate(
+  checkSchema(
+    {
+      authorization: {
+        trim: true,
+        custom: {
+          options: async (value, { req }) => {
+            if (!value) {
+              throw new ErrorWithStatus({
+                message: USER_MESSAGES.ACCESS_TOKEN_IS_REQUESTED,
+                status: HTTP_STATUS.UNAUTHORIZED
+              })
+            }
+            const access_token = (value || '').split(' ')[1]
+
+            if (!access_token) {
+              throw new ErrorWithStatus({
+                message: USER_MESSAGES.ACCESS_TOKEN_IS_REQUESTED,
+                status: HTTP_STATUS.UNAUTHORIZED
+              })
+            }
+
+            try {
+              const decoded_authorization = await verifyToken({
+                token: token,
+                secretOrPublickey: process.env.JWT_SECRET_ACCESS_TOKEN
+              })
+              const { role } = decoded_authorization
+              if (role === 'admin') {
+                req.decoded_authorization = decoded_authorization
+                next()
+              } else {
+                next(new ErrorWithStatus('You not admin', HTTP_STATUS.UNAUTHORIZED).errorHandler())
+              }
+            } catch (error) {
+              if (typeof error === JsonWebTokenError) {
+                const error = new ErrorWithStatus(error?.message, HTTP_STATUS.UNAUTHORIZED)
+                next(error.errorHandler())
+              }
+            }
+          }

@@ -4,7 +4,7 @@ import carsService from '../services/cars.services.js'
 
 export const createCar = async (req, res, next) => {
   console.log(req.body)
-  const result = await carsService.createCar(req.body, req?.files)
+  const result = await carsService.createCar(req.body)
   return res.status(HTTP_STATUS.CREATED).json({
     message: CARS_MESSAGE.CREATE_CAR_SUCCESS,
     result
@@ -72,13 +72,13 @@ export const getListCars = async (req, res, next) => {
 export const uploadImagesCar = async (req, res, next) => {
   const { carId } = req.params
   try {
-    const result = await carsService.uploadImagesCar(carId, req.files)
+    const result = await carsService.uploadImagesCar(carId, req?.files)
     return res.status(HTTP_STATUS.OK).json({
       message: 'Upload images successfully',
       result
     })
   } catch (error) {
-    return res.status(HTTP_STATUS.InternalServerError).json({ error: 'Can not upload images' })
+    return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ error: 'Can not upload images' })
   }
 }
 

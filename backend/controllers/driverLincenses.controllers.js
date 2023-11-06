@@ -3,7 +3,8 @@ import { HTTP_STATUS } from "../constants/httpStatus.js";
 
 export const regisLicensesDriver = async (req, res, next) => {
     try {
-        const result = await driverLicensesService.regisLicensesDriver(req.body, req?.file)
+        const userId = req.decoded_authorization.user_id
+        const result = await driverLicensesService.regisLicensesDriver(req.body, req?.file, userId)
         return res.status(HTTP_STATUS.OK).json({
             message: "Register Driver License successfully",
             result

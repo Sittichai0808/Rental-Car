@@ -70,9 +70,9 @@ export default function AccountPage() {
       <div className="flex flex-col  pl-10 pr-5  pb-6 ">
         <div className="flex flex-col mb-3  mt-3 ">
           <div className="flex flex-row w-full    ">
-            <p className="m-0 text-lg font-semibold flex w-full "> Full Name</p>
+            <p className="m-0 text-lg font-semibold flex w-full "> Address</p>
             <p className="m-0 text-xl font-semibold text-gray-500 flex w-full">
-              Đặng Ngọc Thịnh
+              {user?.address}
               <Link href={`/profile/edit-profile `}>
                 <Button
                   className="items-center absolute right-5"

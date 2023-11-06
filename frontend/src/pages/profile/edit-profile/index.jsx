@@ -47,26 +47,32 @@ export default function EditPage() {
 
   const [profile, setProfile, clearProfile] = useLocalStorage("profile", "");
   const [user, setUser] = useUserState();
-  useEffect(() => {
-    setUser(profile);
-  }, [user]);
+  const [accessToken, setAccessToken, clearAccessToken] =
+    useLocalStorage("access_token");
+
   const onSubmit = async (values) => {
     console.log("User Object:", user);
+    console.log("value:", values);
     console.log("user._id:", user._id);
+    console.log("Access Token:", accessToken);
     try {
       const response = await axios.put(
         `${process.env.NEXT_PUBLIC_REACT_APP_BACKEND_URL}/users/update-user/${user._id}`,
         values,
 
         {
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+            withCredentials: true,
+          },
         }
       );
 
       if (response.status === 200) {
+        console.log(response.data);
         setUser({ ...response.data.result });
         setProfile({ ...response.data.result });
-        setAccessToken(response.data.access_token);
         router.push("/profile");
       } else {
         console.log(error.response.data.errors[0].msg);
@@ -77,6 +83,7 @@ export default function EditPage() {
       });
     }
   };
+
   const { mutate } = useMutation(onSubmit);
   return (
     <div className="flex flex-col mt-10 items-center justify-center border-b bg-slate-100 py-4 sm:flex-row sm:px-5 lg:px-5 xl:px-12">
@@ -109,8 +116,8 @@ export default function EditPage() {
             <StyleInputModal type="text" placeholder="Username" size="large" />
           </Form.Item>
           <Form.Item
-            label="FullName"
-            name="fullname"
+            label="Address"
+            name="address"
             rules={[
               {
                 type: "text",
@@ -122,7 +129,7 @@ export default function EditPage() {
               },
             ]}
           >
-            <StyleInputModal placeholder="Full Name" size="large" />
+            <StyleInputModal placeholder="Address" size="large" />
           </Form.Item>
           <Form.Item
             label="Email"
@@ -155,6 +162,9 @@ export default function EditPage() {
             ]}
           >
             <StyleInputModal placeholder="Phone Number" size="large" />
+          </Form.Item>
+          <Form.Item label="UploadImage" name="profilePicture">
+            <StyleInputModal type="file" size="large" name="profilePicture" />
           </Form.Item>
           <Form.Item>
             <ButtonSummit type="primary" htmlType="submit">

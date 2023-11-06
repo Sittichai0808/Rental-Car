@@ -3,16 +3,17 @@ import useLocalStorage from "@/hooks/useLocalStorage";
 import { useUserState } from "@/recoils/user.state.js";
 import { Tabs } from "antd";
 import moment from "moment";
-import { Layout, Avatar, Button } from "antd";
+import { Layout, Avatar, Button, Upload } from "antd";
 import Account from "@/pages/profile/index";
 import CarRental from "@/pages/profile/car-rental/index";
 // import CarFavorite from "@/pages/profile/car-favorite/index";
 import HeaderComponent from "@/components/HeaderComponent";
 import FooterComponent from "@/components/FooterComponent";
 import { useRouter } from "next/router";
-import { LogoutOutlined } from "@ant-design/icons";
+import { LogoutOutlined, UploadOutlined } from "@ant-design/icons";
 import Image from "next/image";
 const { TabPane } = Tabs;
+import axios from "axios";
 const { Sider, Content } = Layout;
 const onChange = (key) => {
   console.log(key);
@@ -52,6 +53,7 @@ export const ProfileLayout = ({ children }) => {
     "access_token",
     ""
   );
+
   return (
     <Layout className="flex max-w-6xl  mx-auto border-b bg-slate-100  ">
       <HeaderComponent />
@@ -91,10 +93,12 @@ export const ProfileLayout = ({ children }) => {
 
             <Avatar
               className="flex justify-center items-center   "
-              size={150}
+              size={130}
               layout="fill"
               src={user?.profilePicture}
+              alt="Uploaded Image"
             />
+
             <div className="flex flex-col  ">
               <h5 className="text-lg font-semibold text-center mt-1 mb-2 ">
                 {user?.username}

@@ -2,14 +2,8 @@ import Cars from '../models/cars.model.js'
 import Ratings from '../models/ratings.model.js'
 
 class CarsService {
-  async createCar(payloadBody, payloadFiles) {
+  async createCar(payloadBody) {
     try {
-      console.log(payloadFiles)
-      const thumb = payloadFiles?.thumb[0]?.path
-      const images = payloadFiles?.images?.map((el) => el.path)
-      if (thumb) payloadBody.thumb = thumb
-      if (images) payloadBody.images = images
-
       const result = await Cars.create({ ...payloadBody })
       console.log(result)
       return result
@@ -85,18 +79,43 @@ class CarsService {
 
   async uploadImagesCar(carId, payload) {
     try {
-      console.log(payload)
-      if (!payload) throw new Error('Missing input')
+      const { images, thumb } = payload;
+
+      // Tạo mảng mới của đường dẫn hình ảnh
+      const imagesToUpdate = images.map((el) => el.path);
+
+      // Kiểm tra nếu "thumb" được tải lên
+      const thumbImage = thumb[0]?.path;
+
+      const updateData = {};
+
+      // Kiểm tra và cập nhật trường "thumb" nếu có
+      if (thumbImage) {
+        updateData.thumb = thumbImage;
+      }
+
+      // Kiểm tra và cập nhật trường "images" nếu có
+      if (imagesToUpdate.length > 0) {
+        updateData.images = imagesToUpdate;
+      }
+
+      if (Object.keys(updateData).length === 0) {
+        // Không có dữ liệu để cập nhật, không thực hiện gì cả
+        return null;
+      }
+
       const uploadImagesCar = await Cars.findByIdAndUpdate(
         carId,
-        { $push: { images: { $each: payload.map((el) => el.path) } } },
+        updateData,
         { new: true }
-      )
-      return uploadImagesCar
+      );
+
+      return uploadImagesCar;
     } catch (error) {
-      throw new Error('Error uploading images')
+      throw new Error('Error uploading images');
     }
   }
+
 
   async ratings(user_id, carId, payload) {
     try {

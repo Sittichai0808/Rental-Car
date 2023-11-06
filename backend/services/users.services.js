@@ -85,7 +85,7 @@ class UsersService {
     try {
       const getUser = await User.findOne({ _id: user_id.toString() })
       return getUser
-    } catch (error) {}
+    } catch (error) { }
   }
 
   async getUserByEmail(payload) {
@@ -95,7 +95,7 @@ class UsersService {
     try {
       const getUser = await User.findOne({ email: email.toString() })
       return getUser
-    } catch (error) {}
+    } catch (error) { }
   }
 
   async updateUser(user_id, payload) {
@@ -132,11 +132,29 @@ class UsersService {
 
   async getUsers() {
     try {
-      return await User.find()
+      return await User.find({ role: 'user' }).populate('driverLicenses')
     } catch (error) {
       throw Error(error)
     }
   }
+
+  async getStaffs() {
+    try {
+      return await User.find({ role: 'staff' })
+    } catch (error) {
+      throw Error(error)
+    }
+  }
+
+  async getDetailUser(userId) {
+    try {
+      const getDetailUser = await User.findById(userId).populate('driverLicenses')
+      return getDetailUser
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
 }
 
 export default new UsersService()

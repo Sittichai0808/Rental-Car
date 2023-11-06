@@ -1,5 +1,5 @@
 import express from 'express'
-import { registerValidator, loginValidator, accessTokenValidator } from '../middlewares/users.middlewares.js'
+import { registerValidator, loginValidator, accessTokenValidator, adminValidator, staffValidator } from '../middlewares/users.middlewares.js'
 import { wrapRequestHandler } from '../utils/handlers.js'
 import {
   registerController,
@@ -11,7 +11,10 @@ import {
   verifyOTPController,
   resetPasswordController,
   registerMailController,
-  getUserByEmailController
+  getUserByEmailController,
+  getUsers,
+  getDetailUser,
+  getStaffs
 } from '../controllers/users.controllers.js'
 const usersRoutes = express.Router()
 
@@ -99,5 +102,9 @@ usersRoutes.put('/reset-password', wrapRequestHandler(resetPasswordController))
  * Body: {email: String,name: string, text: String, subject: String}
  */
 usersRoutes.post('/register-mail', wrapRequestHandler(registerMailController))
+
+usersRoutes.get('/', [accessTokenValidator, adminValidator, staffValidator], wrapRequestHandler(getUsers))
+usersRoutes.get('/getStaffs', adminValidator, wrapRequestHandler(getStaffs))
+usersRoutes.get('/:userId', adminValidator || staffValidator, wrapRequestHandler(getDetailUser))
 
 export default usersRoutes

@@ -3,6 +3,7 @@ import usersService from '../services/users.services.js'
 import otpGenerator from 'otp-generator'
 import { transporter, MailGenerator } from '../utils/nodemailerConfig.js'
 import { config } from 'dotenv'
+import { HTTP_STATUS } from '../constants/httpStatus.js'
 config()
 export const registerController = async (req, res, next) => {
   const result = await usersService.register(req.body)
@@ -128,32 +129,43 @@ export const getUserByEmailController = async (req, res, next) => {
   })
 }
 
-// export const registerMailController = async (req, res, next) => {
-//   const { name, email, text, subject } = req.body
+export const getUsers = async (req, res, next) => {
+  try {
+    const result = await usersService.getUsers()
+    return res.status(HTTP_STATUS.OK).json({
+      message: "Get List Users Success",
+      result
+    })
+  } catch (error) {
+    return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ error: 'Could not get list users' })
+  }
+}
 
-//   // body of the email
-//   const bodyEmail = {
-//     body: {
-//       name: name,
-//       intro: text || "Welcome to Daily Tuition! We're very excited to have you on board.",
-//       outro: "Need help, or have questions? Just reply to this email, we'd love to help."
-//     }
-//   }
+export const getDetailUser = async (req, res, next) => {
+  try {
+    const { userId } = req.params
+    const result = await usersService.getDetailUser(userId)
+    if (!result) {
+      return res.status(HTTP_STATUS.NOT_FOUND).json({ error: 'User not found' })
+    } else {
+      return res.status(HTTP_STATUS.OK).json({
+        message: 'Get Detail User Success',
+        result
+      })
+    }
+  } catch (e) {
+    return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ error: 'Something went wrong' })
+  }
+}
 
-//   const emailBody = MailGenerator.generate(bodyEmail)
-
-//   const message = {
-//     from: process.env.EMAIL,
-//     to: email,
-//     subject: subject || 'Signup Successful',
-//     html: emailBody
-//   }
-
-//   // send mail
-//   transporter
-//     .sendMail(message)
-//     .then(() => {
-//       return res.status(200).send({ msg: 'You should receive an email from us.' })
-//     })
-//     .catch((error) => res.status(500).send({ error }))
-// }
+export const getStaffs = async (req, res, next) => {
+  try {
+    const result = await usersService.getStaffs()
+    return res.status(HTTP_STATUS.OK).json({
+      message: "Get List Staffs success",
+      result
+    })
+  } catch (error) {
+    return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ error: 'Could not get list staffs' })
+  }
+}

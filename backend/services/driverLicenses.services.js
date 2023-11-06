@@ -1,7 +1,8 @@
 import DriverLicenses from "../models/driverLicenses.model.js";
+import User from "../models/user.model.js";
 
 class DriverLicensesService {
-    async regisLicensesDriver(payloadBody, payloadFile) {
+    async regisLicensesDriver(payloadBody, payloadFile, userId) {
         try {
             const image = payloadFile.path
             if (image) payloadBody.image = image
@@ -13,7 +14,9 @@ class DriverLicensesService {
                 payloadBody.dob = `${dobParts[2]}-${dobParts[1]}-${dobParts[0]}`
             }
             const result = await DriverLicenses.create({ ...payloadBody })
-            console.log(result)
+            await User.findByIdAndUpdate(userId, {
+                driverLicenses: result._id,
+            });
             return result
         } catch (error) {
             console.log(error);

@@ -660,6 +660,9 @@ const BookingPage = () => {
               />
 
               <h1>{result}</h1>
+              <Link href="/">
+                <Button type="primary">Trở về trang chủ</Button>
+              </Link>
             </div>
           ) : (
             <div className="flex flex-col justify-center items-center mt-5 text-gray-700">
@@ -669,7 +672,7 @@ const BookingPage = () => {
 
               <h1>{result}</h1>
               <Link href="/">
-                <Button type="primary">Trang chủ</Button>
+                <Button type="primary">Trở về trang chủ</Button>
               </Link>
             </div>
           )}

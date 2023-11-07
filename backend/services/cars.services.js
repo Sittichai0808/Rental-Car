@@ -77,46 +77,6 @@ class CarsService {
     }
   }
 
-  async uploadImagesCar(carId, payload) {
-    try {
-      const { images, thumb } = payload;
-
-      // Tạo mảng mới của đường dẫn hình ảnh
-      const imagesToUpdate = images.map((el) => el.path);
-
-      // Kiểm tra nếu "thumb" được tải lên
-      const thumbImage = thumb[0]?.path;
-
-      const updateData = {};
-
-      // Kiểm tra và cập nhật trường "thumb" nếu có
-      if (thumbImage) {
-        updateData.thumb = thumbImage;
-      }
-
-      // Kiểm tra và cập nhật trường "images" nếu có
-      if (imagesToUpdate.length > 0) {
-        updateData.images = imagesToUpdate;
-      }
-
-      if (Object.keys(updateData).length === 0) {
-        // Không có dữ liệu để cập nhật, không thực hiện gì cả
-        return null;
-      }
-
-      const uploadImagesCar = await Cars.findByIdAndUpdate(
-        carId,
-        updateData,
-        { new: true }
-      );
-
-      return uploadImagesCar;
-    } catch (error) {
-      throw new Error('Error uploading images');
-    }
-  }
-
-
   async ratings(user_id, carId, payload) {
     try {
       const { star, comment } = payload

@@ -19,18 +19,12 @@ export const updateCar = async (req, res, next) => {
       return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
         message: 'Something went wrong!'
       })
-    } else {
-      if (!result.updatedProperty) {
-        console.log(result)
-        return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
-          message: 'Update failed!'
-        })
-      } else {
-        return res.status(HTTP_STATUS.OK).json({
-          message: CARS_MESSAGE.UPDATE_CAR_SUCCESS,
-          result
-        })
-      }
+    }
+    else {
+      return res.status(HTTP_STATUS.OK).json({
+        message: CARS_MESSAGE.UPDATE_CAR_SUCCESS,
+        result
+      })
     }
   } catch (error) {
     return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({

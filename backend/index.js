@@ -16,6 +16,7 @@ import cors from 'cors'
 import paymentsRoutes from './routes/payments.routes.js'
 import { config } from 'dotenv'
 import bookingRoutes from './routes/booking.routes.js'
+import contractsRoutes from './routes/contracts.routes.js'
 config()
 const app = express()
 const port = 4000
@@ -47,6 +48,7 @@ app.use('/payments', paymentsRoutes)
 app.use('/drivers', driverLicensesRoutes)
 app.use('/bookings', bookingRoutes)
 app.use('/coupons', couponsRoutes)
+app.use('/contracts', contractsRoutes)
 
 app.use(defaultErrorHandler)
 app.listen(port, () => {

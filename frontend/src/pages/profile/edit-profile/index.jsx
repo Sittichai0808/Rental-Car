@@ -163,9 +163,7 @@ export default function EditPage() {
           >
             <StyleInputModal placeholder="Phone Number" size="large" />
           </Form.Item>
-          <Form.Item label="UploadImage" name="profilePicture">
-            <StyleInputModal type="file" size="large" name="profilePicture" />
-          </Form.Item>
+
           <Form.Item>
             <ButtonSummit type="primary" htmlType="submit">
               Cập nhập

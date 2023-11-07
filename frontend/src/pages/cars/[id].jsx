@@ -95,7 +95,7 @@ export default function CarDetailPage() {
 
     return isPastDate || isBookedDate;
   };
-  const { isLoading, isError, data, error } = useQuery({
+  const { data } = useQuery({
     queryKey: ["getCar", carId],
     queryFn: async () => {
       try {
@@ -137,6 +137,7 @@ export default function CarDetailPage() {
       }
     },
   });
+
   return (
     <div>
       <div className="grid h-[600px] gap-4 grid-cols-4 grid-rows-3 relative">

@@ -20,12 +20,8 @@ carsRoutes.post(
 carsRoutes.put('/updateCar/:carId', accessTokenValidator, adminValidator, wrapRequestHandler(updateCar))
 carsRoutes.get('/:carId', wrapRequestHandler(getCarById))
 carsRoutes.get('/', wrapRequestHandler(getListCars))
-carsRoutes.post('/uploadimage/:carId', uploadCloud.fields([
-  { name: 'images', maxCount: 10 },
-  { name: 'thumb', maxCount: 1 }
-]), wrapRequestHandler(uploadImagesCar))
 
-carsRoutes.put('/uploadimage/:carId', uploadCloud.fields([
+carsRoutes.post('/uploadimage', uploadCloud.fields([
   { name: 'images', maxCount: 10 },
   { name: 'thumb', maxCount: 1 }
 ]), wrapRequestHandler(uploadImagesCar))

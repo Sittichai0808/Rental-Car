@@ -70,17 +70,25 @@ export const getListCars = async (req, res, next) => {
 }
 
 export const uploadImagesCar = async (req, res, next) => {
-  const { carId } = req.params
   try {
-    const result = await carsService.uploadImagesCar(carId, req?.files)
-    return res.status(HTTP_STATUS.OK).json({
-      message: 'Upload images successfully',
-      result
-    })
+    const { images, thumb } = req.files;
+
+    const imageLinks = images.map((image) => image.path);
+    const thumbLink = thumb && thumb[0] ? thumb[0].path : null;
+
+    console.log(imageLinks)
+    console.log(thumbLink)
+    // Tạo đối tượng chứa đường link của các ảnh
+    const imageUrls = {
+      images: imageLinks,
+      thumb: thumbLink
+    };
+
+    return res.status(200).json(imageUrls);
   } catch (error) {
-    return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ error: 'Can not upload images' })
+    return res.status(500).json({ error: 'Lỗi tải lên ảnh' });
   }
-}
+};
 
 export const ratings = async (req, res) => {
   try {

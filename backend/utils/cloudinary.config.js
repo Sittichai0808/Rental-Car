@@ -1,21 +1,30 @@
-import { v2 as cloudinary } from 'cloudinary';
-import { CloudinaryStorage } from 'multer-storage-cloudinary';
-import multer from 'multer';
+import { v2 as cloudinary } from 'cloudinary'
+import { CloudinaryStorage } from 'multer-storage-cloudinary'
+import multer from 'multer'
 
 cloudinary.config({
-    cloud_name: process.env.CLOUDINARY_NAME,
-    api_key: process.env.CLOUDINARY_KEY,
-    api_secret: process.env.CLOUDINARY_SECRET
-});
+  cloud_name: process.env.CLOUDINARY_NAME,
+  api_key: process.env.CLOUDINARY_KEY,
+  api_secret: process.env.CLOUDINARY_SECRET
+})
 
 const storage = new CloudinaryStorage({
-    cloudinary,
-    allowedFormats: ['jpg', 'png'],
-    params: {
-        folder: 'cars'
-    }
-});
+  cloudinary,
+  allowedFormats: ['jpg', 'png'],
+  params: {
+    folder: 'cars'
+  }
+})
 
-const uploadCloud = multer({ storage });
+const storagePDF = new CloudinaryStorage({
+  cloudinary,
+  allowedFormats: 'pdf',
+  params: {
+    folder: 'contracts'
+  }
+})
+
+const uploadCloud = multer({ storage })
+export const uploadCloudPDF = multer({ storagePDF })
 
 export default uploadCloud

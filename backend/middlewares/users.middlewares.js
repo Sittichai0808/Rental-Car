@@ -264,9 +264,11 @@ export const staffValidator = validate(
                 secretOrPublickey: process.env.JWT_SECRET_ACCESS_TOKEN
               })
               const { role } = decoded_authorization
+              console.log(role)
+
               if (role === 'staff') {
                 req.decoded_authorization = decoded_authorization
-                next()
+
               } else {
                 next(new ErrorWithStatus('You not staff', HTTP_STATUS.UNAUTHORIZED).errorHandler())
               }
@@ -315,7 +317,7 @@ export const adminValidator = validate(
               const { role } = decoded_authorization
               if (role === 'admin') {
                 req.decoded_authorization = decoded_authorization
-                next()
+
               } else {
                 next(new ErrorWithStatus('You not admin', HTTP_STATUS.UNAUTHORIZED).errorHandler())
               }

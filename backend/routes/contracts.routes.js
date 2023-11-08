@@ -7,8 +7,8 @@ import { createContract } from '../controllers/contracts.controllers.js'
 const contractsRoutes = express.Router()
 
 contractsRoutes.post(
-  '/create',
-  [accessTokenValidator, adminValidator, staffValidator],
+  '/create/:bookingId',
+  accessTokenValidator, adminValidator, staffValidator,
   wrapRequestHandler(createContract)
 )
 export default contractsRoutes

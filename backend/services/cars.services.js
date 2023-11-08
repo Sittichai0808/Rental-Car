@@ -107,6 +107,15 @@ class CarsService {
       throw error
     }
   }
+
+  async getRatingsOfCar(carId) {
+    try {
+      const getRatingsOfCar = await Ratings.find({ carId: carId }).populate('postBy', 'username profilePicture')
+      return getRatingsOfCar
+    } catch (error) {
+      throw Error(error)
+    }
+  }
 }
 const carsService = new CarsService()
 export default carsService

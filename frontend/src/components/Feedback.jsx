@@ -4,9 +4,9 @@ import Image from "next/image";
 export const Feedback = ({ dataRatings }) => {
   return (
     <div className="flex items-center w-full h-[140px] gap-4 rounded-md p-6 border border-solid border-gray-200">
-      <div className="aspect-square relative w-[70px] rounded-full overflow-hidden h-[70px] ml-6">
+      <div className="aspect-square relative w-[60px] rounded-full overflow-hidden h-[60px] ml-6">
         <Image
-          src={dataRatings.postBy.profilePicture}
+          src={dataRatings.postBy.profilePicture[0]}
           layout="fill"
           alt="avatar"
         />

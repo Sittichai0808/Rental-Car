@@ -138,6 +138,26 @@ export default function CarDetailPage() {
     },
   });
 
+  const { data: ratings } = useQuery({
+    queryKey: ["getRatings", carId],
+    queryFn: async () => {
+      try {
+        const response = await axios.get(
+          `${process.env.NEXT_PUBLIC_REACT_APP_BACKEND_URL}/cars/ratings/${carId}`,
+
+          {
+            headers: { "Content-Type": "application/json" },
+            withCredentials: true,
+          }
+        );
+        console.log(response.data.result);
+        return response.data.result;
+      } catch (error) {
+        console.log(error);
+      }
+    },
+  });
+  console.log(ratings);
   return (
     <div>
       <div className="grid h-[600px] gap-4 grid-cols-4 grid-rows-3 relative">
@@ -162,9 +182,9 @@ export default function CarDetailPage() {
 
       <div className="grid grid-cols-5 mt-10 gap-4">
         <div className="col-span-3">
-          <h2 className="text-3xl m-0 font-bold">
+          <h1 className="text-4xl m-0 font-bold">
             {data?.brand.name} {data?.yearManufacture}
-          </h2>
+          </h1>
           <div className="flex gap-4 mt-2 text-gray-800">
             <div className="flex items-center gap-1">
               <StarFilledIcon className="text-yellow-500" />
@@ -191,7 +211,7 @@ export default function CarDetailPage() {
           <Divider />
 
           <div>
-            <h3>Đặc điểm</h3>
+            <h2 className="font-medium">Đặc điểm</h2>
             <div className="grid grid-cols-2 gap-4">
               <div className="flex items-center gap-6">
                 <SeatIcon className="shrink-0 text-2xl text-green-500" />
@@ -222,14 +242,14 @@ export default function CarDetailPage() {
           <Divider />
 
           <div>
-            <h3>Mô tả</h3>
+            <h2 className="font-medium">Mô tả</h2>
             <p>{data?.description}</p>
           </div>
 
           <Divider />
 
           <div>
-            <h3>Các tiện nghi khác</h3>
+            <h2 className="font-medium">Các tiện nghi khác</h2>
             <div className="grid grid-cols-3 gap-x-y gap-y-8">
               {carServices.map(({ icon: Icon, name }) => (
                 <div key={name} className="flex items-center gap-3">
@@ -241,7 +261,7 @@ export default function CarDetailPage() {
           </div>
 
           <div className="mt-10">
-            <h3>Giấy tờ thuê xe</h3>
+            <h2 className="font-medium">Giấy tờ thuê xe</h2>
             <div className="bg-amber-100 border-transparent rounded-md p-4 border-solid border-l-4 border-l-amber-600">
               <h4 className="flex items-center gap-1 text-gray-800 m-0 font-medium">
                 <InfoIcon />
@@ -261,7 +281,7 @@ export default function CarDetailPage() {
           </div>
 
           <div className="mt-10">
-            <h3>Điều khoản</h3>
+            <h2 className="font-medium">Điều khoản</h2>
             <ul>
               <li>Sử dụng xe đúng mục đích.</li>
               <li>
@@ -275,17 +295,18 @@ export default function CarDetailPage() {
           </div>
 
           <div className="mt-10">
-            <h3>Chính sách hủy chuyến</h3>
+            <h2 className="font-medium">Chính sách hủy chuyến</h2>
             <div>Miễn phí hủy chuyến trong vòng 1 giờ sau khi đặt cọc</div>
           </div>
 
           <Divider />
 
-          <div className="mt-10">
-            <h3>Đánh giá</h3>
+          <div className="mt-10 max-w">
+            <h2 className="font-medium">Đánh giá</h2>
             <div className="flex flex-col gap-4">
-              <Feedback />
-              <Feedback />
+              {ratings?.map((rating, index) => (
+                <Feedback key={index} dataRatings={rating} />
+              ))}
             </div>
           </div>
         </div>

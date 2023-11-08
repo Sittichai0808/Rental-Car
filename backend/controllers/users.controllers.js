@@ -52,7 +52,14 @@ export const updateUserController = async (req, res, next) => {
     result: result
   })
 }
-
+export const uploadImagesUser = async (req, res, next) => {
+  const user_id = req.params.userId
+  const result = await usersService.uploadImagesUser(user_id, req?.files)
+  return res.json({
+    message: USER_MESSAGES.UPLOAD_IMAGE_SUCCESS,
+    result: result
+  })
+}
 export const generateOTPController = async (req, res, next) => {
   const email = req.body.email
   req.app.locals.OTP = await otpGenerator.generate(6, {
@@ -133,7 +140,7 @@ export const getUsers = async (req, res, next) => {
   try {
     const result = await usersService.getUsers()
     return res.status(HTTP_STATUS.OK).json({
-      message: "Get List Users Success",
+      message: 'Get List Users Success',
       result
     })
   } catch (error) {
@@ -162,7 +169,7 @@ export const getStaffs = async (req, res, next) => {
   try {
     const result = await usersService.getStaffs()
     return res.status(HTTP_STATUS.OK).json({
-      message: "Get List Staffs success",
+      message: 'Get List Staffs success',
       result
     })
   } catch (error) {

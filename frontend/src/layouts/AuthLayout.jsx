@@ -29,7 +29,7 @@ export const AuthLayout = ({ children }) => {
                 CRT - Hành trình theo cách của bạn
               </Title>
             </div>
-            <div className="absolute z-50 inset-x-0 bottom-0 mx-[20px] my-[30px]  bottom-0 left-0    bg-green-900 bg-opacity-50 rounded-b-lg">
+            <div className="absolute z-50 inset-x-0 bottom-0 mx-[20px] my-[30px]   left-0    bg-green-900 bg-opacity-50 rounded-b-lg">
               <div className="flex justify-center items-center h-20">
                 <Title level={5} className="text-white mb-6">
                   {pathname === "/register"

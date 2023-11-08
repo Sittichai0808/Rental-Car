@@ -21,6 +21,7 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import {
   Avatar,
+  message,
   Button,
   Form,
   Image,
@@ -32,15 +33,17 @@ import {
   Table,
   Upload,
 } from "antd";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function AdminManageBookings() {
   const [form] = Form.useForm();
+
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const [file, setFile] = useState(null);
   const [accessToken] = useLocalStorage("access_token", "");
+  // useEffect(() => {}, [infoContract]);
   const onSubmit = (values) => {
     try {
       if (!file) {
@@ -65,20 +68,13 @@ export default function AdminManageBookings() {
         // You can now use downloadURL to store in your MongoDB or perform other actions
 
         // You may also want to send the user's information to your Node.js server
-        const userData = {
-          customer_id: values.customer_id,
-          car_id: values.car_id,
-          time_booking_start: values.time_booking_start,
-          time_booking_end: values.time_booking_end,
-          file: downloadURL,
-        };
-        console.log(userData);
+
         // Send the user data to your server (e.g., using Axios)
         // axios.post('/api/user', userData);
         try {
           const response = await axios.post(
             `${process.env.NEXT_PUBLIC_REACT_APP_BACKEND_URL}/contracts/create`,
-            userData,
+            values,
             {
               headers: {
                 Authorization: `Bearer ${accessToken}`,
@@ -125,8 +121,10 @@ export default function AdminManageBookings() {
     return false; // Prevent the default upload action
   };
 
-  const showModal = () => {
+  const showModal = (booking) => {
     setOpen(true);
+
+    form.setFieldsValue({ ...booking });
   };
   const handleOk = () => {
     setLoading(true);
@@ -238,7 +236,7 @@ export default function AdminManageBookings() {
                   <Button
                     type="primary"
                     className=" border border-solid border-green-400 "
-                    onClick={showModal}
+                    onClick={() => showModal(booking)}
                   >
                     <PlusCircleOutlined style={{ fontSize: "14px" }} />
                     Hợp Đồng
@@ -276,22 +274,40 @@ export default function AdminManageBookings() {
             className="flex gap-4 mt-10"
           >
             <div className="w-2/3">
-              <Form.Item label="customer_id" name="customer_id">
+              <Form.Item label="Tên khách hàng" name="username">
                 <Input />
               </Form.Item>
-              <Form.Item label="car_id" name="car_id">
+              <Form.Item label="Số điện thoại" name="phone">
                 <Input />
               </Form.Item>
-              <Form.Item label="time_booking_start" name="time_booking_start">
+              <Form.Item label="Địa chỉ" name="address">
                 <Input />
               </Form.Item>
-              <Form.Item label="time_booking_end" name="time_booking_end">
+              <Form.Item label="Biển số xe" name="numberCar">
                 <Input />
               </Form.Item>
+              <Form.Item label="Thời gian bắt đầu thuê" name="timeBookingStart">
+                <Input />
+              </Form.Item>
+              <Form.Item label="Thời gian kết thúc thuê" name="timeBookingEnd">
+                <Input />
+              </Form.Item>
+              <Form.Item label="Tổng giá tiền thuê" name="totalCost">
+                <Input />
+              </Form.Item>
+              <div className=" mt-10">
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  loading={mutation.isLoading}
+                >
+                  Submit
+                </Button>
+              </div>
             </div>
 
             <div className="grow">
-              <Form.Item label="Upload PDF" name="pdf">
+              <Form.Item label="Upload PDF" name="file">
                 <Upload
                   beforeUpload={beforeUpload}
                   maxCount={1}
@@ -303,16 +319,6 @@ export default function AdminManageBookings() {
               </Form.Item>
             </div>
           </Form>
-
-          <div className="flex justify-end mt-10">
-            <Button
-              type="primary"
-              htmlType="submit"
-              loading={mutation.isLoading}
-            >
-              Submit
-            </Button>
-          </div>
         </>
       </Modal>
     </>

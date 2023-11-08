@@ -21,7 +21,7 @@ export const verifyToken = ({ token, secretOrPublickey }) => {
       if (error) {
         throw reject(error)
       }
-      console.log(decoded)
+
       resolve(decoded)
     })
   })

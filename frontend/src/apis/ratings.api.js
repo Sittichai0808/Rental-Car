@@ -1,9 +1,9 @@
 import { apiClient } from "./client";
 
-export async function getHistoryBooking() {
+export async function getRatingsOfCar({ carId }) {
     const { data } = await apiClient.request({
         method: "GET",
-        url: `/bookings/historyBooking`,
+        url: `cars/ratings/${carId}`,
     });
 
     return data;

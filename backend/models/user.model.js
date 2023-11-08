@@ -27,17 +27,20 @@ const userSchema = new mongoose.Schema(
     date_of_birth: {
       type: String
     },
+    userCars: {
+      type: Array
+    },
+    driverLicenses: {
+      type: ObjectId
+    },
+
     profilePicture: {
-      type: String,
+      type: Array,
       default: 'https://res.cloudinary.com/djllhxlfc/image/upload/v1699417003/cars/default_avatar_jwbg8s.jpg'
     },
     address: {
       type: String
-    },
-    driverLicenses: {
-      type: mongoose.Types.ObjectId,
-      ref: "DriverLicenses"
-    },
+    }
   },
   { timestamps: true }
 )

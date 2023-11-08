@@ -1,21 +1,32 @@
 import { Rate } from "antd";
 import Image from "next/image";
 
-export const Feedback = () => {
+export const Feedback = ({ dataRatings }) => {
   return (
-    <div className="flex gap-4 bg-gray-100 rounded-md p-3">
-      <div className="aspect-square relative w-9 rounded-full overflow-hidden h-9">
-        <Image src="/images/car.jpg" layout="fill" alt="avatar" />
+    <div className="flex items-center w-full h-[140px] gap-4 rounded-md p-6 border border-solid border-gray-200">
+      <div className="aspect-square relative w-[70px] rounded-full overflow-hidden h-[70px] ml-6">
+        <Image
+          src={dataRatings.postBy.profilePicture}
+          layout="fill"
+          alt="avatar"
+        />
       </div>
       <div className="grow">
         <div className="flex justify-between items-center">
-          <span className="font-bold text-lg">Trần Nhật Huy</span>
+          <span className="font-medium text-2xl">
+            {dataRatings.postBy.username}
+          </span>
           <span>08/10/2023</span>
         </div>
 
-        <Rate value={4.5} allowHalf />
+        <Rate
+          className="text-base"
+          value={dataRatings.star}
+          disabled
+          allowHalf
+        />
 
-        <div>Xe chay rất thích, sẽ tiếp tục chọn thuê</div>
+        <div>{dataRatings.comment}</div>
       </div>
     </div>
   );

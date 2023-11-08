@@ -16,15 +16,6 @@ const storage = new CloudinaryStorage({
   }
 })
 
-const storagePDF = new CloudinaryStorage({
-  cloudinary,
-  allowedFormats: 'pdf',
-  params: {
-    folder: 'contracts'
-  }
-})
-
 const uploadCloud = multer({ storage })
-export const uploadCloudPDF = multer({ storagePDF })
 
 export default uploadCloud

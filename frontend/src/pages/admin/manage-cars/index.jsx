@@ -2,9 +2,26 @@ import { getCars } from "@/apis/admin-cars.api";
 import { GET_CARS_KEY } from "@/constants/react-query-key.constant";
 import { AdminLayout } from "@/layouts/AdminLayout";
 import { formatCurrency } from "@/utils/number.utils";
-import { CloudUploadOutlined, PlusOutlined, SearchOutlined, UserAddOutlined } from "@ant-design/icons";
+import {
+  CloudUploadOutlined,
+  PlusOutlined,
+  SearchOutlined,
+  UserAddOutlined,
+} from "@ant-design/icons";
 import { useQuery } from "@tanstack/react-query";
-import { Avatar, Button, Form, Image, Input, InputNumber, Modal, Popconfirm, Select, Table, Upload } from "antd";
+import {
+  Avatar,
+  Button,
+  Form,
+  Image,
+  Input,
+  InputNumber,
+  Modal,
+  Popconfirm,
+  Select,
+  Table,
+  Upload,
+} from "antd";
 import { useState } from "react";
 
 function UpsertCarForm({ carId }) {
@@ -26,7 +43,15 @@ function UpsertCarForm({ carId }) {
             />
           </Form.Item>
           <Form.Item label="No. Seat" required>
-            <Select options={[{ value: 1 }, { value: 2 }, { value: 3 }, { value: 4 }, { value: 5 }]} />
+            <Select
+              options={[
+                { value: 1 },
+                { value: 2 },
+                { value: 3 },
+                { value: 4 },
+                { value: 5 },
+              ]}
+            />
           </Form.Item>
           <Form.Item label="Transmissions" required>
             <Select options={[{ value: "Auto" }, { value: "Manual" }]} />
@@ -66,7 +91,7 @@ export default function AdminManageCars() {
     queryKey: [GET_CARS_KEY],
   });
 
-  console.log(data.result);
+  console.log(data?.result);
 
   const dataSource = data?.result.map((item, idx) => ({
     id: idx + 1,
@@ -108,13 +133,30 @@ export default function AdminManageCars() {
               key: "thumb",
               title: "Thumbnail",
               dataIndex: "thumb",
-              render: (url) => <Image className="h-32 aspect-video rounded-md object-cover" src={url} />,
+              render: (url) => (
+                <Image
+                  className="h-32 aspect-video rounded-md object-cover"
+                  src={url}
+                />
+              ),
             },
             { key: "brand", title: "Brand", dataIndex: "brand" },
             { key: "numberSeat", title: "No. Seat", dataIndex: "numberSeat" },
-            { key: "transmissions", title: "Transmissions", dataIndex: "transmissions" },
-            { key: "numberCar", title: "License plate", dataIndex: "numberCar" },
-            { key: "description", title: "Description", dataIndex: "description" },
+            {
+              key: "transmissions",
+              title: "Transmissions",
+              dataIndex: "transmissions",
+            },
+            {
+              key: "numberCar",
+              title: "License plate",
+              dataIndex: "numberCar",
+            },
+            {
+              key: "description",
+              title: "Description",
+              dataIndex: "description",
+            },
             { key: "cost", title: "Cost", dataIndex: "cost" },
             { key: "owner", title: "Owner", dataIndex: "owner" },
             {
@@ -124,12 +166,19 @@ export default function AdminManageCars() {
                 <div className="flex gap-2">
                   <Button
                     className="bg-blue-500 text-white border-none hover:bg-blue-500/70"
-                    onClick={() => setUpsertCarModal({ actionType: "update", carId: car.id })}
+                    onClick={() =>
+                      setUpsertCarModal({ actionType: "update", carId: car.id })
+                    }
                   >
                     Edit
                   </Button>
-                  <Popconfirm title="Are you sure to deactivate this car?" okText="Deactivate">
-                    <Button className="bg-red-500 text-white border-none hover:bg-red-500/70">Deactivate</Button>
+                  <Popconfirm
+                    title="Are you sure to deactivate this car?"
+                    okText="Deactivate"
+                  >
+                    <Button className="bg-red-500 text-white border-none hover:bg-red-500/70">
+                      Deactivate
+                    </Button>
                   </Popconfirm>
                 </div>
               ),
@@ -142,7 +191,9 @@ export default function AdminManageCars() {
 
       <Modal
         open={upsertCarModal}
-        title={upsertCarModal?.actionType === "insert" ? "Add New Car" : "Update Car"}
+        title={
+          upsertCarModal?.actionType === "insert" ? "Add New Car" : "Update Car"
+        }
         width={800}
         destroyOnClose
         footer={null}

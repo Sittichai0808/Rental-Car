@@ -1,5 +1,10 @@
 import { Avatar, Layout, Menu } from "antd";
-import { BellOutlined, UsergroupAddOutlined, CarOutlined } from "@ant-design/icons";
+import {
+  BellOutlined,
+  UsergroupAddOutlined,
+  CarOutlined,
+  BookOutlined,
+} from "@ant-design/icons";
 import { useRouter } from "next/router";
 
 const { Sider, Header, Content } = Layout;
@@ -12,12 +17,27 @@ export const AdminLayout = ({ children }) => {
   return (
     <Layout hasSider className="h-screen">
       <Sider theme="light" className="border-r shadow bg-white p-6" width={300}>
-        <div className="w-full bg-green-100 h-32 flex justify-center items-center mb-10">LOGO</div>
+        <div className="w-full bg-green-100 h-32 flex justify-center items-center mb-10">
+          LOGO
+        </div>
         <Menu
           selectedKeys={selectedKeys}
           items={[
-            { key: "manage-users", label: "Manager Users", icon: <UsergroupAddOutlined /> },
-            { key: "manage-cars", label: "Manager Cars", icon: <CarOutlined /> },
+            {
+              key: "manage-users",
+              label: "Manager Users",
+              icon: <UsergroupAddOutlined />,
+            },
+            {
+              key: "manage-cars",
+              label: "Manager Cars",
+              icon: <CarOutlined />,
+            },
+            {
+              key: "manage-bookings",
+              label: "Manager Bookings",
+              icon: <BookOutlined />,
+            },
           ]}
           onClick={(item) => push(`/admin/${item.key}`)}
         />

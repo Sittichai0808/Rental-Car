@@ -30,6 +30,7 @@ import axios from "axios";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import { useState } from "react";
 import { useDatesState } from "@/recoils/dates.state";
+import { isSameOrAfter, isSameOrBefore } from "moment";
 
 const carServices = [
   { icon: MapIcon, name: "Bản đồ" },
@@ -60,7 +61,7 @@ export default function CarDetailPage() {
     for (const slot of bookedTimeSlots) {
       const bookedStart = new Date(slot.from);
       const bookedEnd = new Date(slot.to);
-
+      console.log(bookedStart, bookedEnd);
       console.log(bookedStart >= startDate, bookedEnd <= endDate);
       if (bookedStart >= startDate && bookedEnd <= endDate) return true;
     }
@@ -130,6 +131,7 @@ export default function CarDetailPage() {
             withCredentials: true,
           }
         );
+        console.log(response.data.result);
         setBookedTimeSlots(response.data.result);
         return response.data.result;
       } catch (error) {

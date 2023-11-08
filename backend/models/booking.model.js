@@ -23,6 +23,9 @@ const bookingsSchema = new mongoose.Schema(
       get: (v) => moment(v).format('DD-MM-YYYY HH:mm'),
       set: (v) => moment(v, 'DD-MM-YYYY HH:mm').toDate()
     },
+    fullname: {
+      type: String
+    },
     phone: {
       type: String,
       require: true

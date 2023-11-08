@@ -85,7 +85,7 @@ class UsersService {
     try {
       const getUser = await User.findOne({ _id: user_id.toString() })
       return getUser
-    } catch (error) { }
+    } catch (error) {}
   }
 
   async getUserByEmail(payload) {
@@ -95,7 +95,7 @@ class UsersService {
     try {
       const getUser = await User.findOne({ email: email.toString() })
       return getUser
-    } catch (error) { }
+    } catch (error) {}
   }
 
   async updateUser(user_id, payload) {
@@ -112,6 +112,32 @@ class UsersService {
       return updateUser
     } catch (error) {
       throw Error(error)
+    }
+  }
+  async uploadImagesUser(user_id, payload) {
+    try {
+      const { profilePicture } = payload
+
+      // Tạo mảng mới của đường dẫn hình ảnh
+      const profilePictureToUpdate = profilePicture.map((el) => el.path)
+
+      const updateData = {}
+
+      // Kiểm tra và cập nhật trường "images" nếu có
+      if (profilePictureToUpdate.length > 0) {
+        updateData.profilePicture = profilePictureToUpdate
+      }
+
+      if (Object.keys(updateData).length === 0) {
+        // Không có dữ liệu để cập nhật, không thực hiện gì cả
+        return null
+      }
+
+      const uploadImagesUser = await User.findByIdAndUpdate(user_id.toString(), updateData, { new: true })
+
+      return uploadImagesUser
+    } catch (error) {
+      throw new Error('Error uploading images')
     }
   }
 
@@ -154,7 +180,6 @@ class UsersService {
       console.log(error)
     }
   }
-
 }
 
 export default new UsersService()

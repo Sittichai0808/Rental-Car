@@ -40,18 +40,21 @@ export const USER_MESSAGES = {
   VERIFY_FORGOT_PASSWORD_SUCCESS: 'Verified forgot password successfully',
   INVALID_FORGOT_PASSWORD_TOKEN: 'Invalid forgot password token',
   RESET_PASSWORD_SUCCESS: 'Reset password successfully',
-  GET_PROFILE_SUCCESS: 'Get profile successfully'
+  GET_PROFILE_SUCCESS: 'Get profile successfully',
+  UPDATE_PROFILE_SUCCESS: 'Update profile successfully',
+  UPLOAD_IMAGE_SUCCESS: 'Upload image successfully'
 }
 
 export const BRAND_MESSAGE = {
-  CREATE_BRAND_SUCCESS: 'Create brand successfullY',
+  CREATE_BRAND_SUCCESS: 'Create brand successfullY'
 }
 export const MODEL_MESSAGE = {
-  CREATE_MODEL_SUCCESS: 'Create model successfullY',
+  CREATE_MODEL_SUCCESS: 'Create model successfullY'
 }
 export const CARS_MESSAGE = {
+  GET_CAR_SUCCESS: 'GetList car successfully',
   CREATE_CAR_SUCCESS: 'Create car successfully',
   UPDATE_CAR_SUCCESS: 'Update car successfully',
   GET_CAR_SUCCESS: 'Get car successfully',
-  GET_CARS_SUCCESS: 'Get list cars successfully',
+  GET_CARS_SUCCESS: 'Get list cars successfully'
 }

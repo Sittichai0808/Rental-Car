@@ -17,7 +17,8 @@ const userSchema = new mongoose.Schema(
       required: true
     },
     phoneNumber: {
-      type: String
+      type: String,
+      default: '09418849194'
     },
     role: {
       type: String,
@@ -27,17 +28,21 @@ const userSchema = new mongoose.Schema(
     date_of_birth: {
       type: String
     },
-    profilePicture: {
-      type: String,
-      default: 'https://img.freepik.com/premium-vector/man-avatar-profile-picture-vector-illustration_268834-538.jpg'
-    },
-    address: {
-      type: String
+    userCars: {
+      type: Array
     },
     driverLicenses: {
-      type: mongoose.Types.ObjectId,
-      ref: "DriverLicenses"
+      type: ObjectId
     },
+
+    profilePicture: {
+      type: Array,
+      default: 'https://res.cloudinary.com/djllhxlfc/image/upload/v1699417003/cars/default_avatar_jwbg8s.jpg'
+    },
+    address: {
+      type: String,
+      default: 'Núi Thành, Quảng Nam'
+    }
   },
   { timestamps: true }
 )

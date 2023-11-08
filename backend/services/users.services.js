@@ -13,33 +13,23 @@ class UsersService {
     return signToken({
       payload: { user_id: user_id, role, token_type: TokenType.AccessToken },
       privateKey: process.env.JWT_SECRET_ACCESS_TOKEN
-      // options: {
-      //   expiresIn: process.env.ACCESS_TOKEN_EXPIRES_IN
-      // }
     })
   }
 
   async register(payload) {
     const user_id = new ObjectId()
-    // const email_verify_token = await this.signEmailVerifyToken(user_id.toString())
-    // console.log('email_verify_token: ', email_verify_token)
     const newUser = new User({
       ...payload,
       _id: user_id,
-
       password: hashPassword(payload.password).toString()
     })
     try {
-      await newUser.save()
-      // const access_token = await this.signAccessToken(user_id.toString())
-      return { user_id, role }
+      const user = await newUser.save()
+      const access_token = await this.signAccessToken(user_id.toString())
+      return { user, access_token }
     } catch (error) {
-      console.log(error)
+      throw Error(error)
     }
-
-    // await databaseServices.refreshTokens.insertOne(
-    //   new RefreshToken({ user_id: new ObjectId(user_id), token: refresh_token })
-    // )
   }
 
   async checkExistEmail(email) {
@@ -98,6 +88,16 @@ class UsersService {
     } catch (error) {}
   }
 
+  async getUserByEmail(payload) {
+    const { email } = { ...payload }
+    console.log(email)
+
+    try {
+      const getUser = await User.findOne({ email: email.toString() })
+      return getUser
+    } catch (error) {}
+  }
+
   async updateUser(user_id, payload) {
     try {
       // if (payload.password) {
@@ -105,12 +105,39 @@ class UsersService {
       // }
       const updateUser = await User.findByIdAndUpdate(
         user_id.toString(),
-        { password: hashPassword(payload.password).toString(), ...payload },
+        { ...payload, password: hashPassword(payload.password).toString() },
         { new: true }
       )
+
       return updateUser
     } catch (error) {
-      console.log(error)
+      throw Error(error)
+    }
+  }
+  async uploadImagesUser(user_id, payload) {
+    try {
+      const { profilePicture } = payload
+
+      // Tạo mảng mới của đường dẫn hình ảnh
+      const profilePictureToUpdate = profilePicture.map((el) => el.path)
+
+      const updateData = {}
+
+      // Kiểm tra và cập nhật trường "images" nếu có
+      if (profilePictureToUpdate.length > 0) {
+        updateData.profilePicture = profilePictureToUpdate
+      }
+
+      if (Object.keys(updateData).length === 0) {
+        // Không có dữ liệu để cập nhật, không thực hiện gì cả
+        return null
+      }
+
+      const uploadImagesUser = await User.findByIdAndUpdate(user_id.toString(), updateData, { new: true })
+
+      return uploadImagesUser
+    } catch (error) {
+      throw new Error('Error uploading images')
     }
   }
 
@@ -128,8 +155,31 @@ class UsersService {
       console.log(error)
     }
   }
+
+  async getUsers() {
+    try {
+      return await User.find({ role: 'user' }).populate('driverLicenses')
+    } catch (error) {
+      throw Error(error)
+    }
+  }
+
+  async getStaffs() {
+    try {
+      return await User.find({ role: 'staff' })
+    } catch (error) {
+      throw Error(error)
+    }
+  }
+
+  async getDetailUser(userId) {
+    try {
+      const getDetailUser = await User.findById(userId).populate('driverLicenses')
+      return getDetailUser
+    } catch (error) {
+      console.log(error)
+    }
+  }
 }
 
-const usersService = new UsersService()
-
-export default usersService
+export default new UsersService()

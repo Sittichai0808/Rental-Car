@@ -1,69 +1,72 @@
-import { Box, Button } from '@mui/material'
-import GoogleIcon from '@mui/icons-material/Google'
-import { GoogleAuthProvider, signInWithPopup, getAuth } from 'firebase/auth'
-import { app } from '../firebase.js'
-import axios from 'axios'
-import { useNavigate } from 'react-router-dom'
+import { GooglePlusOutlined } from "@ant-design/icons";
+import { Button } from "antd";
+import axios from "axios";
+import { GoogleAuthProvider, getAuth, signInWithPopup } from "firebase/auth";
+import { app } from "../../firebase";
+import { toast } from "react-toastify";
+import { useRouter } from "next/router";
+import useLocalStorage from "@/hooks/useLocalStorage";
+import { useUserState } from "@/recoils/user.state.js";
 function OAuthGoogle() {
-  const navigate = useNavigate()
+  const router = useRouter();
+  const [user, setUser] = useUserState();
+  const [profile, setProfile, clearProfile] = useLocalStorage("profile", "");
+  const [accessToken, setAccessToken, clearAccessToken] = useLocalStorage(
+    "access_token",
+    ""
+  );
   const handleGoogleAuthClick = async () => {
     try {
-      const provider = new GoogleAuthProvider()
-      const auth = getAuth(app)
+      const provider = new GoogleAuthProvider();
+      const auth = getAuth(app);
 
-      const result = await signInWithPopup(auth, provider)
-      console.log(result)
+      const result = await signInWithPopup(auth, provider);
+
       const res = await axios.post(
-        'http://localhost:4000/users/google',
+        `${process.env.NEXT_PUBLIC_REACT_APP_BACKEND_URL}/users/google`,
 
         {
           username: result.user.displayName,
           email: result.user.email,
-          photo: result.user.photoURL
+          photo: result.user.photoURL,
         },
         {
-          headers: { 'Content-Type': 'application/json' }
+          headers: { "Content-Type": "application/json" },
         }
-      )
-      // const res = await fetch('/api/auth/google', {
-      //   method: 'POST',
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //   },
-      //   body: JSON.stringify({
-      //     name: result.user.displayName,
-      //     email: result.user.email,
-      //     photo: result.user.photoURL,
-      //   }),
-      // });
-
-      navigate('/')
+      );
+      if (res.status === 200) {
+        setUser({ ...res.data.result });
+        setProfile({ ...res.data.result });
+        setAccessToken(res.data.access_token);
+        router.push("/");
+      } else {
+        console.log(error.res.data.errors[0].msg);
+      }
     } catch (error) {
-      console.log("couldn't not login with google", error)
+      toast.error(error, {
+        position: toast.POSITION.TOP_CENTER,
+      });
     }
-  }
+  };
   return (
     <>
       <Button
-        variant='outlined'
-        sx={{
-          width: '100%',
-          top: '10px',
-          // left: '7px',
-          color: 'gray',
-          textTransform: 'capitalize',
-          borderColor: '#c4c2c2',
-          padding: '10px',
-          position: 'relative'
-        }}
         onClick={handleGoogleAuthClick}
-        // startIcon={<GoogleIcon />}
+        type="default"
+        className="relative  text-base h-[50px] w-[400px] py-2 mt-2"
       >
-        <GoogleIcon sx={{ position: 'absolute', left: '15px' }} />
-        Sign up with Google
+        <GooglePlusOutlined
+          style={{
+            fontSize: "25px",
+            position: "absolute",
+            left: "20px",
+            color: "gray",
+          }}
+        />
+        Sign Up With Google
       </Button>
     </>
-  )
+  );
 }
 
-export default OAuthGoogle
+export default OAuthGoogle;

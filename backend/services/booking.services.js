@@ -81,7 +81,7 @@ class BookingServices {
 
   async getHistoryBooking(bookBy) {
     try {
-      const getHistoryBooking = await Bookings.find({ bookBy: bookBy }).populate("carId")
+      const getHistoryBooking = await Bookings.find({ bookBy: bookBy }).populate("carId").populate("contract")
       return getHistoryBooking
     } catch (error) {
       throw error
@@ -93,6 +93,7 @@ class BookingServices {
       const getListBooking = await Bookings.find({})
         .populate('bookBy', 'username phoneNumber')
         .populate('carId', 'thumb numberCar ')
+        .populate('contract')
       return getListBooking
     } catch (error) {
       throw error

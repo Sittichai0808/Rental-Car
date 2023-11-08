@@ -88,6 +88,17 @@ class BookingServices {
     }
   }
 
+  async getListBooking() {
+    try {
+      const getListBooking = await Bookings.find({})
+        .populate('bookBy', 'username phoneNumber')
+        .populate('carId', 'thumb numberCar ')
+      return getListBooking
+    } catch (error) {
+      throw error
+    }
+  }
+
   async getBookedTimeSlots(carId) {
     try {
       const getBookedTimeSlots = await BookedTimeSlots.find({ carId: carId })

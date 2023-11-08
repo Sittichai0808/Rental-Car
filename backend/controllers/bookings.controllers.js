@@ -30,6 +30,22 @@ export const cancelBooking = async (req, res) => {
   }
 }
 
+export const getListBooking = async (req, res) => {
+  try {
+    const result = await bookingService.getListBooking()
+    if (!result) {
+      return res.status(HTTP_STATUS.NOT_FOUND).json({ error: 'Booking not found' })
+    } else {
+      return res.status(HTTP_STATUS.OK).json({
+        message: 'Get list booking successfully',
+        result
+      })
+    }
+  } catch (error) {
+    return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ error: 'Something went wrong' })
+  }
+}
+
 export const getHistoryBooking = async (req, res) => {
   try {
     const bookBy = req.decoded_authorization.user_id

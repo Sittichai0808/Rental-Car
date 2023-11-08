@@ -168,28 +168,6 @@ const BookingPage = () => {
     }
   };
 
-  const onSubmitMOMO = async (values) => {
-    try {
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_REACT_APP_BACKEND_URL}/payments/create_payment_url_momo`,
-
-        values,
-        {
-          headers: { "Content-Type": "application/json" },
-          //   withCredentials: true,
-        }
-      );
-
-      if (response.status === 200) {
-        window.location.assign(response.data);
-      } else {
-        console.log(error);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   const [bookedTimeSlots, setBookedTimeSlots] = useState([]);
 
   const [validationMessage, setValidationMessage] = useState("");

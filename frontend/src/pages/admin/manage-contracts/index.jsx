@@ -35,7 +35,7 @@ import {
 } from "antd";
 import { useEffect, useState } from "react";
 
-export default function AdminManageBookings() {
+export default function AdminManageContracts() {
   const [form] = Form.useForm();
 
   const [open, setOpen] = useState(false);
@@ -321,4 +321,4 @@ export default function AdminManageBookings() {
   );
 }
 
-AdminManageBookings.Layout = AdminLayout;
+AdminManageContracts.Layout = AdminLayout;

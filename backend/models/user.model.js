@@ -17,8 +17,7 @@ const userSchema = new mongoose.Schema(
       required: true
     },
     phoneNumber: {
-      type: String,
-      default: '09418849194'
+      type: String
     },
     role: {
       type: String,
@@ -40,8 +39,7 @@ const userSchema = new mongoose.Schema(
       default: 'https://res.cloudinary.com/djllhxlfc/image/upload/v1699417003/cars/default_avatar_jwbg8s.jpg'
     },
     address: {
-      type: String,
-      default: 'Núi Thành, Quảng Nam'
+      type: String
     }
   },
   { timestamps: true }

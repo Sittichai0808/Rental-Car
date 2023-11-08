@@ -12,7 +12,6 @@ export const CarCard = ({ dataCar }) => {
             alt="car"
             height={250}
             width={300}
-            layout="fill"
             className="rounded-lg object-cover"
           />
         </div>

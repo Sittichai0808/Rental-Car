@@ -98,3 +98,23 @@ export const ratings = async (req, res) => {
     res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ message: 'Cannot rating' })
   }
 }
+
+export const getRatingsOfCar = async (req, res, next) => {
+  try {
+    const { carId } = req.params
+    const result = await carsService.getRatingsOfCar(carId)
+    if (!result) {
+      return res.status(HTTP_STATUS.NOT_FOUND).json({ error: 'Car not found' })
+    } else {
+      return res.status(HTTP_STATUS.OK).json({
+        message: CARS_MESSAGE.GET_CAR_SUCCESS,
+        result
+      })
+    }
+  } catch (error) {
+    return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
+      message: 'Something went wrong',
+      error: error.message
+    })
+  }
+}

@@ -50,6 +50,10 @@ const bookingsSchema = new mongoose.Schema(
       type: String,
       enum: ['Thành công', 'Đã Hủy'],
       default: 'Thành công'
+    },
+    contract: {
+      type: mongoose.Types.ObjectId,
+      ref: 'Contracts'
     }
   },
   { timestamps: true }

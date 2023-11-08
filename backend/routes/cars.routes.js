@@ -5,7 +5,8 @@ import {
   getCarById,
   getListCars,
   uploadImagesCar,
-  ratings
+  ratings,
+  getRatingsOfCar
 } from '../controllers/cars.controllers.js'
 import { wrapRequestHandler } from '../utils/handlers.js'
 import { accessTokenValidator, adminValidator, staffValidator } from '../middlewares/users.middlewares.js'
@@ -26,5 +27,6 @@ carsRoutes.post(
 )
 
 carsRoutes.post('/:carId/rating', accessTokenValidator, wrapRequestHandler(ratings))
+carsRoutes.get('/ratings/:carId', wrapRequestHandler(getRatingsOfCar))
 
 export default carsRoutes

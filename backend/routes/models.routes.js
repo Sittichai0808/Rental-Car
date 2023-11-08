@@ -1,7 +1,10 @@
 import express from 'express'
-import { createModels } from '../controllers/models.controller.js'
+import { createModels, getModelByBrand } from '../controllers/models.controller.js'
+import { wrapRequestHandler } from '../utils/handlers.js'
+import { adminValidator, staffValidator } from '../middlewares/users.middlewares.js'
 const modelsRoutes = express.Router()
 
-modelsRoutes.post('/createModel', createModels)
+modelsRoutes.post('/createModel', adminValidator || staffValidator, wrapRequestHandler(createModels))
+modelsRoutes.get('/:brandId', adminValidator || staffValidator, wrapRequestHandler(getModelByBrand))
 
 export default modelsRoutes

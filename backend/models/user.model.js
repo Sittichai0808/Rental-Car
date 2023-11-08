@@ -17,11 +17,12 @@ const userSchema = new mongoose.Schema(
       required: true
     },
     phoneNumber: {
-      type: String
+      type: String,
+      default: '09418849194'
     },
     role: {
       type: String,
-      enum: ['user', 'admin'],
+      enum: ['user', 'admin', 'staff'],
       default: 'user'
     },
     date_of_birth: {
@@ -35,8 +36,12 @@ const userSchema = new mongoose.Schema(
     },
 
     profilePicture: {
+      type: Array,
+      default: 'https://res.cloudinary.com/djllhxlfc/image/upload/v1699417003/cars/default_avatar_jwbg8s.jpg'
+    },
+    address: {
       type: String,
-      default: 'https://img.freepik.com/premium-vector/man-avatar-profile-picture-vector-illustration_268834-538.jpg'
+      default: 'Núi Thành, Quảng Nam'
     }
   },
   { timestamps: true }

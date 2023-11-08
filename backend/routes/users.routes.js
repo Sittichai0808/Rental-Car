@@ -10,8 +10,11 @@ import {
   generateOTPController,
   verifyOTPController,
   resetPasswordController,
-  registerMailController
+  registerMailController,
+  getUserByEmailController,
+  uploadImagesUser
 } from '../controllers/users.controllers.js'
+import uploadCloud from '../utils/cloudinary.config.js'
 const usersRoutes = express.Router()
 
 /**
@@ -47,12 +50,25 @@ usersRoutes.post('/google', wrapRequestHandler(googleController))
 usersRoutes.get('/get-user', accessTokenValidator, wrapRequestHandler(getUserController))
 
 /**
+ * Description: Get User
+ * Path: /get-user
+ * Method: GET
+ * body: {email: string}
+ */
+usersRoutes.post('/get-user-by-email', wrapRequestHandler(getUserByEmailController))
+
+/**
  * Description: Update User
  * Path: /update-user
  * Method: POST
  * Body:{ username: string, email: string, password: string,profilePicture: string,...}
  */
 usersRoutes.put('/update-user/:userId', accessTokenValidator, wrapRequestHandler(updateUserController))
+usersRoutes.put(
+  '/upload-image/:userId',
+  uploadCloud.fields([{ name: 'profilePicture', maxCount: 10 }]),
+  wrapRequestHandler(uploadImagesUser)
+)
 
 /**
  * Description: Generate OTP
@@ -75,6 +91,13 @@ usersRoutes.get('/verify-otp/:code', wrapRequestHandler(verifyOTPController))
  * Method: PUT
  */
 usersRoutes.put('/reset-password', wrapRequestHandler(resetPasswordController))
+
+/**
+ * Description: Register Mail
+ * Path: /register-mail
+ * Method: POST
+ * Body: {email: String,name: string, text: String, subject: String}
+ */
 
 /**
  * Description: Register Mail

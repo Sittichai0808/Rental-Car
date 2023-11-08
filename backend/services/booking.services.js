@@ -81,7 +81,19 @@ class BookingServices {
 
   async getHistoryBooking(bookBy) {
     try {
-      const getHistoryBooking = await Bookings.find({ bookBy: bookBy }).populate("carId").populate("contract")
+      const getHistoryBooking = await Bookings.find({ bookBy: bookBy }).populate({
+        path: "carId",
+        populate: {
+          path: "brand",
+          model: "Brands"
+        },
+      }).populate({
+        path: "carId",
+        populate: {
+          path: "model",
+          model: "Models"
+        }
+      }).populate("contract")
       return getHistoryBooking
     } catch (error) {
       throw error

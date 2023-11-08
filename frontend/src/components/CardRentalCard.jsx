@@ -2,10 +2,12 @@ import React from "react";
 import { Button, Modal, Rate, Form, Input } from "antd";
 import Image from "next/image";
 import Link from "next/link";
-import car from "../../public/images/car.jpg";
+import { formatCurrency } from "@/utils/number.utils";
+import moment from "moment";
 import { useState } from "react";
+
 const { TextArea } = Input;
-export const CarRentalCard = () => {
+export const CarRentalCard = ({ info }) => {
   const [open, setOpen] = useState(false);
 
   const showModal = () => {
@@ -23,7 +25,7 @@ export const CarRentalCard = () => {
       <div className="flex flex-row ">
         <div className="flex flex-col relative aspect-video cursor-pointer">
           <Image
-            src={car}
+            src={info?.carId.thumb}
             alt="car"
             height={150}
             width={150}
@@ -34,19 +36,19 @@ export const CarRentalCard = () => {
         <div className="flex flex-col w-3/4 ml-5 justify-around">
           <div>
             <h5 className="text-xl line-clamp-1 font-bold ml-2 mt-0 m-0">
-              Chevrolet Orlando 2017
+              {info?.carId.model.name} {info?.carId.yearManufacture}
             </h5>
             <h2 className="line-clamp-1 text-red-500 font-bold ml-2 m-0">
-              2.000.000 VND
+              {formatCurrency(info?.totalCost)}
             </h2>
           </div>
           <div className="flex justify-between items-center">
             <div className="">
               <span className="line-clamp-1 font-normal ml-2">
-                Ngày thuê: 10-08-2023
+                Ngày thuê: {moment(info?.timeBookingStart).format("DD-MM-YYYY")}
               </span>
               <span className="line-clamp-1 font-normal ml-2">
-                Ngày trả: 11-08-2023
+                Ngày trả: {moment(info?.timeBookingEnd).format("DD-MM-YYYY")}
               </span>
             </div>
             <div className="flex gap-4">

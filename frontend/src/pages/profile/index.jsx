@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from "react";
 import useLocalStorage from "@/hooks/useLocalStorage";
+
 import { useUserState } from "@/recoils/user.state.js";
+
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "react-toastify";
+import moment from "moment";
 import axios from "axios";
 import {
   Typography,
@@ -19,6 +22,7 @@ import Image from "next/image";
 import styled from "@emotion/styled";
 import { ProfileLayout } from "@/layouts/ProfileLayout";
 import Link from "next/link";
+import { borderRadius } from "@material-ui/system";
 
 const { Title } = Typography;
 const StyleInput = styled(Input)`
@@ -61,6 +65,7 @@ export default function AccountPage() {
 
   const [profile, setProfile, clearProfile] = useLocalStorage("profile", "");
   const [user, setUser] = useUserState();
+
   useEffect(() => {
     setUser(profile);
   }, [user]);
@@ -166,14 +171,21 @@ export default function AccountPage() {
         <div className="flex title items-center justify-between">
           <Title className="flex items-center font-semibold text-xl" level={3}>
             Giấy phép lái xe
+            <p className="rounded-lg border-solid border-black text-xs bg-orange-400 ">
+              {user?.status}
+            </p>
           </Title>
+
           <div className="flex items-baseline ">
-            <Button className="rounded-lg border-solid border-black font-bold text-xs">
-              Chỉnh sửa
-              <EditOutlined />
-            </Button>
+            <Link href={`/profile/driverlicsense `}>
+              <Button className="rounded-lg border-solid border-black font-bold text-xs">
+                Chỉnh sửa
+                <EditOutlined />
+              </Button>
+            </Link>
           </div>
         </div>
+
         <div className="flex items-center ">
           <Title className="text-xs font-medium ">
             Vì sao tôi phải xác thực GPLX
@@ -197,9 +209,8 @@ export default function AccountPage() {
                   disabled
                   type="text"
                   className="flex items-center text-base font-semibold text-slate-950"
-                  placeholder="Email"
                   size="small"
-                  defaultValue="09248205850"
+                  value={user?.drivingLicenseNo}
                 />
               </div>
               <div className="flex flex-col  justify-between">
@@ -213,9 +224,8 @@ export default function AccountPage() {
                   disabled
                   type="text"
                   className="flex items-center text-base font-semibold text-slate-950"
-                  placeholder="Email"
                   size="small"
-                  defaultValue="NGUYEN NGOC NGAN"
+                  value={user?.fullName}
                 />
               </div>
               <div className="flex flex-col justify-between">
@@ -223,15 +233,30 @@ export default function AccountPage() {
                   level={5}
                   className="flex items-center text-xs font-medium"
                 >
-                  Ngày sinh
+                  Dob
                 </Title>
                 <StyleInput
                   disabled
                   type="text"
                   className="flex items-center text-base font-semibold text-slate-950"
-                  defaultValue="22-01-2001"
                   size="small"
-                  value={user?.date_of_birth}
+                  value={moment(user?.dob).format("DD/MM/YYYY")}
+                />
+              </div>
+
+              <div className="flex flex-col justify-between">
+                <Title
+                  level={5}
+                  className="flex items-center text-xs font-medium"
+                >
+                  Class
+                </Title>
+                <StyleInput
+                  disabled
+                  type="text"
+                  className="flex items-center text-base font-semibold text-slate-950"
+                  size="small"
+                  value={user?.class}
                 />
               </div>
             </div>

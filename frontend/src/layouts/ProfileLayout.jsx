@@ -90,8 +90,8 @@ export const ProfileLayout = ({ children }) => {
 
         console.log(response.data);
 
-        setUser({ ...response.data.result });
-        setProfile({ ...response.data.result });
+        setUser({ ...user, ...response.data.result });
+        setProfile({ ...user, ...response.data.result });
 
         router.push(window.location.reload());
       } else {

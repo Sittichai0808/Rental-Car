@@ -16,6 +16,5 @@ export const userAtom = atom({
   key: "user",
   default: getProfile("profile"),
 });
-
 export const useUserState = () => useRecoilState(userAtom);
 export const useUserValue = () => useRecoilValue(userAtom);

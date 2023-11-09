@@ -41,7 +41,7 @@ const ButtonSummit = styled(Button)`
   padding: 30px auto;
 `;
 
-export default function EditPage() {
+export default function DriverPage() {
   const router = useRouter();
   const [form] = Form.useForm();
 
@@ -56,8 +56,8 @@ export default function EditPage() {
     console.log("user._id:", user._id);
     console.log("Access Token:", accessToken);
     try {
-      const response = await axios.put(
-        `${process.env.NEXT_PUBLIC_REACT_APP_BACKEND_URL}/users/update-user/${user._id}`,
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_REACT_APP_BACKEND_URL}/drivers/registerDriver`,
         values,
 
         {
@@ -71,10 +71,10 @@ export default function EditPage() {
 
       if (response.status === 200) {
         console.log(response.data);
+
         setUser({ ...user, ...response.data.result });
         setProfile({ ...user, ...response.data.result });
-        console.log("Updated User:", user);
-        console.log("Updated Profile:", profile);
+        console.log("User Object:", user);
         router.push("/profile");
       } else {
         console.log(error.response.data.errors[0].msg);
@@ -91,7 +91,7 @@ export default function EditPage() {
     <div className="flex flex-col mt-10 items-center justify-center border-b bg-slate-100 py-4 sm:flex-row sm:px-5 lg:px-5 xl:px-12">
       <div className="flex flex-col justify-center  pl-10 pr-5  pb-6 w-1/2 ">
         <p className="flex justify-center items-center w-full text-2xl font-bold">
-          Cập nhật thông tin
+          Đăng kí GPLX
         </p>
         <Form
           form={form}
@@ -106,58 +106,84 @@ export default function EditPage() {
           className="mt-5 "
         >
           <Form.Item
-            label="UserName"
-            name="username"
+            label="FullName"
+            name="fullName"
             rules={[
               {
                 type: "text",
                 message: "Please input your name",
               },
+              {
+                required: true,
+                message: "Please input your name!",
+              },
             ]}
           >
-            <StyleInputModal
-              type="text"
-              placeholder={user?.username}
-              size="large"
-            />
+            <StyleInputModal type="text" size="large" />
           </Form.Item>
           <Form.Item
-            label="Address"
-            name="address"
+            label="drivingLicenseNo"
+            name="drivingLicenseNo"
             rules={[
               {
                 type: "text",
-                message: "The input is not valid name",
+                message: "The input is not valid drivingLicenseNo",
               },
-            ]}
-          >
-            <StyleInputModal placeholder={user?.address} size="large" />
-          </Form.Item>
-          <Form.Item
-            label="Email"
-            name="email"
-            rules={[
               {
-                type: "email",
-                message: "The input is not valid E-mail!",
+                required: true,
+                message: "Please input your drivingLicenseNo!",
               },
             ]}
           >
-            <StyleInputModal placeholder={user?.email} size="large" />
+            <StyleInputModal size="large" />
           </Form.Item>
           <Form.Item
-            label="PhoneNumber"
-            name="phoneNumber"
+            label="Dob"
+            name="dob"
             rules={[
               {
                 type: "text",
-                message: "The input is not valid phonenumber!",
+                message: "The input is not valid dob!",
+              },
+              {
+                required: true,
+                message: "Please input your drivingLicenseNo!",
               },
             ]}
           >
-            <StyleInputModal placeholder={user?.phoneNumber} size="large" />
+            <StyleInputModal size="large" />
           </Form.Item>
-
+          <Form.Item
+            label="Class"
+            name="class"
+            rules={[
+              {
+                type: "text",
+                message: "The input is not valid class!",
+              },
+              {
+                required: true,
+                message: "Please input your class!",
+              },
+            ]}
+          >
+            <StyleInputModal size="large" />
+          </Form.Item>
+          <Form.Item
+            label="Status"
+            name="status"
+            rules={[
+              {
+                type: "text",
+                message: "The input is not valid status!",
+              },
+            ]}
+          >
+            <StyleInputModal defaultValue={user?.status} size="large" />
+          </Form.Item>
+          {/* <Form.Item label="image" name="image">
+            <StyleInputModal type="file" size="large" />
+          </Form.Item> */}
           <Form.Item>
             <ButtonSummit type="primary" htmlType="submit">
               Cập nhập

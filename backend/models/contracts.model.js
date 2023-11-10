@@ -8,7 +8,7 @@ const contractsSchema = new mongoose.Schema(
       type: String,
       enum: ['Đang thực hiện', 'Đã tất toán', 'Hủy'],
       default: 'Đang thực hiện'
-    },
+    }
   },
   { timestamps: true }
 )

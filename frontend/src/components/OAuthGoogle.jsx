@@ -10,7 +10,7 @@ import { useUserState } from "@/recoils/user.state.js";
 function OAuthGoogle() {
   const router = useRouter();
   const [user, setUser] = useUserState();
-  const [profile, setProfile, clearProfile] = useLocalStorage("profile", "");
+
   const [accessToken, setAccessToken, clearAccessToken] = useLocalStorage(
     "access_token",
     ""
@@ -35,10 +35,14 @@ function OAuthGoogle() {
         }
       );
       if (res.status === 200) {
-        setUser({ ...res.data.result });
-        setProfile({ ...res.data.result });
+        setUser({ ...res.data });
+
         setAccessToken(res.data.access_token);
-        router.push("/");
+        if (res.data.result.role === "user") {
+          router.push("/");
+        } else {
+          router.push("/admin/dashboard");
+        }
       } else {
         console.log(error.res.data.errors[0].msg);
       }

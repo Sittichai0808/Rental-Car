@@ -1,5 +1,9 @@
+"use client";
 import { getBookings } from "@/apis/admin-bookings.api";
-import { GET_BOOKINGS_KEY } from "@/constants/react-query-key.constant";
+import {
+  GET_BOOKINGS_KEY,
+  GET_CONTRACTS_KEY,
+} from "@/constants/react-query-key.constant";
 import { AdminLayout } from "@/layouts/AdminLayout";
 import { formatCurrency } from "@/utils/number.utils";
 import moment from "moment";
@@ -9,6 +13,7 @@ import { storage } from "../../../../firebase.js"; // Import your Firebase stora
 import axios from "axios";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import { useMutation } from "@tanstack/react-query";
+
 import {
   CloudUploadOutlined,
   PlusOutlined,
@@ -17,6 +22,10 @@ import {
   PlusCircleOutlined,
   UploadOutlined,
   DeleteOutlined,
+  MinusCircleOutlined,
+  CheckCircleOutlined,
+  ExclamationCircleOutlined,
+  EyeOutlined,
 } from "@ant-design/icons";
 import { useQuery } from "@tanstack/react-query";
 import {
@@ -34,8 +43,23 @@ import {
   Upload,
 } from "antd";
 import { useEffect, useState } from "react";
+import { getContracts } from "@/apis/admin-contracts.api.js";
+import { Worker } from "@react-pdf-viewer/core";
+// Import the main component
+import { Viewer } from "@react-pdf-viewer/core";
 
-export default function AdminManageBookings() {
+// Import the styles
+import "@react-pdf-viewer/core/lib/styles/index.css";
+
+import { defaultLayoutPlugin } from "@react-pdf-viewer/default-layout";
+
+// Import styles
+import "@react-pdf-viewer/default-layout/lib/styles/index.css";
+export default function AdminManageContracts() {
+  const defaultLayoutPluginInstance = defaultLayoutPlugin();
+
+  const [urlFile, setUrlFile] = useState("");
+
   const [form] = Form.useForm();
 
   const [open, setOpen] = useState(false);
@@ -116,6 +140,23 @@ export default function AdminManageBookings() {
     return false; // Prevent the default upload action
   };
 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const showModalView = (contract) => {
+    setIsModalOpen(true);
+    console.log(contract.file);
+
+    setUrlFile(contract.file);
+  };
+
+  const handleOkView = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleCancelView = () => {
+    setIsModalOpen(false);
+  };
+
   const showModal = (booking) => {
     setOpen(true);
 
@@ -134,28 +175,29 @@ export default function AdminManageBookings() {
   };
 
   const { data } = useQuery({
-    queryFn: getBookings,
-    queryKey: [GET_BOOKINGS_KEY],
+    queryKey: [GET_CONTRACTS_KEY, accessToken],
+    queryFn: async () => await getContracts(accessToken),
   });
 
   console.log(data?.result);
 
   const dataSource = data?.result.map((item, idx) => ({
     id: idx + 1,
-    _id: item._id,
-    thumb: item?.carId?.thumb,
-    numberCar: item?.carId?.numberCar,
-    username: item?.bookBy?.username,
-    phone: item?.phone,
-    address: item?.address,
-
-    totalCost: formatCurrency(item?.totalCost),
-
-    timeBookingStart: moment(item?.timeBookingStart).format("DD-MM-YYYY HH:mm"),
-    timeBookingEnd: moment(item?.timeBookingEnd).format("DD-MM-YYYY HH:mm"),
-
-    codeTransaction: item?.codeTransaction,
-    timeTransaction: item?.timeTransaction,
+    _id: item?._id,
+    createBy: item?.createBy?.username,
+    bookBy: item?.bookingId?.bookBy?.username,
+    email: item?.bookingId?.bookBy?.email,
+    phone: item?.bookingId?.phone,
+    address: item?.bookingId?.address,
+    timeBookingStart: moment(item?.bookingId?.timeBookingStart).format(
+      "DD-MM-YYYY HH:mm"
+    ),
+    timeBookingEnd: moment(item?.bookingId?.timeBookingEnd).format(
+      "DD-MM-YYYY HH:mm"
+    ),
+    totalCost: formatCurrency(item?.bookingId?.totalCost),
+    file: item?.file,
+    status: item?.status,
   }));
 
   return (
@@ -167,74 +209,131 @@ export default function AdminManageBookings() {
             <Button type="primary">Search</Button>
           </div>
         </div>
+
         <Table
           scroll={{ x: 2400 }}
           columns={[
             { key: "id", title: "ID", dataIndex: "id", width: "2%" },
             {
-              key: "thumb",
-              title: "Thumbnail",
-              dataIndex: "thumb",
-              render: (url) => (
-                <Image
-                  className="h-32 aspect-video rounded-md object-cover"
-                  src={url}
-                />
+              key: "createBy",
+              title: "Người Tạo Hợp Đồng",
+              dataIndex: "createBy",
+            },
+            { key: "bookBy", title: "Tên Khách Hàng", dataIndex: "bookBy" },
+            {
+              key: "status",
+              title: "Trạng Thái",
+              dataIndex: "status",
+              render: (status) => (
+                <>
+                  {status === "Đang thực hiện" ? (
+                    <>
+                      <p className="text-green-500">
+                        <MinusCircleOutlined
+                          style={{
+                            color: "green",
+                            fontSize: "12px",
+                            marginRight: "5px",
+                          }}
+                        />
+                        Đang Thực Hiện
+                      </p>
+                    </>
+                  ) : status === "Đã tất toán" ? (
+                    <>
+                      <p className="text-green-600">
+                        <CheckCircleOutlined
+                          style={{
+                            color: "green",
+                            fontSize: "12px",
+                            marginRight: "5px",
+                          }}
+                        />
+                        Đã Tất Toán
+                      </p>
+                    </>
+                  ) : (
+                    <>
+                      <p className="text-red-500">
+                        <ExclamationCircleOutlined
+                          style={{
+                            color: "red",
+                            fontSize: "12px",
+                            marginRight: "5px",
+                          }}
+                        />
+                        Đã Hủy
+                      </p>
+                    </>
+                  )}
+                </>
               ),
             },
 
-            { key: "numberCar", title: "No. Seat", dataIndex: "numberCar" },
-            { key: "username", title: "Customer", dataIndex: "username" },
+            { key: "email", title: "Thư Điện Tử", dataIndex: "email" },
 
             {
               key: "phone",
-              title: "Phone Number",
+              title: "Số Điện Thoại",
               dataIndex: "phone",
             },
             {
-              key: "address",
-              title: "Address",
+              key: "addres",
+              title: "Điạ Chỉ",
               dataIndex: "address",
             },
             {
               key: "totalCost",
-              title: "Total Cost",
+              title: "Tổng Số Tiền",
               dataIndex: "totalCost",
             },
             {
               key: "timeBookingStart",
-              title: "Time Booking Start",
+              title: "Thời Gian Bắt Đầu",
               dataIndex: "timeBookingStart",
             },
             {
               key: "timeBookingEnd",
-              title: "Time Booking End",
+              title: "Thời Gian Kết Thúc",
               dataIndex: "timeBookingEnd",
             },
-            {
-              key: "codeTransaction",
-              title: "Code Transaction",
-              dataIndex: "codeTransaction",
-            },
-            {
-              key: "timeTransaction",
-              title: "Time Transaction",
-              dataIndex: "timeTransaction",
-            },
+
+            // {
+            //   key: "thumb",
+            //   title: "Thumbnail",
+            //   dataIndex: "thumb",
+            //   render: (url) => (
+            //     <div>
+            //       <Document file={url} onLoadSuccess={onDocumentLoadSuccess}>
+            //         <Page pageNumber={pageNumber} />
+            //       </Document>
+            //       <p>
+            //         Page {pageNumber} of {numPages}
+            //       </p>
+            //     </div>
+            //   ),
+            //  },
+
             {
               key: "action",
               title: "Action",
               fixed: "right",
-              width: "10%",
-              render: (_, booking) => (
+              width: "8%",
+              render: (_, contract) => (
                 <div className="flex gap-2">
                   <Button
                     type="primary"
                     className=" border border-solid border-green-400 "
-                    onClick={() => showModal(booking)}
+                    onClick={() => showModalView(contract)}
+                  >
+                    <EyeOutlined style={{ fontSize: "14px" }} />
+                  </Button>
+                  <Button
+                    type="primary"
+                    className=" border border-solid border-green-400 "
+                    onClick={() => showModal(contract)}
                   >
                     <PlusCircleOutlined style={{ fontSize: "14px" }} />
-                    Hợp Đồng
                   </Button>
                   <Popconfirm
                     title="Are you sure to deactivate this car?"
@@ -242,7 +341,6 @@ export default function AdminManageBookings() {
                   >
                     <Button className="bg-red-500 text-white border-none hover:bg-red-500/70">
                       <DeleteOutlined style={{ fontSize: "14px" }} />
-                      Hủy
                     </Button>
                   </Popconfirm>
                 </div>
@@ -317,8 +415,38 @@ export default function AdminManageBookings() {
           </Form>
         </>
       </Modal>
+
+      <Modal
+        title="Hợp Đồng"
+        open={isModalOpen}
+        onOk={handleOkView}
+        footer={null}
+        width={1000}
+        onCancel={handleCancelView}
+      >
+        <div>
+          {/* <Loader isLoading={isLoading} /> */}
+          <section
+            id="pdf-section"
+            className="d-flex flex-column align-items-center w-100"
+          >
+            <Worker workerUrl="https://unpkg.com/pdfjs-dist@2.14.305/build/pdf.worker.min.js">
+              <Viewer
+                fileUrl={urlFile}
+                plugins={[defaultLayoutPluginInstance]}
+              />
+            </Worker>
+            {/* <embed
+              type="application/pdf"
+              src={urlFile}
+              width={100 + "%"}
+              height={100 + "%"}
+            /> */}
+          </section>
+        </div>
+      </Modal>
     </>
   );
 }
 
-AdminManageBookings.Layout = AdminLayout;
+AdminManageContracts.Layout = AdminLayout;

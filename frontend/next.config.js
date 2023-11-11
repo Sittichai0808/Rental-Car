@@ -4,6 +4,7 @@ const nextConfig = {
     const fileLoaderRule = config.module.rules.find((rule) =>
       rule.test?.test?.(".svg")
     );
+    config.resolve.alias.canvas = false;
 
     config.module.rules.push(
       {

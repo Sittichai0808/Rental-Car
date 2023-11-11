@@ -18,7 +18,7 @@ import {
 } from "@/icons";
 import moment from "moment";
 import dayjs from "dayjs";
-import { Button, Divider, Table, Tag, DatePicker } from "antd";
+import { Button, Divider, Table, Tag, DatePicker, Modal } from "antd";
 import { DateRangePicker } from "@/components/antd";
 import Image from "next/image";
 import styled from "@emotion/styled";
@@ -31,6 +31,8 @@ import useLocalStorage from "@/hooks/useLocalStorage";
 import { useState } from "react";
 import { useDatesState } from "@/recoils/dates.state";
 import { isSameOrAfter, isSameOrBefore } from "moment";
+import { useUserState } from "@/recoils/user.state";
+import { BugOutlined } from "@ant-design/icons";
 
 const carServices = [
   { icon: MapIcon, name: "Bản đồ" },
@@ -47,6 +49,26 @@ const BorderlessTable = styled(Table)`
 `;
 
 export default function CarDetailPage() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [user, setUser] = useUserState();
+
+  const handleOk = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleRent = () => {
+    console.log(user);
+    if (user === null) {
+      setIsModalOpen(true);
+    } else {
+      router.push(`/booking/${data?._id}`);
+    }
+  };
+
   const router = useRouter();
   const carId = router.query.id;
   const [accessToken, setAccessToken, clearAccessToken] = useLocalStorage(
@@ -388,13 +410,28 @@ export default function CarDetailPage() {
               ]}
             /> */}
             <div className="flex justify-center ">
-              <Link href={`/booking/${data?._id}`}>
-                <Button type="primary">Chọn thuê</Button>
-              </Link>
+              {/* <Link href={`/booking/${data?._id}`}> */}
+              <Button type="primary" onClick={handleRent}>
+                Chọn thuê
+              </Button>
+              {/* </Link> */}
             </div>
           </div>
         </div>
       </div>
+      <Modal
+        title="Bạn cần đăng nhập để thuê xe"
+        open={isModalOpen}
+        onOk={handleOk}
+        onCancel={handleCancel}
+        footer={false}
+      >
+        <Link href="/login ">
+          <Button type="primary" className="mt-5">
+            Login
+          </Button>
+        </Link>
+      </Modal>
     </div>
   );
 }

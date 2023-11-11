@@ -17,20 +17,35 @@ export default function CarRentalPage() {
     <div>
       <div className="mb-20">
         {isLoading ? (
-          <Spin
-            indicator={
-              <LoadingOutlined
-                style={{
-                  fontSize: 24,
-                }}
-                spin
-              />
-            }
-          />
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              minHeight: "70vh",
+            }}
+          >
+            <Spin
+              indicator={
+                <LoadingOutlined
+                  style={{
+                    fontSize: 24,
+                  }}
+                  spin
+                />
+              }
+            />
+          </div>
         ) : (
           <div className="flex flex-col gap-5 ">
             {data?.result.map((value, index) => (
-              <CarRentalCard key={index} info={value} />
+              <CarRentalCard
+                key={index}
+                info={value}
+                accessToken={accessToken}
+                bookingId={value?.bookingId}
+                carId={value?.carId}
+              />
             ))}
           </div>
         )}

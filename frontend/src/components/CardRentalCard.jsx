@@ -1,22 +1,23 @@
 import React from "react";
-import { Button, Modal, Rate, Form, Input } from "antd";
+import { Button, Input } from "antd";
 import Image from "next/image";
 import Link from "next/link";
 import { formatCurrency } from "@/utils/number.utils";
 import moment from "moment";
 import { useState } from "react";
+import RatingModal from "./RatingModal";
 
-const { TextArea } = Input;
-export const CarRentalCard = ({ info }) => {
+export const CarRentalCard = ({ info, accessToken }) => {
   const [open, setOpen] = useState(false);
+  const [bookingId, setBookingId] = React.useState(null);
+  const [carId, setCarId] = React.useState(null);
 
-  const showModal = () => {
+  const showModal = (bookingId, carId) => {
+    setBookingId(bookingId);
+    setCarId(carId);
     setOpen(true);
   };
   const handleCancel = () => {
-    setOpen(false);
-  };
-  const handleOk = () => {
     setOpen(false);
   };
 
@@ -61,38 +62,17 @@ export const CarRentalCard = ({ info }) => {
                 <Button
                   className=" bg-red-600 text-gray-50"
                   danger
-                  onClick={showModal}
+                  onClick={() => showModal(info._id, info.carId._id)}
                 >
                   Đánh giá
                 </Button>
-                <Modal
+                <RatingModal
                   open={open}
-                  onOk={handleOk}
-                  onCancel={handleCancel}
-                  footer={[
-                    <Button key="back" onClick={handleCancel}>
-                      Cancel
-                    </Button>,
-                    <Button key="submit" type="primary" onClick={handleOk}>
-                      OK
-                    </Button>,
-                  ]}
-                >
-                  <div className="mt-10">
-                    <h3>Đánh giá </h3>
-                    <Rate className="mb-5" allowHalf defaultValue={5} />
-                    <div className="flex flex-col ">
-                      <Form.Item>
-                        <TextArea />
-                      </Form.Item>
-                      <Form.Item>
-                        <Button htmlType="submit" type="primary">
-                          Add Comment
-                        </Button>
-                      </Form.Item>
-                    </div>
-                  </div>
-                </Modal>
+                  handleCancel={handleCancel}
+                  bookingId={bookingId}
+                  carId={carId}
+                  accessToken={accessToken}
+                />
               </div>
             </div>
           </div>

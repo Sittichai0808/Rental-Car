@@ -46,7 +46,7 @@ class UsersService {
     const { password: hashedPassword, role, _id, ...rest } = user._doc
 
     const access_token = await this.signAccessToken(_id.toString(), role)
-    return { rest, access_token }
+    return { rest, access_token, role }
   }
 
   async google(payload) {

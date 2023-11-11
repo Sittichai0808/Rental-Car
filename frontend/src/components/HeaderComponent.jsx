@@ -21,11 +21,10 @@ const StyledMenu = styled(Menu)`
 `;
 const { Header } = Layout;
 export default function HeaderComponent() {
-  const [profile, setProfile, clearProfile] = useLocalStorage("profile", "");
   const [user, setUser] = useUserState();
-  useEffect(() => {
-    setUser(profile);
-  }, [user]);
+  // useEffect(() => {
+  //   setUser(profile);
+  // }, [user]);
 
   return (
     <Header className="bg-white flex gap-2 items-center px-0">
@@ -68,7 +67,7 @@ export default function HeaderComponent() {
             <div className="flex bg-neutral-200 rounded-full p-1 cursor-pointer">
               <UserFilledIcon className="text-neutral-500" />
             </div>
-            <span>{user?.username}</span>
+            <span>{user?.result?.username}</span>
           </div>
         </Link>
       )}

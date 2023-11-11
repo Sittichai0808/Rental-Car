@@ -1,10 +1,21 @@
 import { atom, useRecoilState, useRecoilValue } from "recoil";
-
-const getProfile = (key) => {
+import { apiClient } from "../apis/client";
+const getProfile = async () => {
   try {
     if (typeof window !== "undefined") {
-      const value = window.localStorage.getItem(key);
-      return value ? JSON.parse(value) : null;
+      const value = window.localStorage.getItem("access_token");
+      const { data } = await apiClient.request({
+        method: "GET",
+        url: "/users/get-user",
+        headers: {
+          Authorization: `Bearer ${JSON.parse(value)}`,
+          "Content-Type": "application/json",
+        },
+        withCredentials: true,
+      });
+      console.log(data);
+
+      return data;
     }
     return null;
   } catch (error) {
@@ -14,7 +25,7 @@ const getProfile = (key) => {
 
 export const userAtom = atom({
   key: "user",
-  default: getProfile("profile"),
+  default: getProfile(),
 });
 
 export const useUserState = () => useRecoilState(userAtom);

@@ -59,11 +59,7 @@ export default function AccountPage() {
   const handleOk = () => setOpen(false);
   const handleCancle = () => setOpen(false);
 
-  const [profile, setProfile, clearProfile] = useLocalStorage("profile", "");
   const [user, setUser] = useUserState();
-  useEffect(() => {
-    setUser(profile);
-  }, [user]);
 
   return (
     <div className="flex flex-col  mt-5">
@@ -72,7 +68,7 @@ export default function AccountPage() {
           <div className="flex flex-row w-full    ">
             <p className="m-0 text-lg font-semibold flex w-full "> Address</p>
             <p className="m-0 text-xl font-semibold text-gray-500 flex w-full">
-              {user?.address}
+              {user?.result?.address}
               <Link href={`/profile/edit-profile `}>
                 <Button
                   className="items-center absolute right-5"
@@ -106,7 +102,7 @@ export default function AccountPage() {
             </p>
             <p className="mt-0 mb-0 text-xl font-semibold text-gray-500 flex w-full">
               {" "}
-              {user?.email}
+              {user?.result?.email}
             </p>
           </div>
           <hr
@@ -127,7 +123,7 @@ export default function AccountPage() {
             </p>
             <p className="mt-0 mb-0 text-xl font-semibold text-gray-500 flex w-full">
               {" "}
-              {user?.phoneNumber}
+              {user?.result?.phoneNumber}
             </p>
           </div>
           <hr
@@ -231,7 +227,7 @@ export default function AccountPage() {
                   className="flex items-center text-base font-semibold text-slate-950"
                   defaultValue="22-01-2001"
                   size="small"
-                  value={user?.date_of_birth}
+                  value={user?.result?.date_of_birth}
                 />
               </div>
             </div>

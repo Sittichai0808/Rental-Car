@@ -249,7 +249,6 @@ const BookingPage = () => {
     setTotalDays(value[1]?.diff(value[0], "days"));
   };
   const { mutate } = useMutation(onSubmit);
-  const { mutate1 } = useMutation(onSubmitMOMO);
   const handleCheckout = (value) => {
     setTotalDays(totalDays);
     console.log(totalDays);

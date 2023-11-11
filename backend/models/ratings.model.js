@@ -11,6 +11,10 @@ const ratingsSchema = new mongoose.Schema(
             type: mongoose.Types.ObjectId,
             ref: "Cars"
         },
+        bookingId: {
+            type: mongoose.Types.ObjectId,
+            ref: "Bookings"
+        },
         comment: {
             type: String,
         },

@@ -77,41 +77,45 @@ class CarsService {
     }
   }
 
-  async ratings(user_id, carId, payload) {
+  async ratings(user_id, payload) {
     try {
-      const { star, comment } = payload
-
-      // const existingRating = await Ratings.findOne({ postBy: user_id, car: carId });
-
-      // if (existingRating) {
-      //     existingRating.star = star;
-      //     existingRating.comment = comment;
-      //     await existingRating.save();
-      //     return 'Đánh giá đã được cập nhật.';
-      // } else {
+      const { carId, bookingId, star, comment } = payload
       const newRatings = new Ratings({
         postBy: user_id,
-        carId: carId,
+        carId,
+        bookingId,
         star,
         comment
       })
-      await newRatings.save()
+      const savedRating = await newRatings.save();
 
-      const ratings = await Ratings.find({ carId: carId })
-      const totalStars = ratings.reduce((total, rating) => total + rating.star, 0)
-      const newTotalRatings = ratings.length > 0 ? totalStars / ratings.length : 0
+      const ratings = await Ratings.find({ carId: carId });
+      const totalStars = ratings.reduce((total, rating) => total + rating.star, 0);
+      const newTotalRatings = ratings.length > 0 ? totalStars / ratings.length : 0;
 
-      await Cars.updateOne({ _id: carId }, { totalRatings: newTotalRatings })
-      // }
+      // Cập nhật totalRatings của Car
+      await Cars.updateOne({ _id: carId }, { totalRatings: newTotalRatings });
+
+      return savedRating; // Trả về đánh giá đã lưu
     } catch (error) {
-      throw error
+      throw error;
     }
   }
+
 
   async getRatingsOfCar(carId) {
     try {
       const getRatingsOfCar = await Ratings.find({ carId: carId }).populate('postBy', 'username profilePicture')
       return getRatingsOfCar
+    } catch (error) {
+      throw Error(error)
+    }
+  }
+
+  async getRatingByBooking(bookingId) {
+    try {
+      const getRatingByBooking = await Ratings.find({ bookingId: bookingId })
+      return getRatingByBooking
     } catch (error) {
       throw Error(error)
     }

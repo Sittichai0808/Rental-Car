@@ -128,8 +128,6 @@ export const ProfileLayout = ({ children }) => {
             <Button
               className="absolute top-0 right-0 text-red-600 "
               onClick={() => {
-                console.log("log out");
-
                 clearAccessToken();
                 setUser(null);
                 router.push("/");

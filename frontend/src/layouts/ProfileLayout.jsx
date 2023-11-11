@@ -154,7 +154,7 @@ export const ProfileLayout = ({ children }) => {
               height={100}
               width={90}
               icon={<UserOutlined />}
-              src={user?.profilePicture[0]}
+              src={user?.result?.profilePicture[0]}
               alt="Image"
             />
 
@@ -167,11 +167,11 @@ export const ProfileLayout = ({ children }) => {
             </Upload>
             <div className="flex flex-col  ">
               <h5 className="text-lg font-semibold text-center mt-1 mb-2 ">
-                {user?.username}
+                {user?.result?.username}
               </h5>
 
               <p className="mt-0">
-                Tham gia: {moment(user?.createdAt).format("DD/MM/YYYY")}
+                Tham gia: {moment(user?.result?.createdAt).format("DD/MM/YYYY")}
               </p>
             </div>
           </div>

@@ -6,7 +6,7 @@ const contractsSchema = new mongoose.Schema(
     file: { type: String, required: true },
     status: {
       type: String,
-      enum: ['Đang thực hiện', 'Đã tất toán', 'Hủy'],
+      enum: ['Đang thực hiện', 'Đã tất toán', 'Đã Hủy'],
       default: 'Đang thực hiện'
     }
   },

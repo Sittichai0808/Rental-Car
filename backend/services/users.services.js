@@ -12,7 +12,10 @@ class UsersService {
     console.log(user_id, role)
     return signToken({
       payload: { user_id: user_id, role, token_type: TokenType.AccessToken },
-      privateKey: process.env.JWT_SECRET_ACCESS_TOKEN
+      privateKey: process.env.JWT_SECRET_ACCESS_TOKEN,
+      options: {
+        expiresIn: '3h'
+      }
     })
   }
 
@@ -60,7 +63,7 @@ class UsersService {
         const generatedPassword = Math.random().toString(36).slice(-8) + Math.random().toString(36).slice(-8)
         const hashedPassword1 = hashPassword(generatedPassword).toString()
         const newUser = new User({
-          username: user.username.split(' ').join('').toLowerCase() + Math.random().toString(36).slice(-8),
+          username: user.username,
           email: user.email,
           password: hashedPassword1,
           profilePicture: user.photo,

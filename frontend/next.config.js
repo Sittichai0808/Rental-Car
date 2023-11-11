@@ -1,4 +1,9 @@
 /** @type {import('next').NextConfig} */
+import withBundleAnalyzer from "@next/bundle-analyzer";
+const bundleAnalyzer = withBundleAnalyzer({
+  enabled: process.env.ANALYZE === "true",
+});
+
 const nextConfig = {
   webpack: (config) => {
     const fileLoaderRule = config.module.rules.find((rule) =>
@@ -33,7 +38,10 @@ const nextConfig = {
         pathname: "/djllhxlfc/**",
       },
     ],
+    domains: ["res.cloudinary.com"],
   },
+  swcMinify: true,
+  poweredByHeader: false,
   async headers() {
     return [
       {
@@ -49,4 +57,4 @@ const nextConfig = {
   },
 };
 
-export default nextConfig;
+export default bundleAnalyzer(nextConfig);

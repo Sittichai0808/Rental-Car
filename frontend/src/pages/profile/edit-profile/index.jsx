@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import { useUserState } from "@/recoils/user.state.js";
+import { useDriverState } from "@/recoils/driver.state.js";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import axios from "axios";
@@ -47,6 +48,7 @@ export default function EditPage() {
 
   const [profile, setProfile, clearProfile] = useLocalStorage("profile", "");
   const [user, setUser] = useUserState();
+  const [driver, setDriver] = useDriverState();
   const [accessToken, setAccessToken, clearAccessToken] =
     useLocalStorage("access_token");
 
@@ -71,10 +73,11 @@ export default function EditPage() {
 
       if (response.status === 200) {
         console.log(response.data);
-        setUser({ ...user, ...response.data.result });
-        setProfile({ ...user, ...response.data.result });
+
+        setUser({ ...response.data.result });
+        setProfile({ ...driver, ...response.data.result });
         console.log("Updated User:", user);
-        console.log("Updated Profile:", profile);
+
         router.push("/profile");
       } else {
         console.log(error.response.data.errors[0].msg);

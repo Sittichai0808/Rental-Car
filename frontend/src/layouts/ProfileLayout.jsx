@@ -90,8 +90,8 @@ export const ProfileLayout = ({ children }) => {
 
         console.log(response.data);
 
-        setUser({ ...user, ...response.data.result });
-        setProfile({ ...user, ...response.data.result });
+        setUser({ ...response.data.result });
+        setProfile({ ...response.data.result });
 
         router.push(window.location.reload());
       } else {
@@ -154,7 +154,7 @@ export const ProfileLayout = ({ children }) => {
               height={100}
               width={90}
               icon={<UserOutlined />}
-              src={user?.profilePicture[0]}
+              src={user?.profilePicture}
               alt="Image"
             />
 

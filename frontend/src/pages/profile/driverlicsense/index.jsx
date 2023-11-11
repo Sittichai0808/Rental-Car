@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from "react";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import { useUserState } from "@/recoils/user.state.js";
+import { useDriverState } from "@/recoils/driver.state.js";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import axios from "axios";
-import { Button, Input, Form } from "antd";
+import { Button, Input, Form, Upload } from "antd";
 import Image from "next/image";
 import styled from "@emotion/styled";
 import { useRouter } from "next/router";
 import Link from "next/link";
+import { UploadOutlined } from "@ant-design/icons";
 
 const StyleInput = styled(Input)`
   display: flex;
@@ -46,24 +48,33 @@ export default function DriverPage() {
   const [form] = Form.useForm();
 
   const [profile, setProfile, clearProfile] = useLocalStorage("profile", "");
+  const [driver, setDriver] = useDriverState();
   const [user, setUser] = useUserState();
   const [accessToken, setAccessToken, clearAccessToken] =
     useLocalStorage("access_token");
 
   const onSubmit = async (values) => {
-    console.log("User Object:", user);
+    const formData = new FormData();
+    formData.append("fullName", values.fullName);
+    formData.append("drivingLicenseNo", values.drivingLicenseNo);
+    formData.append("dob", values.dob);
+    formData.append("class", values.class);
+    formData.append("status", values.status);
+    formData.append("image", values.image);
+
+    console.log("User Object:", driver);
     console.log("value:", values);
     console.log("user._id:", user._id);
     console.log("Access Token:", accessToken);
     try {
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_REACT_APP_BACKEND_URL}/drivers/registerDriver`,
-        values,
+        formData,
 
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
-            "Content-Type": "application/json",
+            "Content-Type": "multipart/form-data",
             withCredentials: true,
           },
         }
@@ -72,9 +83,9 @@ export default function DriverPage() {
       if (response.status === 200) {
         console.log(response.data);
 
-        setUser({ ...user, ...response.data.result });
+        setDriver({ ...response.data.result });
         setProfile({ ...user, ...response.data.result });
-        console.log("User Object:", user);
+        console.log("User Object:", driver);
         router.push("/profile");
       } else {
         console.log(error.response.data.errors[0].msg);
@@ -101,7 +112,7 @@ export default function DriverPage() {
             mutate(values);
           }}
           label
-          initialValues={{}}
+          initialValues={{ status: driver?.status || "Chưa xác thực" }}
           autoComplete="off"
           className="mt-5 "
         >
@@ -179,11 +190,13 @@ export default function DriverPage() {
               },
             ]}
           >
-            <StyleInputModal defaultValue={user?.status} size="large" />
+            <StyleInputModal size="large" />
           </Form.Item>
-          {/* <Form.Item label="image" name="image">
-            <StyleInputModal type="file" size="large" />
-          </Form.Item> */}
+          <Form.Item label="image" name="image">
+            <Upload showUploadList={false} accept="image/*">
+              <Button icon={<UploadOutlined />}>Click to upload</Button>
+            </Upload>
+          </Form.Item>
           <Form.Item>
             <ButtonSummit type="primary" htmlType="submit">
               Cập nhập

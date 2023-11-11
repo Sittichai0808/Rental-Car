@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import useLocalStorage from "@/hooks/useLocalStorage";
 
 import { useUserState } from "@/recoils/user.state.js";
-
+import { useDriverState } from "@/recoils/driver.state";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import moment from "moment";
@@ -65,10 +65,14 @@ export default function AccountPage() {
 
   const [profile, setProfile, clearProfile] = useLocalStorage("profile", "");
   const [user, setUser] = useUserState();
+  const [driver, setDriver] = useDriverState();
 
   useEffect(() => {
     setUser(profile);
   }, [user]);
+  useEffect(() => {
+    setDriver(profile);
+  }, [driver]);
 
   return (
     <div className="flex flex-col  mt-5">
@@ -172,7 +176,7 @@ export default function AccountPage() {
           <Title className="flex items-center font-semibold text-xl" level={3}>
             Giấy phép lái xe
             <p className="rounded-lg border-solid border-black text-xs bg-orange-400 ">
-              {user?.status}
+              {driver?.status || "Chưa xác thực"}
             </p>
           </Title>
 
@@ -210,7 +214,7 @@ export default function AccountPage() {
                   type="text"
                   className="flex items-center text-base font-semibold text-slate-950"
                   size="small"
-                  value={user?.drivingLicenseNo}
+                  value={driver?.drivingLicenseNo}
                 />
               </div>
               <div className="flex flex-col  justify-between">
@@ -225,7 +229,7 @@ export default function AccountPage() {
                   type="text"
                   className="flex items-center text-base font-semibold text-slate-950"
                   size="small"
-                  value={user?.fullName}
+                  value={driver?.fullName}
                 />
               </div>
               <div className="flex flex-col justify-between">
@@ -240,7 +244,8 @@ export default function AccountPage() {
                   type="text"
                   className="flex items-center text-base font-semibold text-slate-950"
                   size="small"
-                  value={moment(user?.dob).format("DD/MM/YYYY")}
+                  value={moment(user?.dob).format("DD/MM/YYYY") || driver?.dob}
+                  // value={user?.dob}
                 />
               </div>
 
@@ -256,7 +261,7 @@ export default function AccountPage() {
                   type="text"
                   className="flex items-center text-base font-semibold text-slate-950"
                   size="small"
-                  value={user?.class}
+                  value={driver?.class}
                 />
               </div>
             </div>
@@ -268,8 +273,11 @@ export default function AccountPage() {
             <div className="flex flex-col justify-evenly h-full">
               <Image
                 className="w-full object-cover rounded-xl"
-                src="/images/car-detail.jpg"
-                alt="bgImage"
+                src={
+                  driver?.image ||
+                  "https://res.cloudinary.com/djllhxlfc/image/upload/v1698163098/cars/lnyyfgbsjmcb86wshum7.jpg"
+                }
+                alt="Image"
                 width={300}
                 height={200}
               />

@@ -52,12 +52,9 @@ const items = [
 
 export const ProfileLayout = ({ children }) => {
   const router = useRouter();
-  const [profile, setProfile, clearProfile] = useLocalStorage("profile", "");
+
   const [user, setUser] = useUserState();
 
-  useEffect(() => {
-    setUser(profile);
-  }, [user]);
   const [accessToken, setAccessToken, clearAccessToken] = useLocalStorage(
     "access_token",
     ""
@@ -90,8 +87,7 @@ export const ProfileLayout = ({ children }) => {
 
         console.log(response.data);
 
-        setUser({ ...response.data.result });
-        setProfile({ ...response.data.result });
+        setUser({ ...response.data });
 
         router.push(window.location.reload());
       } else {
@@ -133,7 +129,7 @@ export const ProfileLayout = ({ children }) => {
               className="absolute top-0 right-0 text-red-600 "
               onClick={() => {
                 console.log("log out");
-                clearProfile();
+
                 clearAccessToken();
                 setUser(null);
                 router.push("/");

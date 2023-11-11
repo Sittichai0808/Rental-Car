@@ -39,7 +39,7 @@ const RegisterPage = () => {
   const [form] = Form.useForm();
   const router = useRouter();
   const [user, setUser] = useUserState();
-  const [profile, setProfile, clearProfile] = useLocalStorage("profile", "");
+
   const [accessToken, setAccessToken, clearAccessToken] = useLocalStorage(
     "access_token",
     ""
@@ -56,10 +56,14 @@ const RegisterPage = () => {
       );
 
       if (response.status === 200) {
-        setUser({ ...response.data.result });
-        setProfile({ ...response.data.result });
+        setUser({ ...response.data });
+
         setAccessToken(response.data.access_token);
-        router.push("/");
+        if (response.data.result.role === "user") {
+          router.push("/");
+        } else {
+          router.push("/admin/dashboard");
+        }
       } else {
         console.log(error.response.data.errors[0].msg);
       }
@@ -96,11 +100,10 @@ const RegisterPage = () => {
               maxWidth: 600,
             }}
             autoComplete="off"
-            className="mt-5"
+            // className="mt-5"
           >
             <Form.Item
               name="username"
-              tooltip="What do you want others to call you?"
               rules={[
                 {
                   required: true,
@@ -111,10 +114,11 @@ const RegisterPage = () => {
             >
               <StyleInput
                 placeholder="Username"
-                size="large"
+                size="medium"
                 // style={{ border: "2px solid red" }}
               />
             </Form.Item>
+
             <Form.Item
               name="email"
               rules={[
@@ -128,7 +132,39 @@ const RegisterPage = () => {
                 },
               ]}
             >
-              <StyleInput placeholder="Email" size="large" />
+              <StyleInput placeholder="Email" size="medium" />
+            </Form.Item>
+            <Form.Item
+              name="fullname"
+              rules={[
+                {
+                  required: true,
+                  message: "Họ và tên không được để trống!",
+                  whitespace: true,
+                },
+              ]}
+            >
+              <StyleInput
+                placeholder="Họ và tên"
+                size="medium"
+                // style={{ border: "2px solid red" }}
+              />
+            </Form.Item>
+            <Form.Item
+              name="phoneNumber"
+              rules={[
+                {
+                  required: true,
+                  message: "Số điện thoại không được để trống!",
+                  whitespace: true,
+                },
+              ]}
+            >
+              <StyleInput
+                placeholder="Số Điện Thoại"
+                size="medium"
+                // style={{ border: "2px solid red" }}
+              />
             </Form.Item>
 
             <Form.Item
@@ -144,7 +180,7 @@ const RegisterPage = () => {
               <StyleInputPassword
                 type="password"
                 placeholder="Password"
-                size="large"
+                size="medium"
               />
             </Form.Item>
 
@@ -174,7 +210,7 @@ const RegisterPage = () => {
               <StyleInputPassword
                 type="password"
                 placeholder="Confirm Password"
-                size="large"
+                size="medium"
               />
             </Form.Item>
 

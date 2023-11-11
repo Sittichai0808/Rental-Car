@@ -57,10 +57,13 @@ const LoginPage = () => {
       );
 
       if (response.status === 200) {
-        setUser({ ...response.data.result });
-        setProfile({ ...response.data.result });
+        setUser({ ...response.data });
         setAccessToken(response.data.access_token);
-        router.push("/");
+        if (response.data.result.role === "user") {
+          router.push("/");
+        } else {
+          router.push("/admin/dashboard");
+        }
       } else {
         toast.error(error.response.data.errors[0].msg, {
           position: toast.POSITION.TOP_CENTER,

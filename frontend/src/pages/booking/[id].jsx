@@ -29,9 +29,11 @@ import Image from "next/image";
 import { useAccessTokenState } from "@/recoils/accessToken.state";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import { useDatesState } from "@/recoils/dates.state";
+import { useUserState } from "@/recoils/user.state";
 const { Title } = Typography;
 const { RangePicker } = DatePicker;
 const BookingPage = () => {
+  const [user, setUser] = useUserState();
   const router = useRouter();
   const { query, pathname } = useRouter();
   const carId = query?.id || "653912b7f01c77b98e74364c";
@@ -249,7 +251,7 @@ const BookingPage = () => {
     setTotalDays(value[1]?.diff(value[0], "days"));
   };
   const { mutate } = useMutation(onSubmit);
-  const { mutate1 } = useMutation(onSubmitMOMO);
+
   const handleCheckout = (value) => {
     setTotalDays(totalDays);
     console.log(totalDays);
@@ -430,10 +432,13 @@ const BookingPage = () => {
               </p>
               <p className="text-lg">
                 Tổng giá thuê:{" "}
-                {(totalDays * data?.cost + costGetCar).toLocaleString("it-IT", {
-                  style: "currency",
-                  currency: "VND",
-                })}
+                {(totalDays * data?.cost + costGetCar || 0).toLocaleString(
+                  "it-IT",
+                  {
+                    style: "currency",
+                    currency: "VND",
+                  }
+                )}
               </p>
 
               <button
@@ -446,26 +451,35 @@ const BookingPage = () => {
           </div>
         )}
         {current === 1 && (
-          <div class="flex  justify-center  bg-slate-100">
-            <div className="flex mt-5 mb-10 w-3/5 bg-slate-200 justify-center">
-              <Form
-                form={form}
-                onFinish={(values) => {
-                  mutate(values);
-                }}
-                layout="vertical"
-                name="basic"
-                initialValues={{
-                  bankCode: "",
-                  language: "vn",
-                  amount: "0",
-                }}
-                style={{
-                  width: 500,
-                }}
-                size="large"
-                className="mt-5"
-              >
+          <Form
+            form={form}
+            onFinish={(values) => {
+              mutate(values);
+            }}
+            labelCol={{
+              span: 7,
+            }}
+            wrapperCol={{
+              span: 18,
+            }}
+            layout="horizontal"
+            name="basic"
+            initialValues={{
+              bankCode: "",
+              language: "vn",
+              amount: "0",
+              fullname: `${user?.result?.fullname}`,
+              phone: `${user?.result?.phoneNumber}`,
+              address: `${user?.result?.address || ""}`,
+            }}
+            // style={{
+            //   width: 450,
+            // }}
+            size="large"
+            className=""
+          >
+            <div className="grid sm:px-10 lg:grid-cols-2 p-5  bg-slate-100">
+              <div class="px-10 pt-8 ">
                 <Form.Item
                   name="fullname"
                   label="Họ và tên:"
@@ -512,13 +526,14 @@ const BookingPage = () => {
                       dayjs(to || endDate, "DD MM YYYY HH mm"),
                     ]}
                     disabled
-                    style={{ width: "500px", color: "white" }}
+                    style={{ color: "white" }}
                   />
                 </Form.Item>
                 <Form.Item name="amount" label="Số tiền:">
                   <Input readOnly />
                 </Form.Item>
-
+              </div>
+              <div class="mt-14 bg-gray-50 px-10 pt-8 lg:mt-5">
                 <Form.Item name="bankCode" label="Chọn Phương thức thanh toán:">
                   <Radio.Group name="bankCode">
                     <Space direction="vertical">
@@ -557,9 +572,9 @@ const BookingPage = () => {
                     </Button>
                   </Space>
                 </Form.Item>
-              </Form>
+              </div>
             </div>
-          </div>
+          </Form>
         )}
       </>
 

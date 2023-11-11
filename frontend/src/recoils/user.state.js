@@ -4,18 +4,21 @@ const getProfile = async () => {
   try {
     if (typeof window !== "undefined") {
       const value = window.localStorage.getItem("access_token");
-      const { data } = await apiClient.request({
-        method: "GET",
-        url: "/users/get-user",
-        headers: {
-          Authorization: `Bearer ${JSON.parse(value)}`,
-          "Content-Type": "application/json",
-        },
-        withCredentials: true,
-      });
-      console.log(data);
 
-      return data;
+      if (value !== null) {
+        const { data } = await apiClient.request({
+          method: "GET",
+          url: "/users/get-user",
+          headers: {
+            Authorization: `Bearer ${JSON.parse(value)}`,
+            "Content-Type": "application/json",
+          },
+          withCredentials: true,
+        });
+        console.log(data);
+
+        return data;
+      }
     }
     return null;
   } catch (error) {

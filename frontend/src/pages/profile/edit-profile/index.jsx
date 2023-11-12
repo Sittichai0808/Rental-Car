@@ -51,16 +51,18 @@ export default function EditPage() {
   const [driver, setDriver] = useDriverState();
   const [accessToken, setAccessToken, clearAccessToken] =
     useLocalStorage("access_token");
-
-  const onSubmit = async (values) => {
+  useEffect(() => {
+    console.log("user: ", user);
+  }, [user]);
+  const updateProfile = async (value) => {
     console.log("User Object:", user);
-    console.log("value:", values);
+    console.log("value:", value);
     console.log("user._id:", user._id);
     console.log("Access Token:", accessToken);
     try {
       const response = await axios.put(
         `${process.env.NEXT_PUBLIC_REACT_APP_BACKEND_URL}/users/update-user/${user._id}`,
-        values,
+        value,
 
         {
           headers: {
@@ -70,14 +72,10 @@ export default function EditPage() {
           },
         }
       );
-
       if (response.status === 200) {
         console.log(response.data);
-
         setUser({ ...response.data.result });
-        setProfile({ ...driver, ...response.data.result });
-        console.log("Updated User:", user);
-
+        setProfile({ ...profile, ...response.data.result });
         router.push("/profile");
       } else {
         console.log(error.response.data.errors[0].msg);
@@ -89,7 +87,7 @@ export default function EditPage() {
     }
   };
 
-  const { mutate } = useMutation(onSubmit);
+  const { mutate } = useMutation(updateProfile);
   return (
     <div className="flex flex-col mt-10 items-center justify-center border-b bg-slate-100 py-4 sm:flex-row sm:px-5 lg:px-5 xl:px-12">
       <div className="flex flex-col justify-center  pl-10 pr-5  pb-6 w-1/2 ">
@@ -100,8 +98,8 @@ export default function EditPage() {
           form={form}
           layout="vertical"
           name="basic"
-          onFinish={(values) => {
-            mutate(values);
+          onFinish={(value) => {
+            mutate(value);
           }}
           label
           initialValues={{}}

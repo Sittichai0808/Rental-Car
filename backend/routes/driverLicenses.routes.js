@@ -5,8 +5,16 @@ import { accessTokenValidator, adminValidator, staffValidator } from '../middlew
 import uploadCloud from '../utils/cloudinary.config.js'
 const driverLicensesRoutes = express.Router()
 
-driverLicensesRoutes.post('/registerDriver', accessTokenValidator, uploadCloud.single('image'), wrapRequestHandler(regisLicensesDriver))
-driverLicensesRoutes.put('/acceptDriver/:did', adminValidator || staffValidator, wrapRequestHandler(acceptLicensesDriver))
+driverLicensesRoutes.post(
+  '/registerDriver',
+  accessTokenValidator,
+  uploadCloud.single('image'),
+  wrapRequestHandler(regisLicensesDriver)
+)
+driverLicensesRoutes.put(
+  '/acceptDriver/:did',
+  adminValidator || staffValidator,
+  wrapRequestHandler(acceptLicensesDriver)
+)
 
 export default driverLicensesRoutes
-

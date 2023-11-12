@@ -60,12 +60,8 @@ export default function DriverPage() {
     formData.append("dob", values.dob);
     formData.append("class", values.class);
     formData.append("status", values.status);
-    formData.append("image", values.image);
+    formData.append("image", values.image.file.originFileObj);
 
-    console.log("User Object:", driver);
-    console.log("value:", values);
-    console.log("user._id:", user._id);
-    console.log("Access Token:", accessToken);
     try {
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_REACT_APP_BACKEND_URL}/drivers/registerDriver`,
@@ -84,8 +80,7 @@ export default function DriverPage() {
         console.log(response.data);
 
         setDriver({ ...response.data.result });
-        setProfile({ ...user, ...response.data.result });
-        console.log("User Object:", driver);
+        setProfile({ ...profile, ...response.data.result });
         router.push("/profile");
       } else {
         console.log(error.response.data.errors[0].msg);
@@ -190,7 +185,7 @@ export default function DriverPage() {
               },
             ]}
           >
-            <StyleInputModal size="large" />
+            <StyleInputModal size="large" disabled />
           </Form.Item>
           <Form.Item label="image" name="image">
             <Upload showUploadList={false} accept="image/*">

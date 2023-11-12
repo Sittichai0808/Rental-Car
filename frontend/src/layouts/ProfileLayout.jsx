@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import { useUserState } from "@/recoils/user.state.js";
+import { useDriverState } from "@/recoils/driver.state.js";
 import { Tabs } from "antd";
 import moment from "moment";
 import { useMutation } from "@tanstack/react-query";
@@ -54,6 +55,7 @@ export const ProfileLayout = ({ children }) => {
   const router = useRouter();
   const [profile, setProfile, clearProfile] = useLocalStorage("profile", "");
   const [user, setUser] = useUserState();
+  const [driver, setDriver] = useDriverState();
 
   useEffect(() => {
     setUser(profile);
@@ -63,7 +65,7 @@ export const ProfileLayout = ({ children }) => {
     ""
   );
 
-  const onSubmit = async ({ file }) => {
+  const uploadProfilePicture = async ({ file }) => {
     console.log("User Object:", user);
     console.log("value:", file);
     console.log("user._id:", user._id);
@@ -85,13 +87,10 @@ export const ProfileLayout = ({ children }) => {
       );
 
       if (response.status === 200) {
-        const image_url = response.data.result.profilePicture;
-        console.log("Image URL:", image_url);
-
         console.log(response.data);
 
         setUser({ ...response.data.result });
-        setProfile({ ...response.data.result });
+        setProfile({ ...profile, ...response.data.result });
 
         router.push(window.location.reload());
       } else {
@@ -136,6 +135,7 @@ export const ProfileLayout = ({ children }) => {
                 clearProfile();
                 clearAccessToken();
                 setUser(null);
+                setDriver(null);
                 router.push("/");
               }}
             >
@@ -154,12 +154,12 @@ export const ProfileLayout = ({ children }) => {
               height={100}
               width={90}
               icon={<UserOutlined />}
-              src={user?.profilePicture}
+              src={user?.profilePicture[0]}
               alt="Image"
             />
 
             <Upload
-              customRequest={onSubmit}
+              customRequest={uploadProfilePicture}
               showUploadList={false}
               accept="image/*"
             >

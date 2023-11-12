@@ -67,12 +67,12 @@ export default function AccountPage() {
   const [user, setUser] = useUserState();
   const [driver, setDriver] = useDriverState();
 
-  useEffect(() => {
-    setUser(profile);
-  }, [user]);
-  useEffect(() => {
-    setDriver(profile);
-  }, [driver]);
+  // useEffect(() => {
+  //   setUser(profile);
+  // }, [user]);
+  // useEffect(() => {
+  //   setDriver(profile);
+  // }, [driver]);
 
   return (
     <div className="flex flex-col  mt-5">
@@ -244,8 +244,11 @@ export default function AccountPage() {
                   type="text"
                   className="flex items-center text-base font-semibold text-slate-950"
                   size="small"
-                  value={moment(user?.dob).format("DD/MM/YYYY") || driver?.dob}
-                  // value={user?.dob}
+                  value={
+                    driver?.dob
+                      ? moment(driver?.dob).format("DD/MM/YYYY")
+                      : driver?.dob
+                  }
                 />
               </div>
 
@@ -273,10 +276,7 @@ export default function AccountPage() {
             <div className="flex flex-col justify-evenly h-full">
               <Image
                 className="w-full object-cover rounded-xl"
-                src={
-                  driver?.image ||
-                  "https://res.cloudinary.com/djllhxlfc/image/upload/v1698163098/cars/lnyyfgbsjmcb86wshum7.jpg"
-                }
+                src={driver?.image}
                 alt="Image"
                 width={300}
                 height={200}

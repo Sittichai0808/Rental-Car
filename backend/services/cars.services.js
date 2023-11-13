@@ -120,6 +120,31 @@ class CarsService {
       throw Error(error)
     }
   }
+
+  async likeCars(user_id, carId) {
+    try {
+      const car = await Cars.findById(carId)
+      const isLiked = car?.likes?.find(el => el.toString() === user_id)
+      if (isLiked) {
+        const result = await Cars.findByIdAndUpdate(carId, { $pull: { likes: user_id } }, { new: true })
+        return result
+      } else {
+        const result = await Cars.findByIdAndUpdate(carId, { $push: { likes: user_id } }, { new: true })
+        return result
+      }
+    } catch (error) {
+      throw Error(error)
+    }
+  }
+
+  async getCarsLikedByUser(userId) {
+    try {
+      const likedCars = await Cars.find({ likes: userId }).populate('brand').populate('model');
+      return likedCars;
+    } catch (error) {
+      throw new Error('Error fetching liked cars for the user');
+    }
+  }
 }
 const carsService = new CarsService()
 export default carsService

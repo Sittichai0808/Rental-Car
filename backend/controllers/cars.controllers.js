@@ -137,3 +137,43 @@ export const getRatingByBooking = async (req, res, next) => {
     })
   }
 }
+
+export const likeCars = async (req, res) => {
+  try {
+    const { carId } = req.params;
+    const user_id = req.decoded_authorization.user_id
+    const result = await carsService.likeCars(user_id, carId);
+    if (!result) {
+      return res.status(HTTP_STATUS.NOT_FOUND).json({ error: 'Car not found' });
+    }
+
+    const isLiked = result.likes.some(el => el.toString() === user_id);
+    const message = isLiked ? 'Liked the car' : 'Unliked the car';
+
+    return res.status(HTTP_STATUS.OK).json({
+      message,
+      car: result
+    });
+  } catch (error) {
+    return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
+      message: 'Something went wrong',
+      error: error.message
+    });
+  }
+};
+
+export const getCarLikedByUser = async (req, res) => {
+  try {
+    const userId = req.params.userId
+    const result = await carsService.getCarsLikedByUser(userId)
+    return res.status(HTTP_STATUS.OK).json({
+      message: 'Get cars liked by user successfully',
+      result
+    })
+  } catch (error) {
+    return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
+      message: 'Something went wrong',
+      error: error.message
+    })
+  }
+}

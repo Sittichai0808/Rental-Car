@@ -1,8 +1,4 @@
 /** @type {import('next').NextConfig} */
-import withBundleAnalyzer from "@next/bundle-analyzer";
-const bundleAnalyzer = withBundleAnalyzer({
-  enabled: process.env.ANALYZE === "true",
-});
 
 const nextConfig = {
   webpack: (config) => {
@@ -57,4 +53,4 @@ const nextConfig = {
   },
 };
 
-export default bundleAnalyzer(nextConfig);
+export default nextConfig;

@@ -16,9 +16,9 @@ import {
   TransmissionIcon,
   UsbIcon,
 } from "@/icons";
+
 import moment from "moment";
-import dayjs from "dayjs";
-import { Button, Divider, Table, Tag, DatePicker, Modal } from "antd";
+import { Button, Divider, Table, Tag, Modal } from "antd";
 import { DateRangePicker } from "@/components/antd";
 import Image from "next/image";
 import styled from "@emotion/styled";
@@ -28,11 +28,16 @@ import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import axios from "axios";
 import useLocalStorage from "@/hooks/useLocalStorage";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useDatesState } from "@/recoils/dates.state";
-import { isSameOrAfter, isSameOrBefore } from "moment";
 import { useUserState } from "@/recoils/user.state";
-import { BugOutlined } from "@ant-design/icons";
+import { HeartOutlined, HeartFilled } from "@ant-design/icons";
+import {
+  GET_CAR_DETAILS,
+  GET_RATINGS_OF_CAR,
+} from "@/constants/react-query-key.constant";
+import { getCarDetail } from "@/apis/user-cars.api";
+import { getRatingsOfCar } from "@/apis/ratings.api";
 
 const carServices = [
   { icon: MapIcon, name: "Bản đồ" },
@@ -52,6 +57,16 @@ export default function CarDetailPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [user, setUser] = useUserState();
 
+  const [liked, setLiked] = useState(false);
+  const { data: car } = useQuery({
+    queryKey: [GET_CAR_DETAILS, carId],
+    queryFn: () => getCarDetail(carId),
+  });
+
+  const handleLikeClick = () => {
+    setLiked(!liked);
+  };
+
   const handleOk = () => {
     setIsModalOpen(false);
   };
@@ -61,20 +76,16 @@ export default function CarDetailPage() {
   };
 
   const handleRent = () => {
-    console.log(user);
     if (user === null) {
       setIsModalOpen(true);
     } else {
-      router.push(`/booking/${data?._id}`);
+      router.push(`/booking/${car?.result._id}`);
     }
   };
 
   const router = useRouter();
   const carId = router.query.id;
-  const [accessToken, setAccessToken, clearAccessToken] = useLocalStorage(
-    "access_token",
-    ""
-  );
+
   const [dates, setDates] = useDatesState();
   const [bookedTimeSlots, setBookedTimeSlots] = useState([]);
 
@@ -118,25 +129,6 @@ export default function CarDetailPage() {
 
     return isPastDate || isBookedDate;
   };
-  const { data } = useQuery({
-    queryKey: ["getCar", carId],
-    queryFn: async () => {
-      try {
-        const response = await axios.get(
-          `${process.env.NEXT_PUBLIC_REACT_APP_BACKEND_URL}/cars/${carId}`,
-
-          {
-            headers: { "Content-Type": "application/json" },
-            withCredentials: true,
-          }
-        );
-        console.log(response.data.result);
-        return response.data.result;
-      } catch (error) {
-        console.log(error);
-      }
-    },
-  });
 
   const result = useQuery({
     queryKey: ["getScheduleCar", carId],
@@ -147,13 +139,12 @@ export default function CarDetailPage() {
 
           {
             headers: {
-              Authorization: `Bearer ${accessToken}`,
               "Content-Type": "application/json",
             },
             withCredentials: true,
           }
         );
-        console.log(response.data.result);
+        // console.log(response.data.result);
         setBookedTimeSlots(response.data.result);
         return response.data.result;
       } catch (error) {
@@ -163,39 +154,23 @@ export default function CarDetailPage() {
   });
 
   const { data: ratings } = useQuery({
-    queryKey: ["getRatings", carId],
-    queryFn: async () => {
-      try {
-        const response = await axios.get(
-          `${process.env.NEXT_PUBLIC_REACT_APP_BACKEND_URL}/cars/ratings/${carId}`,
-
-          {
-            headers: { "Content-Type": "application/json" },
-            withCredentials: true,
-          }
-        );
-        console.log(response.data.result);
-        return response.data.result;
-      } catch (error) {
-        console.log(error);
-      }
-    },
+    queryKey: [GET_RATINGS_OF_CAR, carId],
+    queryFn: () => getRatingsOfCar(carId),
   });
-  console.log(ratings);
   return (
     <div>
       <div className="grid h-[600px] gap-4 grid-cols-4 grid-rows-3 relative">
         <div className="relative col-span-3 row-span-3 rounded-md overflow-hidden">
-          <Image alt="car" src={data?.thumb} layout="fill" />
+          <Image alt="car" src={car?.result.thumb} layout="fill" />
         </div>
         <div className="relative rounded-md overflow-hidden">
-          <Image alt="car" src={data?.images[0]} layout="fill" />
+          <Image alt="car" src={car?.result.images[0]} layout="fill" />
         </div>
         <div className="relative rounded-md overflow-hidden">
-          <Image alt="car" src={data?.images[1]} layout="fill" />
+          <Image alt="car" src={car?.result.images[1]} layout="fill" />
         </div>
         <div className="relative rounded-md overflow-hidden">
-          <Image alt="car" src={data?.images[2]} layout="fill" />
+          <Image alt="car" src={car?.result.images[2]} layout="fill" />
         </div>
 
         <div className="absolute bg-white rounded-md px-4 py-2 bottom-4 right-4 flex items-center gap-2 text-gray-800">
@@ -206,13 +181,29 @@ export default function CarDetailPage() {
 
       <div className="grid grid-cols-5 mt-10 gap-4">
         <div className="col-span-3">
-          <h1 className="text-4xl m-0 font-bold">
-            {data?.brand.name} {data?.yearManufacture}
-          </h1>
+          <div className="flex justify-between">
+            <h1 className="text-4xl m-0 font-bold">
+              {car?.result.model.name} {car?.result.yearManufacture}
+            </h1>
+
+            {!liked ? (
+              <HeartOutlined
+                className="p-3 border border-solid text-gray-500 rounded-full"
+                style={{ fontSize: "24px" }}
+                onClick={handleLikeClick}
+              />
+            ) : (
+              <HeartFilled
+                className="p-3 border border-solid text-gray-500 rounded-full"
+                style={{ fontSize: "24px" }}
+                onClick={handleLikeClick}
+              />
+            )}
+          </div>
           <div className="flex gap-4 mt-2 text-gray-800">
             <div className="flex items-center gap-1">
               <StarFilledIcon className="text-yellow-500" />
-              <span>{data?.totalRatings}</span>
+              <span>{car?.result.totalRatings}</span>
             </div>
 
             <div className="flex items-center gap-1">
@@ -225,7 +216,7 @@ export default function CarDetailPage() {
 
           <div className="flex gap-2 mt-4">
             <Tag className="rounded-full border-none bg-green-100">
-              {data?.transmissions}
+              {car?.result.transmissions}
             </Tag>
             {/* <Tag className="rounded-full border-none bg-rose-100">
               Đặt xe nhanh
@@ -241,7 +232,7 @@ export default function CarDetailPage() {
                 <SeatIcon className="shrink-0 text-2xl text-green-500" />
                 <div className="flex flex-col items-center text-base">
                   <span className="text-gray-800">Số ghê</span>
-                  <span className="font-bold">{data?.numberSeat}</span>
+                  <span className="font-bold">{car?.result.numberSeat}</span>
                 </div>
               </div>
 
@@ -249,7 +240,10 @@ export default function CarDetailPage() {
                 <TransmissionIcon className="shrink-0 text-2xl text-green-500" />
                 <div className="flex flex-col items-center text-base">
                   <span className="text-gray-800">Truyền động</span>
-                  <span className="font-bold"> {data?.transmissions}</span>
+                  <span className="font-bold">
+                    {" "}
+                    {car?.result.transmissions}
+                  </span>
                 </div>
               </div>
 
@@ -267,7 +261,7 @@ export default function CarDetailPage() {
 
           <div>
             <h2 className="font-medium">Mô tả</h2>
-            <p>{data?.description}</p>
+            <p>{car?.result.description}</p>
           </div>
 
           <Divider />
@@ -328,7 +322,7 @@ export default function CarDetailPage() {
           <div className="mt-10 max-w">
             <h2 className="font-medium">Đánh giá</h2>
             <div className="flex flex-col gap-4">
-              {ratings?.map((rating, index) => (
+              {ratings?.result.map((rating, index) => (
                 <Feedback key={index} dataRatings={rating} />
               ))}
             </div>
@@ -350,7 +344,7 @@ export default function CarDetailPage() {
 
           <div className="flex flex-col gap-4 border border-solid rounded-lg border-gray-300 p-4 bg-green-50 mt-10">
             <h1>
-              {data?.cost.toLocaleString("it-IT", {
+              {car?.result.cost.toLocaleString("it-IT", {
                 style: "currency",
                 currency: "VND",
               })}
@@ -384,7 +378,7 @@ export default function CarDetailPage() {
             </div>
 
             <Divider />
-            {/* 
+            {/*
             <BorderlessTable
               columns={[
                 { dataIndex: "label" },
@@ -410,7 +404,7 @@ export default function CarDetailPage() {
               ]}
             /> */}
             <div className="flex justify-center ">
-              {/* <Link href={`/booking/${data?._id}`}> */}
+              {/* <Link href={`/booking/${car?.result._id}`}> */}
               <Button type="primary" onClick={handleRent}>
                 Chọn thuê
               </Button>

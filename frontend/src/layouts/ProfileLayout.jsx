@@ -7,7 +7,7 @@ import { useMutation } from "@tanstack/react-query";
 import { Layout, Avatar, Button, Upload, message } from "antd";
 import Account from "@/pages/profile/index";
 import CarRental from "@/pages/profile/car-rental/index";
-// import CarFavorite from "@/pages/profile/car-favorite/index";
+import CarLiked from "@/pages/profile/car-liked";
 import HeaderComponent from "@/components/HeaderComponent";
 import FooterComponent from "@/components/FooterComponent";
 import { useRouter } from "next/router";
@@ -47,6 +47,7 @@ const items = [
     label: (
       <span className="text-lg font-semibold text-center">Xe yêu thích</span>
     ),
+    children: <CarLiked />,
   },
 ];
 

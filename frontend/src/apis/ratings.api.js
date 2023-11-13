@@ -1,14 +1,5 @@
 import { apiClient } from "./client";
 
-export async function getRatingsOfCar({ carId }) {
-    const { data } = await apiClient.request({
-        method: "GET",
-        url: `cars/ratings/${carId}`,
-    });
-
-    return data;
-}
-
 export async function createRating(ratingData) {
     const { accessToken, bookingId, carId, star, comment } = { ...ratingData }
     const { data } = await apiClient.request({
@@ -37,3 +28,14 @@ export async function getRatingByBooking(accessToken, bookingId) {
     return data
 }
 
+export async function getRatingsOfCar(carId) {
+    const { data } = await apiClient.request({
+        method: 'GET',
+        url: `cars/ratings/${carId}`,
+        headers: {
+            "Content-Type": "application/json",
+        },
+        withCredentials: true
+    })
+    return data
+} 

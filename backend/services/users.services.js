@@ -101,11 +101,11 @@ class UsersService {
     } catch (error) {}
   }
 
-  async updateUser(user_id, payload) {
+  async updateUser(user_id, payload, payloadFile) {
     try {
-      // if (payload.password) {
-      //   password =
-      // }
+      if (payloadFile && payloadFile.path) {
+        payload.profilePicture = payloadFile.path
+      }
       const updateUser = await User.findByIdAndUpdate(
         user_id.toString(),
         { ...payload, password: hashPassword(payload.password).toString() },
@@ -117,6 +117,20 @@ class UsersService {
       throw Error(error)
     }
   }
+
+  // async updateUser(user_id, payload) {
+  //   try {
+  //     const updateUser = await User.findByIdAndUpdate(
+  //       user_id.toString(),
+  //       { ...payload, password: hashPassword(payload.password).toString() },
+  //       { new: true }
+  //     )
+
+  //     return updateUser
+  //   } catch (error) {
+  //     throw Error(error)
+  //   }
+  // }
   async uploadImagesUser(user_id, payload) {
     try {
       const { profilePicture } = payload

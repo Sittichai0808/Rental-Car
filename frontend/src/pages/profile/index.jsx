@@ -164,6 +164,7 @@ export default function AccountPage() {
               </Button>
               <Modal
                 open={open}
+                onCancel={handleCancle}
                 footer={[
                   <ButtonSummit
                     loading={isLoading}
@@ -252,7 +253,7 @@ export default function AccountPage() {
                     />
                   </Form.Item>
 
-                  <Form.Item label="profilePicture" name="profilePicture">
+                  <Form.Item label="ProfilePicture" name="profilePicture">
                     <Upload showUploadList={true} accept="image/*">
                       <Button icon={<UploadOutlined />}>Click to upload</Button>
                     </Upload>

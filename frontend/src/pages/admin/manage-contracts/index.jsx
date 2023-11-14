@@ -1,5 +1,9 @@
+"use client";
 import { getBookings } from "@/apis/admin-bookings.api";
-import { GET_BOOKINGS_KEY } from "@/constants/react-query-key.constant";
+import {
+  GET_BOOKINGS_KEY,
+  GET_CONTRACTS_KEY,
+} from "@/constants/react-query-key.constant";
 import { AdminLayout } from "@/layouts/AdminLayout";
 import { formatCurrency } from "@/utils/number.utils";
 import moment from "moment";
@@ -9,6 +13,7 @@ import { storage } from "../../../../firebase.js"; // Import your Firebase stora
 import axios from "axios";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import { useMutation } from "@tanstack/react-query";
+
 import {
   CloudUploadOutlined,
   PlusOutlined,
@@ -17,10 +22,10 @@ import {
   PlusCircleOutlined,
   UploadOutlined,
   DeleteOutlined,
-  ExclamationCircleOutlined,
-  CheckCircleOutlined,
   MinusCircleOutlined,
-  DownloadOutlined,
+  CheckCircleOutlined,
+  ExclamationCircleOutlined,
+  EyeOutlined,
 } from "@ant-design/icons";
 import { useQuery } from "@tanstack/react-query";
 import {
@@ -38,111 +43,41 @@ import {
   Upload,
   Space,
 } from "antd";
-import { useEffect, useState, useCallback, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
+import { getContracts } from "@/apis/admin-contracts.api.js";
+import { Worker } from "@react-pdf-viewer/core";
+// Import the main component
+import { Viewer } from "@react-pdf-viewer/core";
 
+// Import the styles
+import "@react-pdf-viewer/core/lib/styles/index.css";
 import Highlighter from "react-highlight-words";
-import { useRouter } from "next/router";
-import Docxtemplater from "docxtemplater";
-import PizZip from "pizzip";
-import { saveAs } from "file-saver";
-import { useUserState } from "@/recoils/user.state.js";
-let PizZipUtils = null;
-if (typeof window !== "undefined") {
-  import("pizzip/utils/index.js").then(function (r) {
-    PizZipUtils = r;
-  });
-}
 
-function loadFile(url, callback) {
-  PizZipUtils.getBinaryContent(url, callback);
-}
+import { defaultLayoutPlugin } from "@react-pdf-viewer/default-layout";
 
-export default function AdminManageBookings() {
+// Import styles
+import "@react-pdf-viewer/default-layout/lib/styles/index.css";
+export default function AdminManageContracts() {
+  const defaultLayoutPluginInstance = defaultLayoutPlugin();
+
+  const [urlFile, setUrlFile] = useState("");
+
   const [form] = Form.useForm();
-  const [user, setUser] = useUserState();
+
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [filteredInfo, setFilteredInfo] = useState({});
+
   const [file, setFile] = useState(null);
   const [accessToken] = useLocalStorage("access_token", "");
+
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState("");
-  const [bookings, setBookings] = useState({});
   const searchInput = useRef(null);
-  const router = useRouter();
-  const generateDocument = () => {
-    loadFile(
-      "https://firebasestorage.googleapis.com/v0/b/rental-945b7.appspot.com/o/pdfs%2Fhop_dong.docx?alt=media&token=fa09173a-80e1-4972-aad4-747f2784ddab",
-      function (error, content) {
-        if (error) {
-          throw error;
-        }
-        var zip = new PizZip(content);
-        var doc = new Docxtemplater().loadZip(zip);
-        doc.setData({
-          address: bookings.address,
-          fullName: bookings.username,
-          phone: bookings.phone,
-
-          phoneNumber: user?.result.phoneNumber,
-          nameStaff: user?.result.username,
-          role: user?.result.role === "staff" ? "Nhân viên" : "Quản lý",
-
-          model: bookings.model,
-          yearManufacture: bookings.yearManufacture,
-          numberSeat: bookings.numberSeat,
-          numberCar: bookings.numberCar,
-          totalCost: bookings.totalCost,
-          timeBookingStart: bookings.timeBookingStart,
-          timeBookingEnd: bookings.timeBookingEnd,
-        });
-        try {
-          // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
-          doc.render();
-        } catch (error) {
-          // The error thrown here contains additional information when logged with JSON.stringify (it contains a properties object containing all suberrors).
-          function replaceErrors(key, value) {
-            if (value instanceof Error) {
-              return Object.getOwnPropertyNames(value).reduce(function (
-                error,
-                key
-              ) {
-                error[key] = value[key];
-                return error;
-              },
-              {});
-            }
-            return value;
-          }
-          console.log(JSON.stringify({ error: error }, replaceErrors));
-
-          if (error.properties && error.properties.errors instanceof Array) {
-            const errorMessages = error.properties.errors
-              .map(function (error) {
-                return error.properties.explanation;
-              })
-              .join("\n");
-            console.log("errorMessages", errorMessages);
-            // errorMessages is a humanly readable message looking like this :
-            // 'The tag beginning with "foobar" is unopened'
-          }
-          throw error;
-        }
-        console.log("aaa");
-        var out = doc.getZip().generate({
-          type: "blob",
-          mimeType:
-            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-        });
-
-        saveAs(out, "hợp_đồng.docx");
-      }
-    );
-  };
-
+  const [filteredInfo, setFilteredInfo] = useState({});
   const handleChange = (pagination, filters) => {
     setFilteredInfo(filters);
   };
+
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
     confirm();
     setSearchText(selectedKeys[0]);
@@ -254,6 +189,7 @@ export default function AdminManageBookings() {
         text
       ),
   });
+
   const onSubmit = async (values) => {
     try {
       if (!file) {
@@ -282,9 +218,6 @@ export default function AdminManageBookings() {
         // Send the user data to your server (e.g., using Axios)
         // axios.post('/api/user', userData);
         try {
-          setTimeout(() => {
-            setOpen(false);
-          }, 1000);
           const response = await axios.post(
             `${process.env.NEXT_PUBLIC_REACT_APP_BACKEND_URL}/contracts/create/${values._id}`,
             { file: downloadURL },
@@ -298,8 +231,8 @@ export default function AdminManageBookings() {
           );
 
           if (response.status === 201) {
+            // Display a success message to the user
             message.success("Create Contract successfully");
-            router.reload();
           } else {
             // Handle API errors and display an error message
             message.error("Error submitting the form. Please try again later.");
@@ -329,9 +262,25 @@ export default function AdminManageBookings() {
     return false; // Prevent the default upload action
   };
 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const showModalView = (contract) => {
+    setIsModalOpen(true);
+    console.log(contract.file);
+
+    setUrlFile(contract.file);
+  };
+
+  const handleOkView = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleCancelView = () => {
+    setIsModalOpen(false);
+  };
+
   const showModal = (booking) => {
     setOpen(true);
-    setBookings({ ...booking });
 
     form.setFieldsValue({ ...booking });
   };
@@ -348,154 +297,146 @@ export default function AdminManageBookings() {
   };
 
   const { data } = useQuery({
-    queryFn: getBookings,
-    queryKey: [GET_BOOKINGS_KEY],
+    queryKey: [GET_CONTRACTS_KEY, accessToken],
+    queryFn: async () => await getContracts(accessToken),
   });
 
   console.log(data?.result);
 
   const dataSource = data?.result.map((item, idx) => ({
     id: idx + 1,
-    _id: item._id,
-    thumb: item?.carId?.thumb,
-    numberCar: item?.carId?.numberCar,
-    model: item?.carId?.model?.name,
-
-    numberSeat: item?.carId?.numberSeat,
-    yearManufacture: item?.carId?.yearManufacture,
-    username: item?.bookBy?.username,
-
-    phone: item?.phone,
-
-    address: item?.address,
-
-    totalCost: formatCurrency(item?.totalCost),
-
-    timeBookingStart: moment(item?.timeBookingStart).format("DD-MM-YYYY HH:mm"),
-    timeBookingEnd: moment(item?.timeBookingEnd).format("DD-MM-YYYY HH:mm"),
-
-    codeTransaction: item?.codeTransaction,
-    timeTransaction: item?.timeTransaction,
+    _id: item?._id,
+    createBy: item?.createBy?.username,
+    bookBy: item?.bookingId?.bookBy?.username,
+    email: item?.bookingId?.bookBy?.email,
+    phone: item?.bookingId?.phone,
+    address: item?.bookingId?.address,
+    timeBookingStart: moment(item?.bookingId?.timeBookingStart).format(
+      "DD-MM-YYYY HH:mm"
+    ),
+    timeBookingEnd: moment(item?.bookingId?.timeBookingEnd).format(
+      "DD-MM-YYYY HH:mm"
+    ),
+    totalCost: formatCurrency(item?.bookingId?.totalCost),
+    file: item?.file,
     status: item?.status,
   }));
 
   return (
     <>
-      <div className="pt-14">
+      <div className="pt-10">
+        <div className="mb-4 flex justify-between items-center">
+          <div className="max-w-[30%] flex gap-2 items-center">
+            <Input prefix={<SearchOutlined />} />
+            <Button type="primary">Search</Button>
+          </div>
+        </div>
+
         <Table
           onChange={handleChange}
           scroll={{ x: 2400 }}
           columns={[
             { key: "id", title: "ID", dataIndex: "id", width: "2%" },
             {
-              key: "thumb",
-              title: "Thumbnail",
-              dataIndex: "thumb",
-
-              render: (url) => (
-                <Image
-                  className="h-32 aspect-video rounded-md object-cover"
-                  src={url}
-                />
-              ),
+              key: "createBy",
+              title: "Người Tạo Hợp Đồng",
+              dataIndex: "createBy",
+              ...getColumnSearchProps("createBy"),
+            },
+            {
+              key: "bookBy",
+              title: "Tên Khách Hàng",
+              dataIndex: "bookBy",
+              ...getColumnSearchProps("bookBy"),
             },
 
             {
-              key: "numberCar",
-              title: "No. Seat",
-              dataIndex: "numberCar",
-              ...getColumnSearchProps("numberCar"),
-            },
-            {
-              key: "username",
-              title: "Customer",
-              dataIndex: "username",
-              ...getColumnSearchProps("username"),
+              key: "email",
+              title: "Thư Điện Tử",
+              dataIndex: "email",
+              ...getColumnSearchProps("email"),
             },
 
             {
               key: "phone",
-              title: "Phone Number",
+              title: "Số Điện Thoại",
               dataIndex: "phone",
               ...getColumnSearchProps("phone"),
             },
             {
-              key: "address",
-              title: "Address",
+              key: "addres",
+              title: "Điạ Chỉ",
               dataIndex: "address",
               ...getColumnSearchProps("address"),
             },
             {
               key: "totalCost",
-              title: "Total Cost",
+              title: "Tổng Số Tiền",
               dataIndex: "totalCost",
-              ...getColumnSearchProps("totalCost"),
-              sorter: (a, b) => a.totalCost - b.totalCost,
-              sortDirections: ["descend", "ascend"],
             },
             {
               key: "timeBookingStart",
-              title: "Time Booking Start",
+              title: "Thời Gian Bắt Đầu",
               dataIndex: "timeBookingStart",
             },
             {
               key: "timeBookingEnd",
-              title: "Time Booking End",
+              title: "Thời Gian Kết Thúc",
               dataIndex: "timeBookingEnd",
             },
-            {
-              key: "codeTransaction",
-              title: "Code Transaction",
-              dataIndex: "codeTransaction",
-            },
-            {
-              key: "timeTransaction",
-              title: "Time Transaction",
-              dataIndex: "timeTransaction",
-            },
+
+            // {
+            //   key: "thumb",
+            //   title: "Thumbnail",
+            //   dataIndex: "thumb",
+            //   render: (url) => (
+            //     <div>
+            //       <Document file={url} onLoadSuccess={onDocumentLoadSuccess}>
+            //         <Page pageNumber={pageNumber} />
+            //       </Document>
+            //       <p>
+            //         Page {pageNumber} of {numPages}
+            //       </p>
+            //     </div>
+            //   ),
+            //  },
 
             {
               key: "status",
-              title: "Status",
+              title: "Trạng Thái",
               dataIndex: "status",
-              fixed: "right",
-              // width: "%",
               filters: [
                 {
-                  text: "Chưa Có Hợp Đồng",
-                  value: "Chưa có hợp đồng",
+                  text: "Đang thực hiện",
+                  value: "Đang thực hiện",
                 },
                 {
-                  text: "Đã Có Hợp Đồng",
-                  value: "Đã có hợp đồng",
-                },
-                {
-                  text: "Đã Hủy",
-                  value: "Đã hủy",
+                  text: "Đã tất toán",
+                  value: "Đã tất toán",
                 },
               ],
               filteredValue: filteredInfo.status || null,
               onFilter: (value, record) => record.status.includes(value),
 
-              // ellipsis: true,
+              fixed: "right",
               render: (status) => (
                 <>
-                  {status === "Chưa có hợp đồng" ? (
+                  {status === "Đang thực hiện" ? (
                     <>
-                      <p className="text-red-500 justify-center">
+                      <p className="text-green-500 flex justify-center">
                         <MinusCircleOutlined
                           style={{
-                            color: "red",
+                            color: "green",
                             fontSize: "12px",
                             marginRight: "5px",
                           }}
                         />
-                        Chưa Có Hợp Đồng
+                        Đang Thực Hiện
                       </p>
                     </>
-                  ) : status === "Đã có hợp đồng" ? (
+                  ) : status === "Đã tất toán" ? (
                     <>
-                      <p className="text-green-600">
+                      <p className="text-green-600 flex justify-center">
                         <CheckCircleOutlined
                           style={{
                             color: "green",
@@ -503,12 +444,12 @@ export default function AdminManageBookings() {
                             marginRight: "5px",
                           }}
                         />
-                        Đã Có Hợp Đồng
+                        Đã Tất Toán
                       </p>
                     </>
                   ) : (
                     <>
-                      <p className="text-red-500 flex justify-center ">
+                      <p className="text-red-500 flex justify-center">
                         <ExclamationCircleOutlined
                           style={{
                             color: "red",
@@ -523,20 +464,27 @@ export default function AdminManageBookings() {
                 </>
               ),
             },
+
             {
               key: "action",
               title: "Action",
               fixed: "right",
-              width: "10%",
-              render: (_, booking) => (
+              width: "8%",
+              render: (_, contract) => (
                 <div className="flex gap-2">
                   <Button
                     type="primary"
                     className=" border border-solid border-green-400 "
-                    onClick={() => showModal(booking)}
+                    onClick={() => showModalView(contract)}
+                  >
+                    <EyeOutlined style={{ fontSize: "14px" }} />
+                  </Button>
+                  <Button
+                    type="primary"
+                    className=" border border-solid border-green-400 "
+                    onClick={() => showModal(contract)}
                   >
                     <PlusCircleOutlined style={{ fontSize: "14px" }} />
-                    Hợp Đồng
                   </Button>
                   <Popconfirm
                     title="Are you sure to deactivate this car?"
@@ -544,7 +492,6 @@ export default function AdminManageBookings() {
                   >
                     <Button className="bg-red-500 text-white border-none hover:bg-red-500/70">
                       <DeleteOutlined style={{ fontSize: "14px" }} />
-                      Hủy
                     </Button>
                   </Popconfirm>
                 </div>
@@ -605,18 +552,7 @@ export default function AdminManageBookings() {
             </div>
 
             <div className="grow">
-              <Button
-                type="primary"
-                shape="round"
-                icon={<DownloadOutlined />}
-                onClick={generateDocument}
-                className="px-8 mt-7 mb-4"
-              >
-                {" "}
-                Hợp đồng
-              </Button>
-
-              <Form.Item label="" name="file">
+              <Form.Item label="Upload PDF" name="file">
                 <Upload
                   beforeUpload={beforeUpload}
                   maxCount={1}
@@ -630,8 +566,38 @@ export default function AdminManageBookings() {
           </Form>
         </>
       </Modal>
+
+      <Modal
+        title="Hợp Đồng"
+        open={isModalOpen}
+        onOk={handleOkView}
+        footer={null}
+        width={1000}
+        onCancel={handleCancelView}
+      >
+        <div>
+          {/* <Loader isLoading={isLoading} /> */}
+          <section
+            id="pdf-section"
+            className="d-flex flex-column align-items-center w-100"
+          >
+            <Worker workerUrl="https://unpkg.com/pdfjs-dist@2.14.305/build/pdf.worker.min.js">
+              <Viewer
+                fileUrl={urlFile}
+                plugins={[defaultLayoutPluginInstance]}
+              />
+            </Worker>
+            {/* <embed
+              type="application/pdf"
+              src={urlFile}
+              width={100 + "%"}
+              height={100 + "%"}
+            /> */}
+          </section>
+        </div>
+      </Modal>
     </>
   );
 }
 
-AdminManageBookings.Layout = AdminLayout;
+AdminManageContracts.Layout = AdminLayout;

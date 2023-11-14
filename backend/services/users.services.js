@@ -13,6 +13,9 @@ class UsersService {
     return signToken({
       payload: { user_id: user_id, role, token_type: TokenType.AccessToken },
       privateKey: process.env.JWT_SECRET_ACCESS_TOKEN
+      // options: {
+      //   expiresIn: '3h'
+      // }
     })
   }
 
@@ -43,7 +46,7 @@ class UsersService {
     const { password: hashedPassword, role, _id, ...rest } = user._doc
 
     const access_token = await this.signAccessToken(_id.toString(), role)
-    return { rest, access_token }
+    return { rest, access_token, role }
   }
 
   async google(payload) {
@@ -60,7 +63,7 @@ class UsersService {
         const generatedPassword = Math.random().toString(36).slice(-8) + Math.random().toString(36).slice(-8)
         const hashedPassword1 = hashPassword(generatedPassword).toString()
         const newUser = new User({
-          username: user.username.split(' ').join('').toLowerCase() + Math.random().toString(36).slice(-8),
+          username: user.username,
           email: user.email,
           password: hashedPassword1,
           profilePicture: user.photo,

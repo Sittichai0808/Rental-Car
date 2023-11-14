@@ -53,13 +53,10 @@ const items = [
 
 export const ProfileLayout = ({ children }) => {
   const router = useRouter();
-  const [profile, setProfile, clearProfile] = useLocalStorage("profile", "");
+
   const [user, setUser] = useUserState();
   const [driver, setDriver] = useDriverState();
 
-  useEffect(() => {
-    setUser(profile);
-  }, [user]);
   const [accessToken, setAccessToken, clearAccessToken] = useLocalStorage(
     "access_token",
     ""
@@ -131,8 +128,6 @@ export const ProfileLayout = ({ children }) => {
             <Button
               className="absolute top-0 right-0 text-red-600 "
               onClick={() => {
-                console.log("log out");
-                clearProfile();
                 clearAccessToken();
                 setUser(null);
                 setDriver(null);
@@ -154,7 +149,7 @@ export const ProfileLayout = ({ children }) => {
               height={100}
               width={90}
               icon={<UserOutlined />}
-              src={user?.profilePicture[0]}
+              src={user?.result?.profilePicture[0]}
               alt="Image"
             />
 
@@ -167,11 +162,11 @@ export const ProfileLayout = ({ children }) => {
             </Upload>
             <div className="flex flex-col  ">
               <h5 className="text-lg font-semibold text-center mt-1 mb-2 ">
-                {user?.username}
+                {user?.result?.username}
               </h5>
 
               <p className="mt-0">
-                Tham gia: {moment(user?.createdAt).format("DD/MM/YYYY")}
+                Tham gia: {moment(user?.result?.createdAt).format("DD/MM/YYYY")}
               </p>
             </div>
           </div>

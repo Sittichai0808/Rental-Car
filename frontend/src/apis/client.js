@@ -2,7 +2,7 @@ import { QueryClient } from "@tanstack/react-query";
 import axios from "axios";
 
 export const apiClient = axios.create({
-  baseURL: "http://localhost:4000",
+  baseURL: `${process.env.NEXT_PUBLIC_REACT_APP_BACKEND_URL}`,
   timeout: 1000,
 });
 

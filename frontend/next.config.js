@@ -1,9 +1,11 @@
 /** @type {import('next').NextConfig} */
+
 const nextConfig = {
   webpack: (config) => {
     const fileLoaderRule = config.module.rules.find((rule) =>
       rule.test?.test?.(".svg")
     );
+    config.resolve.alias.canvas = false;
 
     config.module.rules.push(
       {
@@ -32,7 +34,10 @@ const nextConfig = {
         pathname: "/djllhxlfc/**",
       },
     ],
+    domains: ["res.cloudinary.com"],
   },
+  swcMinify: true,
+  poweredByHeader: false,
   async headers() {
     return [
       {

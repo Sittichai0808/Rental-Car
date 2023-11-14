@@ -48,8 +48,8 @@ const bookingsSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ['Thành công', 'Đã Hủy'],
-      default: 'Thành công'
+      enum: ['Chưa có hợp đồng', 'Đã có hợp đồng', 'Đã hủy'],
+      default: 'Chưa có hợp đồng'
     },
     contract: {
       type: mongoose.Types.ObjectId,

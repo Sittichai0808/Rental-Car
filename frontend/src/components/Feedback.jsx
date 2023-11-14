@@ -1,5 +1,6 @@
 import { Rate } from "antd";
 import Image from "next/image";
+import moment from "moment";
 
 export const Feedback = ({ dataRatings }) => {
   return (
@@ -16,7 +17,7 @@ export const Feedback = ({ dataRatings }) => {
           <span className="font-medium text-2xl">
             {dataRatings.postBy.username}
           </span>
-          <span>08/10/2023</span>
+          <span>{moment(dataRatings.createdAt).format("DD-MM-YYYY")}</span>
         </div>
 
         <Rate

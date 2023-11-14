@@ -4,6 +4,7 @@ import {
   UsergroupAddOutlined,
   CarOutlined,
   BookOutlined,
+  ContactsOutlined,
 } from "@ant-design/icons";
 import { useRouter } from "next/router";
 
@@ -25,18 +26,23 @@ export const AdminLayout = ({ children }) => {
           items={[
             {
               key: "manage-users",
-              label: "Manager Users",
+              label: "Users management",
               icon: <UsergroupAddOutlined />,
             },
             {
               key: "manage-cars",
-              label: "Manager Cars",
+              label: "Cars management",
               icon: <CarOutlined />,
             },
             {
               key: "manage-bookings",
-              label: "Manager Bookings",
+              label: "Bookings management",
               icon: <BookOutlined />,
+            },
+            {
+              key: "manage-contracts",
+              label: "Contracts management",
+              icon: <ContactsOutlined />,
             },
           ]}
           onClick={(item) => push(`/admin/${item.key}`)}

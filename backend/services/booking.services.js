@@ -81,7 +81,23 @@ class BookingServices {
 
   async getHistoryBooking(bookBy) {
     try {
-      const getHistoryBooking = await Bookings.find({ bookBy: bookBy }).populate("carId").populate("contract")
+      const getHistoryBooking = await Bookings.find({ bookBy: bookBy })
+        .populate({
+          path: 'carId',
+          populate: {
+            path: 'brand',
+            model: 'Brands'
+          }
+        })
+        .populate({
+          path: 'carId',
+          populate: {
+            path: 'model',
+            model: 'Models'
+          }
+        })
+        .populate('contract')
+        .sort({ createdAt: -1 })
       return getHistoryBooking
     } catch (error) {
       throw error
@@ -91,9 +107,21 @@ class BookingServices {
   async getListBooking() {
     try {
       const getListBooking = await Bookings.find({})
-        .populate('bookBy', 'username phoneNumber')
-        .populate('carId', 'thumb numberCar ')
+        .populate('bookBy', 'username ')
+        .populate({
+          path: 'carId',
+          populate: [
+            {
+              path: 'model',
+              model: 'Models'
+            },
+            { path: 'brand', model: 'Brands' }
+          ]
+
+          // model: 'numberCar numberSeat yearManufacture'
+        })
         .populate('contract')
+        .sort({ createdAt: -1 })
       return getListBooking
     } catch (error) {
       throw error

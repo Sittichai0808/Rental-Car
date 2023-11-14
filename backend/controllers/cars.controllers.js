@@ -86,9 +86,8 @@ export const uploadImagesCar = async (req, res, next) => {
 
 export const ratings = async (req, res) => {
   try {
-    const { carId } = req.params
     const user_id = req.decoded_authorization.user_id
-    const result = await carsService.ratings(user_id, carId, req.body)
+    const result = await carsService.ratings(user_id, req.body)
     return res.status(HTTP_STATUS.OK).json({
       message: 'Ratings created',
       result
@@ -108,6 +107,26 @@ export const getRatingsOfCar = async (req, res, next) => {
     } else {
       return res.status(HTTP_STATUS.OK).json({
         message: CARS_MESSAGE.GET_CAR_SUCCESS,
+        result
+      })
+    }
+  } catch (error) {
+    return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
+      message: 'Something went wrong',
+      error: error.message
+    })
+  }
+}
+
+export const getRatingByBooking = async (req, res, next) => {
+  try {
+    const { bookingId } = req.params
+    const result = await carsService.getRatingByBooking(bookingId)
+    if (!result) {
+      return res.status(HTTP_STATUS.NOT_FOUND).json({ error: 'Booking has no ratings' })
+    } else {
+      return res.status(HTTP_STATUS.OK).json({
+        message: 'Get rating successfully',
         result
       })
     }

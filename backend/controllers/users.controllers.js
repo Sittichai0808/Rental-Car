@@ -47,20 +47,14 @@ export const getUserController = async (req, res, next) => {
 
 export const updateUserController = async (req, res, next) => {
   const user_id = req.params.userId
-  const result = await usersService.updateUser(user_id, req.body)
+
+  const result = await usersService.updateUser(user_id, req.body, req?.file)
   return res.json({
     message: USER_MESSAGES.UPDATE_PROFILE_SUCCESS,
     result: result
   })
 }
-export const uploadImagesUser = async (req, res, next) => {
-  const user_id = req.params.userId
-  const result = await usersService.uploadImagesUser(user_id, req?.files)
-  return res.json({
-    message: USER_MESSAGES.UPLOAD_IMAGE_SUCCESS,
-    result: result
-  })
-}
+
 export const generateOTPController = async (req, res, next) => {
   const email = req.body.email
   req.app.locals.OTP = await otpGenerator.generate(6, {

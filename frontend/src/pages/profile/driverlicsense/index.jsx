@@ -5,7 +5,7 @@ import { useDriverState } from "@/recoils/driver.state.js";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import axios from "axios";
-import { Button, Input, Form, Upload } from "antd";
+import { Button, Input, Form, Upload, notification } from "antd";
 import Image from "next/image";
 import styled from "@emotion/styled";
 import { useRouter } from "next/router";
@@ -46,7 +46,7 @@ const ButtonSummit = styled(Button)`
 export default function DriverPage() {
   const router = useRouter();
   const [form] = Form.useForm();
-
+  const [loading, setLoading] = useState(false);
   const [profile, setProfile, clearProfile] = useLocalStorage("profile", "");
   const [driver, setDriver] = useDriverState();
   const [user, setUser] = useUserState();
@@ -79,8 +79,10 @@ export default function DriverPage() {
       if (response.status === 200) {
         console.log(response.data);
 
-        setDriver({ ...response.data.result });
-        setProfile({ ...profile, ...response.data.result });
+        setDriver({ ...response.data });
+        notification.success({
+          message: "Đăng kí thành công",
+        });
         router.push("/profile");
       } else {
         console.log(error.response.data.errors[0].msg);
@@ -92,7 +94,14 @@ export default function DriverPage() {
     }
   };
 
-  const { mutate } = useMutation(onSubmit);
+  const { mutate, isLoading } = useMutation(onSubmit, {
+    onMutate: () => {
+      setLoading(true);
+      setTimeout(() => {
+        setLoading(false);
+      }, 1000);
+    },
+  });
   return (
     <div className="flex flex-col mt-10 items-center justify-center border-b bg-slate-100 py-4 sm:flex-row sm:px-5 lg:px-5 xl:px-12">
       <div className="flex flex-col justify-center  pl-10 pr-5  pb-6 w-1/2 ">
@@ -107,7 +116,7 @@ export default function DriverPage() {
             mutate(values);
           }}
           label
-          initialValues={{ status: driver?.status || "Chưa xác thực" }}
+          initialValues={{ status: driver?.result?.status || "Chưa xác thực" }}
           autoComplete="off"
           className="mt-5 "
         >
@@ -188,13 +197,13 @@ export default function DriverPage() {
             <StyleInputModal size="large" disabled />
           </Form.Item>
           <Form.Item label="image" name="image">
-            <Upload showUploadList={false} accept="image/*">
+            <Upload showUploadList={true} accept="image/*">
               <Button icon={<UploadOutlined />}>Click to upload</Button>
             </Upload>
           </Form.Item>
           <Form.Item>
-            <ButtonSummit type="primary" htmlType="submit">
-              Cập nhập
+            <ButtonSummit type="primary" htmlType="submit" loading={isLoading}>
+              Đăng kí
             </ButtonSummit>
           </Form.Item>
         </Form>

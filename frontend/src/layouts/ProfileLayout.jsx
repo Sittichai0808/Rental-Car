@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import { useUserState } from "@/recoils/user.state.js";
-import { useDriverState } from "@/recoils/driver.state.js";
+import { useDriverState } from "@/recoils/driver.state";
 import { Tabs } from "antd";
 import moment from "moment";
 import { useMutation } from "@tanstack/react-query";
@@ -53,52 +53,50 @@ const items = [
 
 export const ProfileLayout = ({ children }) => {
   const router = useRouter();
-
   const [user, setUser] = useUserState();
   const [driver, setDriver] = useDriverState();
-
   const [accessToken, setAccessToken, clearAccessToken] = useLocalStorage(
     "access_token",
     ""
   );
 
-  const uploadProfilePicture = async ({ file }) => {
-    console.log("User Object:", user);
-    console.log("value:", file);
-    console.log("user._id:", user._id);
-    console.log("Access Token:", accessToken);
+  // const onSubmit = async ({ file }) => {
+  //   console.log("User Object:", user);
+  //   console.log("value:", file);
+  //   console.log("user._id:", user?.result?._id);
+  //   console.log("Access Token:", accessToken);
 
-    try {
-      const formData = new FormData();
-      formData.append("profilePicture", file);
-      const response = await axios.put(
-        `${process.env.NEXT_PUBLIC_REACT_APP_BACKEND_URL}/users/upload-image/${user._id}`,
-        formData,
+  //   try {
+  //     const formData = new FormData();
+  //     formData.append("profilePicture", file);
+  //     const userId = user?.result?._id;
+  //     const response = await axios.put(
+  //       `${process.env.NEXT_PUBLIC_REACT_APP_BACKEND_URL}/users/upload-image/${userId}`,
+  //       formData,
 
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            withCredentials: true,
-          },
-        }
-      );
+  //       {
+  //         headers: {
+  //           "Content-Type": "multipart/form-data",
+  //           withCredentials: true,
+  //         },
+  //       }
+  //     );
 
-      if (response.status === 200) {
-        console.log(response.data);
+  //     if (response.status === 200) {
+  //       console.log(response.data);
 
-        setUser({ ...response.data.result });
-        setProfile({ ...profile, ...response.data.result });
+  //       setUser({ ...response.data });
 
-        router.push(window.location.reload());
-      } else {
-        console.log(error.response.data.errors[0].msg);
-      }
-    } catch (error) {
-      toast.error(error.response.data.errors[0].msg, {
-        position: toast.POSITION.TOP_CENTER,
-      });
-    }
-  };
+  //       router.push(window.location.reload());
+  //     } else {
+  //       console.log(error.response.data.errors[0].msg);
+  //     }
+  //   } catch (error) {
+  //     toast.error(error.response.data.errors[0].msg, {
+  //       position: toast.POSITION.TOP_CENTER,
+  //     });
+  //   }
+  // };
 
   return (
     <Layout className="flex max-w-6xl  mx-auto border-b bg-slate-100  ">
@@ -149,17 +147,17 @@ export const ProfileLayout = ({ children }) => {
               height={100}
               width={90}
               icon={<UserOutlined />}
-              src={user?.result?.profilePicture[0]}
+              src={user?.result?.profilePicture}
               alt="Image"
             />
-
+            {/* 
             <Upload
-              customRequest={uploadProfilePicture}
+              customRequest={onSubmit}
               showUploadList={false}
               accept="image/*"
             >
               <Button icon={<UploadOutlined />}></Button>
-            </Upload>
+            </Upload> */}
             <div className="flex flex-col  ">
               <h5 className="text-lg font-semibold text-center mt-1 mb-2 ">
                 {user?.result?.username}

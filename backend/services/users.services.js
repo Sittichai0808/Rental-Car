@@ -12,10 +12,10 @@ class UsersService {
     console.log(user_id, role)
     return signToken({
       payload: { user_id: user_id, role, token_type: TokenType.AccessToken },
-      privateKey: process.env.JWT_SECRET_ACCESS_TOKEN,
-      options: {
-        expiresIn: '3h'
-      }
+      privateKey: process.env.JWT_SECRET_ACCESS_TOKEN
+      // options: {
+      //   expiresIn: '3h'
+      // }
     })
   }
 

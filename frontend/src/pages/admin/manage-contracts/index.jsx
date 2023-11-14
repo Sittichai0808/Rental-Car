@@ -41,8 +41,9 @@ import {
   Select,
   Table,
   Upload,
+  Space,
 } from "antd";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { getContracts } from "@/apis/admin-contracts.api.js";
 import { Worker } from "@react-pdf-viewer/core";
 // Import the main component
@@ -50,6 +51,7 @@ import { Viewer } from "@react-pdf-viewer/core";
 
 // Import the styles
 import "@react-pdf-viewer/core/lib/styles/index.css";
+import Highlighter from "react-highlight-words";
 
 import { defaultLayoutPlugin } from "@react-pdf-viewer/default-layout";
 
@@ -67,7 +69,127 @@ export default function AdminManageContracts() {
 
   const [file, setFile] = useState(null);
   const [accessToken] = useLocalStorage("access_token", "");
-  // useEffect(() => {}, [infoContract]);
+
+  const [searchText, setSearchText] = useState("");
+  const [searchedColumn, setSearchedColumn] = useState("");
+  const searchInput = useRef(null);
+  const [filteredInfo, setFilteredInfo] = useState({});
+  const handleChange = (pagination, filters) => {
+    setFilteredInfo(filters);
+  };
+
+  const handleSearch = (selectedKeys, confirm, dataIndex) => {
+    confirm();
+    setSearchText(selectedKeys[0]);
+    setSearchedColumn(dataIndex);
+  };
+  const handleReset = (clearFilters) => {
+    clearFilters();
+    setSearchText("");
+  };
+  const getColumnSearchProps = (dataIndex) => ({
+    filterDropdown: ({
+      setSelectedKeys,
+      selectedKeys,
+      confirm,
+      clearFilters,
+      close,
+    }) => (
+      <div
+        style={{
+          padding: 8,
+        }}
+        onKeyDown={(e) => e.stopPropagation()}
+      >
+        <Input
+          ref={searchInput}
+          placeholder={`Search ${dataIndex}`}
+          value={selectedKeys[0]}
+          onChange={(e) =>
+            setSelectedKeys(e.target.value ? [e.target.value] : [])
+          }
+          onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
+          style={{
+            marginBottom: 8,
+            display: "block",
+          }}
+        />
+        <Space>
+          <Button
+            type="primary"
+            onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
+            icon={<SearchOutlined />}
+            size="small"
+            style={{
+              width: 90,
+            }}
+          >
+            Search
+          </Button>
+          <Button
+            onClick={() => clearFilters && handleReset(clearFilters)}
+            size="small"
+            style={{
+              width: 90,
+            }}
+          >
+            Reset
+          </Button>
+          <Button
+            type="link"
+            size="small"
+            onClick={() => {
+              confirm({
+                closeDropdown: false,
+              });
+              setSearchText(selectedKeys[0]);
+              setSearchedColumn(dataIndex);
+            }}
+          >
+            Filter
+          </Button>
+          <Button
+            type="link"
+            size="small"
+            onClick={() => {
+              close();
+            }}
+          >
+            close
+          </Button>
+        </Space>
+      </div>
+    ),
+    filterIcon: (filtered) => (
+      <SearchOutlined
+        style={{
+          color: filtered ? "#1677ff" : undefined,
+        }}
+      />
+    ),
+    onFilter: (value, record) =>
+      record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
+    onFilterDropdownOpenChange: (visible) => {
+      if (visible) {
+        setTimeout(() => searchInput.current?.select(), 100);
+      }
+    },
+    render: (text) =>
+      searchedColumn === dataIndex ? (
+        <Highlighter
+          highlightStyle={{
+            backgroundColor: "#ffc069",
+            padding: 0,
+          }}
+          searchWords={[searchText]}
+          autoEscape
+          textToHighlight={text ? text.toString() : ""}
+        />
+      ) : (
+        text
+      ),
+  });
+
   const onSubmit = async (values) => {
     try {
       if (!file) {
@@ -211,6 +333,7 @@ export default function AdminManageContracts() {
         </div>
 
         <Table
+          onChange={handleChange}
           scroll={{ x: 2400 }}
           columns={[
             { key: "id", title: "ID", dataIndex: "id", width: "2%" },
@@ -218,69 +341,33 @@ export default function AdminManageContracts() {
               key: "createBy",
               title: "Người Tạo Hợp Đồng",
               dataIndex: "createBy",
+              ...getColumnSearchProps("createBy"),
             },
-            { key: "bookBy", title: "Tên Khách Hàng", dataIndex: "bookBy" },
             {
-              key: "status",
-              title: "Trạng Thái",
-              dataIndex: "status",
-              render: (status) => (
-                <>
-                  {status === "Đang thực hiện" ? (
-                    <>
-                      <p className="text-green-500">
-                        <MinusCircleOutlined
-                          style={{
-                            color: "green",
-                            fontSize: "12px",
-                            marginRight: "5px",
-                          }}
-                        />
-                        Đang Thực Hiện
-                      </p>
-                    </>
-                  ) : status === "Đã tất toán" ? (
-                    <>
-                      <p className="text-green-600">
-                        <CheckCircleOutlined
-                          style={{
-                            color: "green",
-                            fontSize: "12px",
-                            marginRight: "5px",
-                          }}
-                        />
-                        Đã Tất Toán
-                      </p>
-                    </>
-                  ) : (
-                    <>
-                      <p className="text-red-500">
-                        <ExclamationCircleOutlined
-                          style={{
-                            color: "red",
-                            fontSize: "12px",
-                            marginRight: "5px",
-                          }}
-                        />
-                        Đã Hủy
-                      </p>
-                    </>
-                  )}
-                </>
-              ),
+              key: "bookBy",
+              title: "Tên Khách Hàng",
+              dataIndex: "bookBy",
+              ...getColumnSearchProps("bookBy"),
             },
 
-            { key: "email", title: "Thư Điện Tử", dataIndex: "email" },
+            {
+              key: "email",
+              title: "Thư Điện Tử",
+              dataIndex: "email",
+              ...getColumnSearchProps("email"),
+            },
 
             {
               key: "phone",
               title: "Số Điện Thoại",
               dataIndex: "phone",
+              ...getColumnSearchProps("phone"),
             },
             {
               key: "addres",
               title: "Điạ Chỉ",
               dataIndex: "address",
+              ...getColumnSearchProps("address"),
             },
             {
               key: "totalCost",
@@ -313,6 +400,70 @@ export default function AdminManageContracts() {
             //     </div>
             //   ),
             //  },
+
+            {
+              key: "status",
+              title: "Trạng Thái",
+              dataIndex: "status",
+              filters: [
+                {
+                  text: "Đang thực hiện",
+                  value: "Đang thực hiện",
+                },
+                {
+                  text: "Đã tất toán",
+                  value: "Đã tất toán",
+                },
+              ],
+              filteredValue: filteredInfo.status || null,
+              onFilter: (value, record) => record.status.includes(value),
+
+              fixed: "right",
+              render: (status) => (
+                <>
+                  {status === "Đang thực hiện" ? (
+                    <>
+                      <p className="text-green-500 flex justify-center">
+                        <MinusCircleOutlined
+                          style={{
+                            color: "green",
+                            fontSize: "12px",
+                            marginRight: "5px",
+                          }}
+                        />
+                        Đang Thực Hiện
+                      </p>
+                    </>
+                  ) : status === "Đã tất toán" ? (
+                    <>
+                      <p className="text-green-600 flex justify-center">
+                        <CheckCircleOutlined
+                          style={{
+                            color: "green",
+                            fontSize: "12px",
+                            marginRight: "5px",
+                          }}
+                        />
+                        Đã Tất Toán
+                      </p>
+                    </>
+                  ) : (
+                    <>
+                      <p className="text-red-500 flex justify-center">
+                        <ExclamationCircleOutlined
+                          style={{
+                            color: "red",
+                            fontSize: "12px",
+                            marginRight: "5px",
+                          }}
+                        />
+                        Đã Hủy
+                      </p>
+                    </>
+                  )}
+                </>
+              ),
+            },
 
             {
               key: "action",

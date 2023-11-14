@@ -17,6 +17,10 @@ import {
   PlusCircleOutlined,
   UploadOutlined,
   DeleteOutlined,
+  ExclamationCircleOutlined,
+  CheckCircleOutlined,
+  MinusCircleOutlined,
+  DownloadOutlined,
 } from "@ant-design/icons";
 import { useQuery } from "@tanstack/react-query";
 import {
@@ -32,18 +36,224 @@ import {
   Select,
   Table,
   Upload,
+  Space,
 } from "antd";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
+
+import Highlighter from "react-highlight-words";
+import { useRouter } from "next/router";
+import Docxtemplater from "docxtemplater";
+import PizZip from "pizzip";
+import { saveAs } from "file-saver";
+import { useUserState } from "@/recoils/user.state.js";
+let PizZipUtils = null;
+if (typeof window !== "undefined") {
+  import("pizzip/utils/index.js").then(function (r) {
+    PizZipUtils = r;
+  });
+}
+
+function loadFile(url, callback) {
+  PizZipUtils.getBinaryContent(url, callback);
+}
 
 export default function AdminManageBookings() {
   const [form] = Form.useForm();
-
+  const [user, setUser] = useUserState();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-
+  const [filteredInfo, setFilteredInfo] = useState({});
   const [file, setFile] = useState(null);
   const [accessToken] = useLocalStorage("access_token", "");
-  // useEffect(() => {}, [infoContract]);
+  const [searchText, setSearchText] = useState("");
+  const [searchedColumn, setSearchedColumn] = useState("");
+  const [bookings, setBookings] = useState({});
+  const searchInput = useRef(null);
+  const router = useRouter();
+  const generateDocument = () => {
+    loadFile(
+      "https://firebasestorage.googleapis.com/v0/b/rental-945b7.appspot.com/o/pdfs%2Fhop_dong.docx?alt=media&token=fa09173a-80e1-4972-aad4-747f2784ddab",
+      function (error, content) {
+        if (error) {
+          throw error;
+        }
+        var zip = new PizZip(content);
+        var doc = new Docxtemplater().loadZip(zip);
+        doc.setData({
+          address: bookings.address,
+          fullName: bookings.username,
+          phone: bookings.phone,
+
+          phoneNumber: user?.result.phoneNumber,
+          nameStaff: user?.result.username,
+          role: user?.result.role === "staff" ? "Nhân viên" : "Quản lý",
+
+          model: bookings.model,
+          yearManufacture: bookings.yearManufacture,
+          numberSeat: bookings.numberSeat,
+          numberCar: bookings.numberCar,
+          totalCost: bookings.totalCost,
+          timeBookingStart: bookings.timeBookingStart,
+          timeBookingEnd: bookings.timeBookingEnd,
+        });
+        try {
+          // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
+          doc.render();
+        } catch (error) {
+          // The error thrown here contains additional information when logged with JSON.stringify (it contains a properties object containing all suberrors).
+          function replaceErrors(key, value) {
+            if (value instanceof Error) {
+              return Object.getOwnPropertyNames(value).reduce(function (
+                error,
+                key
+              ) {
+                error[key] = value[key];
+                return error;
+              },
+              {});
+            }
+            return value;
+          }
+          console.log(JSON.stringify({ error: error }, replaceErrors));
+
+          if (error.properties && error.properties.errors instanceof Array) {
+            const errorMessages = error.properties.errors
+              .map(function (error) {
+                return error.properties.explanation;
+              })
+              .join("\n");
+            console.log("errorMessages", errorMessages);
+            // errorMessages is a humanly readable message looking like this :
+            // 'The tag beginning with "foobar" is unopened'
+          }
+          throw error;
+        }
+        console.log("aaa");
+        var out = doc.getZip().generate({
+          type: "blob",
+          mimeType:
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        });
+
+        saveAs(out, "hợp_đồng.docx");
+      }
+    );
+  };
+
+  const handleChange = (pagination, filters) => {
+    setFilteredInfo(filters);
+  };
+  const handleSearch = (selectedKeys, confirm, dataIndex) => {
+    confirm();
+    setSearchText(selectedKeys[0]);
+    setSearchedColumn(dataIndex);
+  };
+  const handleReset = (clearFilters) => {
+    clearFilters();
+    setSearchText("");
+  };
+  const getColumnSearchProps = (dataIndex) => ({
+    filterDropdown: ({
+      setSelectedKeys,
+      selectedKeys,
+      confirm,
+      clearFilters,
+      close,
+    }) => (
+      <div
+        style={{
+          padding: 8,
+        }}
+        onKeyDown={(e) => e.stopPropagation()}
+      >
+        <Input
+          ref={searchInput}
+          placeholder={`Search ${dataIndex}`}
+          value={selectedKeys[0]}
+          onChange={(e) =>
+            setSelectedKeys(e.target.value ? [e.target.value] : [])
+          }
+          onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
+          style={{
+            marginBottom: 8,
+            display: "block",
+          }}
+        />
+        <Space>
+          <Button
+            type="primary"
+            onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
+            icon={<SearchOutlined />}
+            size="small"
+            style={{
+              width: 90,
+            }}
+          >
+            Search
+          </Button>
+          <Button
+            onClick={() => clearFilters && handleReset(clearFilters)}
+            size="small"
+            style={{
+              width: 90,
+            }}
+          >
+            Reset
+          </Button>
+          <Button
+            type="link"
+            size="small"
+            onClick={() => {
+              confirm({
+                closeDropdown: false,
+              });
+              setSearchText(selectedKeys[0]);
+              setSearchedColumn(dataIndex);
+            }}
+          >
+            Filter
+          </Button>
+          <Button
+            type="link"
+            size="small"
+            onClick={() => {
+              close();
+            }}
+          >
+            close
+          </Button>
+        </Space>
+      </div>
+    ),
+    filterIcon: (filtered) => (
+      <SearchOutlined
+        style={{
+          color: filtered ? "#1677ff" : undefined,
+        }}
+      />
+    ),
+    onFilter: (value, record) =>
+      record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
+    onFilterDropdownOpenChange: (visible) => {
+      if (visible) {
+        setTimeout(() => searchInput.current?.select(), 100);
+      }
+    },
+    render: (text) =>
+      searchedColumn === dataIndex ? (
+        <Highlighter
+          highlightStyle={{
+            backgroundColor: "#ffc069",
+            padding: 0,
+          }}
+          searchWords={[searchText]}
+          autoEscape
+          textToHighlight={text ? text.toString() : ""}
+        />
+      ) : (
+        text
+      ),
+  });
   const onSubmit = async (values) => {
     try {
       if (!file) {
@@ -72,6 +282,9 @@ export default function AdminManageBookings() {
         // Send the user data to your server (e.g., using Axios)
         // axios.post('/api/user', userData);
         try {
+          setTimeout(() => {
+            setOpen(false);
+          }, 1000);
           const response = await axios.post(
             `${process.env.NEXT_PUBLIC_REACT_APP_BACKEND_URL}/contracts/create/${values._id}`,
             { file: downloadURL },
@@ -85,8 +298,8 @@ export default function AdminManageBookings() {
           );
 
           if (response.status === 201) {
-            // Display a success message to the user
             message.success("Create Contract successfully");
+            router.reload();
           } else {
             // Handle API errors and display an error message
             message.error("Error submitting the form. Please try again later.");
@@ -118,6 +331,7 @@ export default function AdminManageBookings() {
 
   const showModal = (booking) => {
     setOpen(true);
+    setBookings({ ...booking });
 
     form.setFieldsValue({ ...booking });
   };
@@ -145,8 +359,14 @@ export default function AdminManageBookings() {
     _id: item._id,
     thumb: item?.carId?.thumb,
     numberCar: item?.carId?.numberCar,
+    model: item?.carId?.model?.name,
+
+    numberSeat: item?.carId?.numberSeat,
+    yearManufacture: item?.carId?.yearManufacture,
     username: item?.bookBy?.username,
+
     phone: item?.phone,
+
     address: item?.address,
 
     totalCost: formatCurrency(item?.totalCost),
@@ -156,18 +376,14 @@ export default function AdminManageBookings() {
 
     codeTransaction: item?.codeTransaction,
     timeTransaction: item?.timeTransaction,
+    status: item?.status,
   }));
 
   return (
     <>
-      <div className="pt-10">
-        <div className="mb-4 flex justify-between items-center">
-          <div className="max-w-[30%] flex gap-2 items-center">
-            <Input prefix={<SearchOutlined />} />
-            <Button type="primary">Search</Button>
-          </div>
-        </div>
+      <div className="pt-14">
         <Table
+          onChange={handleChange}
           scroll={{ x: 2400 }}
           columns={[
             { key: "id", title: "ID", dataIndex: "id", width: "2%" },
@@ -175,6 +391,7 @@ export default function AdminManageBookings() {
               key: "thumb",
               title: "Thumbnail",
               dataIndex: "thumb",
+
               render: (url) => (
                 <Image
                   className="h-32 aspect-video rounded-md object-cover"
@@ -183,23 +400,38 @@ export default function AdminManageBookings() {
               ),
             },
 
-            { key: "numberCar", title: "No. Seat", dataIndex: "numberCar" },
-            { key: "username", title: "Customer", dataIndex: "username" },
+            {
+              key: "numberCar",
+              title: "No. Seat",
+              dataIndex: "numberCar",
+              ...getColumnSearchProps("numberCar"),
+            },
+            {
+              key: "username",
+              title: "Customer",
+              dataIndex: "username",
+              ...getColumnSearchProps("username"),
+            },
 
             {
               key: "phone",
               title: "Phone Number",
               dataIndex: "phone",
+              ...getColumnSearchProps("phone"),
             },
             {
               key: "address",
               title: "Address",
               dataIndex: "address",
+              ...getColumnSearchProps("address"),
             },
             {
               key: "totalCost",
               title: "Total Cost",
               dataIndex: "totalCost",
+              ...getColumnSearchProps("totalCost"),
+              sorter: (a, b) => a.totalCost - b.totalCost,
+              sortDirections: ["descend", "ascend"],
             },
             {
               key: "timeBookingStart",
@@ -220,6 +452,76 @@ export default function AdminManageBookings() {
               key: "timeTransaction",
               title: "Time Transaction",
               dataIndex: "timeTransaction",
+            },
+
+            {
+              key: "status",
+              title: "Status",
+              dataIndex: "status",
+              fixed: "right",
+              // width: "%",
+              filters: [
+                {
+                  text: "Chưa Có Hợp Đồng",
+                  value: "Chưa có hợp đồng",
+                },
+                {
+                  text: "Đã Có Hợp Đồng",
+                  value: "Đã có hợp đồng",
+                },
+                {
+                  text: "Đã Hủy",
+                  value: "Đã hủy",
+                },
+              ],
+              filteredValue: filteredInfo.status || null,
+              onFilter: (value, record) => record.status.includes(value),
+
+              // ellipsis: true,
+              render: (status) => (
+                <>
+                  {status === "Chưa có hợp đồng" ? (
+                    <>
+                      <p className="text-red-500 justify-center">
+                        <MinusCircleOutlined
+                          style={{
+                            color: "red",
+                            fontSize: "12px",
+                            marginRight: "5px",
+                          }}
+                        />
+                        Chưa Có Hợp Đồng
+                      </p>
+                    </>
+                  ) : status === "Đã có hợp đồng" ? (
+                    <>
+                      <p className="text-green-600">
+                        <CheckCircleOutlined
+                          style={{
+                            color: "green",
+                            fontSize: "12px",
+                            marginRight: "5px",
+                          }}
+                        />
+                        Đã Có Hợp Đồng
+                      </p>
+                    </>
+                  ) : (
+                    <>
+                      <p className="text-red-500 flex justify-center ">
+                        <ExclamationCircleOutlined
+                          style={{
+                            color: "red",
+                            fontSize: "12px",
+                            marginRight: "5px",
+                          }}
+                        />
+                        Đã Hủy
+                      </p>
+                    </>
+                  )}
+                </>
+              ),
             },
             {
               key: "action",
@@ -303,7 +605,18 @@ export default function AdminManageBookings() {
             </div>
 
             <div className="grow">
-              <Form.Item label="Upload PDF" name="file">
+              <Button
+                type="primary"
+                shape="round"
+                icon={<DownloadOutlined />}
+                onClick={generateDocument}
+                className="px-8 mt-7 mb-4"
+              >
+                {" "}
+                Hợp đồng
+              </Button>
+
+              <Form.Item label="" name="file">
                 <Upload
                   beforeUpload={beforeUpload}
                   maxCount={1}

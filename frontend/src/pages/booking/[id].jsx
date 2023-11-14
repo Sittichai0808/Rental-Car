@@ -5,7 +5,14 @@
 import moment from "moment";
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { CheckCircleOutlined, CloseCircleOutlined } from "@ant-design/icons";
+import {
+  CheckCircleOutlined,
+  CloseCircleOutlined,
+  LoadingOutlined,
+  SmileOutlined,
+  SolutionOutlined,
+  PayCircleOutlined,
+} from "@ant-design/icons";
 import styled from "@emotion/styled";
 import dayjs from "dayjs";
 import { useMutation } from "@tanstack/react-query";
@@ -135,15 +142,7 @@ const BookingPage = () => {
       }
     },
   });
-  const handleCheckoutVNPAY = () => {
-    setCurrent(1);
-    setPaymentMethod("vnpay");
-  };
-  const handleCheckoutMOMO = () => {
-    setCurrent(1);
-    setPaymentMethod("momo");
-  };
-  //   vnp_TransactionStatus;
+
   const onSubmit = async (values) => {
     try {
       if (from === undefined || to === undefined) {
@@ -227,7 +226,7 @@ const BookingPage = () => {
 
     // Cập nhật initialValues
     form.setFieldsValue({
-      amount: newAmount, // Định dạng số tiền theo ý muốn
+      amount: newAmount || 0, // Định dạng số tiền theo ý muốn
     });
   }, [totalDays, data?.cost, costGetCar]);
 
@@ -244,27 +243,25 @@ const BookingPage = () => {
       } else {
         setValidationMessage("");
       }
+      setFrom(moment(value[0]?.format("DD MM YYYY HH mm") || "")._i);
+      setTo(moment(value[1]?.format("DD MM YYYY HH mm") || "")._i);
+      setTotalDays(Math.ceil(value[1]?.diff(value[0], "hours") / 24));
     }
-
-    setFrom(moment(value[0]?.format("DD MM YYYY HH mm"))._i);
-    setTo(moment(value[1]?.format("DD MM YYYY HH mm"))._i);
-    setTotalDays(value[1]?.diff(value[0], "days"));
   };
   const { mutate } = useMutation(onSubmit);
-  const handleCheckout = (value) => {
-    setTotalDays(totalDays);
-    console.log(totalDays);
-    setCurrent(1);
+  const handleCheckout = () => {
+    if (from === undefined || to === undefined) {
+      setValidationMessage("Hãy chọn ngày thuê");
+    } else {
+      setTotalDays(totalDays);
+      setCurrent(1);
+    }
   };
   console.log(current);
   return (
-    <div>
+    <div className="mb-10">
       <>
-        {" "}
-        <div class="flex flex-col mt-10 items-center justify-center border-b bg-slate-100 py-4 sm:flex-row sm:px-5 lg:px-5 xl:px-12">
-          {/* <a href="#" class="text-2xl font-bold text-gray-800 w-1/3">
-              My Checkout
-            </a> */}
+        <div class="flex flex-col mt-10 items-center justify-center border rounded-sm bg-slate-100 p-2 pb-4 sm:flex-row sm:px-5 lg:px-5 xl:px-12">
           <div class="flex  w-full mt-4 py-2 text-xs sm:mt-0 sm:ml-auto sm:text-base ">
             <Steps
               className="mt-5"
@@ -272,92 +269,24 @@ const BookingPage = () => {
               items={[
                 {
                   title: "Thủ tục thanh toán",
+                  icon: <SolutionOutlined />,
                 },
 
                 {
                   title: "Thanh toán",
+                  icon:
+                    current === 1 ? <LoadingOutlined /> : <PayCircleOutlined />,
                 },
                 {
                   title: "Kết quả",
+                  icon: <SmileOutlined />,
                 },
               ]}
             />
-            {/* <div class="relative">
-                <ul class="relative flex w-full items-center justify-between space-x-2 sm:space-x-4">
-                  <li class="flex items-center space-x-3 text-left sm:space-x-4">
-                    <a
-                      class="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-200 text-xs font-semibold text-emerald-700"
-                      href="#"
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        class="h-4 w-4"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        stroke-width="2"
-                      >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          d="M5 13l4 4L19 7"
-                        />
-                      </svg>
-                    </a>
-                    <span class="font-semibold text-gray-900">Shop</span>
-                  </li>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="h-4 w-4 text-gray-400"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    stroke-width="2"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      d="M9 5l7 7-7 7"
-                    />
-                  </svg>
-                  <li class="flex items-center space-x-3 text-left sm:space-x-4">
-                    <a
-                      class="flex h-6 w-6 items-center justify-center rounded-full bg-gray-600 text-xs font-semibold text-white ring ring-gray-600 ring-offset-2"
-                      href="#"
-                    >
-                      2
-                    </a>
-                    <span class="font-semibold text-gray-900">Shipping</span>
-                  </li>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="h-4 w-4 text-gray-400"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    stroke-width="2"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      d="M9 5l7 7-7 7"
-                    />
-                  </svg>
-                  <li class="flex items-center space-x-3 text-left sm:space-x-4">
-                    <a
-                      class="flex h-6 w-6 items-center justify-center rounded-full bg-gray-400 text-xs font-semibold text-white"
-                      href="#"
-                    >
-                      3
-                    </a>
-                    <span class="font-semibold text-gray-500">Payment</span>
-                  </li>
-                </ul>
-              </div> */}
           </div>
         </div>
         {current === 0 && (
-          <div class="grid sm:px-10 lg:grid-cols-2 p-5  bg-slate-100">
+          <div class="grid sm:px- mt-3 lg:grid-cols-2 p-5 rounded-sm  bg-slate-100 ">
             <div class="px-10 pt-8 ">
               <p class="text-xl font-medium">Tổng kết đơn hàng</p>
               <p class="text-gray-400"></p>
@@ -403,7 +332,7 @@ const BookingPage = () => {
                 </Radio.Group>
               </form>
             </div>
-            <div class="mt-14 bg-gray-50 px-10 pt-8 lg:mt-5">
+            <div class="mt-14 bg-gray-50 px-10 pt-8 lg:mt-5 rounded-sm">
               <p class="text-xl font-medium">Thông tin thuê chi tiết</p>
               <p class="text-gray-400">Thời gian thuê xe</p>
               <Space direction="vertical" size={12}>
@@ -414,6 +343,7 @@ const BookingPage = () => {
                   size="large"
                   disabledDate={disabledDate}
                   defaultValue={[startDate, endDate]}
+
                   // locale={locale}
                 />
                 {validationMessage && (
@@ -427,7 +357,7 @@ const BookingPage = () => {
                 {data?.cost.toLocaleString("it-IT", {
                   style: "currency",
                   currency: "VND",
-                })}
+                }) || 0}
               </p>
               <p className="text-lg">
                 Tổng giá thuê:{" "}
@@ -449,6 +379,7 @@ const BookingPage = () => {
             </div>
           </div>
         )}
+
         {current === 1 && (
           <Form
             form={form}
@@ -467,17 +398,14 @@ const BookingPage = () => {
               bankCode: "",
               language: "vn",
               amount: "0",
-              fullname: `${user?.result?.fullname}`,
-              phone: `${user?.result?.phoneNumber}`,
+              fullname: `${user?.result?.fullname || ""}`,
+              phone: `${user?.result?.phoneNumber || ""}`,
               address: `${user?.result?.address || ""}`,
             }}
-            // style={{
-            //   width: 450,
-            // }}
             size="large"
             className=""
           >
-            <div className="grid sm:px-10 lg:grid-cols-2 p-5  bg-slate-100">
+            <div className="grid sm:px-10 lg:grid-cols-2 p-5 mt-3 rounded-sm  bg-slate-100">
               <div class="px-10 pt-8 ">
                 <Form.Item
                   name="fullname"
@@ -518,7 +446,7 @@ const BookingPage = () => {
                 <Form.Item name="date" label="Thời gian thuê xe">
                   <RangePicker
                     showTime={{ format: "HH mm" }}
-                    format="DD MM YYYY HH mm"
+                    format="DD MM YYYY HH:mm"
                     onChange={selectTimeSlots}
                     defaultValue={[
                       dayjs(from || startDate, "DD MM YYYY HH mm"),
@@ -532,9 +460,9 @@ const BookingPage = () => {
                   <Input readOnly />
                 </Form.Item>
               </div>
-              <div class="mt-14 bg-gray-50 px-10 pt-8 lg:mt-5">
-                <Form.Item name="bankCode" label="Chọn Phương thức thanh toán:">
-                  <Radio.Group name="bankCode">
+              <div class="mt-14 bg-gray-50 px-10 pt-8 lg:mt-5 rounded-sm">
+                <Form.Item name="bankCode" label="Thanh toán:">
+                  <Radio.Group name="bankCode" className="mt-2">
                     <Space direction="vertical">
                       <Radio value="" checked={true}>
                         Cổng thanh toán VNPAYQR
@@ -553,7 +481,7 @@ const BookingPage = () => {
                 </Form.Item>
 
                 <Form.Item name="language" label="Ngôn ngữ:">
-                  <Radio.Group name="language">
+                  <Radio.Group name="language" className="mt-2">
                     <Space direction="vertical">
                       <Radio value="vn">Tiếng việt</Radio>
                       <Radio value="en">Tiếng anh</Radio>
@@ -562,11 +490,11 @@ const BookingPage = () => {
                 </Form.Item>
 
                 <Form.Item>
-                  <Space direction="horizontal">
+                  <Space direction="horizontal" className="ml-12">
                     <Button type="primary" htmlType="submit">
                       Thanh Toán
                     </Button>
-                    <Button type="primary" onClick={handleBack}>
+                    <Button type="dashed" onClick={handleBack}>
                       Trở về thủ tục thanh toán
                     </Button>
                   </Space>
@@ -576,72 +504,6 @@ const BookingPage = () => {
           </Form>
         )}
       </>
-
-      {/* {current === 1 && paymentMethod === "momo" && (
-        <div className="mt-5">
-          <Form
-            form={form}
-            onFinish={(values) => {
-              mutate1(values);
-            }}
-            layout="vertical"
-            name="basic"
-            initialValues={{ bankCode: "", language: "vn" }}
-            style={{
-              maxWidth: 600,
-            }}
-            size="large"
-            className="mt-5"
-          >
-            <Form.Item
-              name="amount"
-              label="Số tiền:"
-              rules={[
-                {
-                  required: true,
-                  message: "Số tiền không được để trống",
-                },
-              ]}
-            >
-              <Input />
-            </Form.Item>  */}
-
-      {/* <Form.Item name="bankCode" label="Chọn Phương thức thanh toán:">
-              <Radio.Group name="bankCode">
-                <Space direction="vertical">
-                  <Radio value="" checked={true}>
-                    Cổng thanh toán VNPAYQR
-                  </Radio>
-                  <Radio name="bankCode" value="VNPAYQR">
-                    Thanh toán qua ứng dụng hỗ trợ VNPAYQR
-                  </Radio>
-                  <Radio name="bankCode" value="VNBANK">
-                    Thanh toán qua ATM-Tài khoản ngân hàng nội địa
-                  </Radio>
-                  <Radio name="bankCode" value="INTCARD">
-                    Thanh toán qua thẻ quốc tế
-                  </Radio>
-                </Space>
-              </Radio.Group>
-            </Form.Item>
-
-            <Form.Item name="language" label="Ngôn ngữ:">
-              <Radio.Group name="language">
-                <Space direction="vertical">
-                  <Radio value="vn">Tiếng việt</Radio>
-                  <Radio value="en">Tiếng anh</Radio>
-                </Space>
-              </Radio.Group>
-            </Form.Item>
-
-            <Form.Item>
-              <Button type="primary" htmlType="submit">
-                Thanh Toán
-              </Button>
-            </Form.Item>
-          </Form>
-        </div>
-      )}*/}
 
       {current === 2 && (
         <div className="flex justify-center items-start mt-5 text-gray-700">

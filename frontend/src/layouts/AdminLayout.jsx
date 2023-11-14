@@ -26,22 +26,22 @@ export const AdminLayout = ({ children }) => {
           items={[
             {
               key: "manage-users",
-              label: "Manager Users",
+              label: "Users management",
               icon: <UsergroupAddOutlined />,
             },
             {
               key: "manage-cars",
-              label: "Manager Cars",
+              label: "Cars management",
               icon: <CarOutlined />,
             },
             {
               key: "manage-bookings",
-              label: "Manager Bookings",
+              label: "Bookings management",
               icon: <BookOutlined />,
             },
             {
               key: "manage-contracts",
-              label: "Manager Contracts",
+              label: "Contracts management",
               icon: <ContactsOutlined />,
             },
           ]}

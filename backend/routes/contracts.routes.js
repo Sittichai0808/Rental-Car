@@ -14,5 +14,5 @@ contractsRoutes.post(
   wrapRequestHandler(createContract)
 )
 
-contractsRoutes.get('/', accessTokenValidator, adminValidator, staffValidator, wrapRequestHandler(getContractById))
+contractsRoutes.get('/', staffValidator, wrapRequestHandler(getContractById))
 export default contractsRoutes

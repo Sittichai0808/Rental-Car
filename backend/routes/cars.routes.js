@@ -7,7 +7,8 @@ import {
   uploadImagesCar,
   ratings,
   getRatingsOfCar,
-  getRatingByBooking
+  getRatingByBooking,
+  updateRatingsByBooking
 } from '../controllers/cars.controllers.js'
 import { wrapRequestHandler } from '../utils/handlers.js'
 import { accessTokenValidator, adminValidator, staffValidator } from '../middlewares/users.middlewares.js'
@@ -30,5 +31,5 @@ carsRoutes.post(
 carsRoutes.post('/rating/create', accessTokenValidator, wrapRequestHandler(ratings))
 carsRoutes.get('/ratings/:carId', wrapRequestHandler(getRatingsOfCar))
 carsRoutes.get('/rating/:bookingId', accessTokenValidator, wrapRequestHandler(getRatingByBooking))
-
+carsRoutes.put('/rating/update/:bookingId', accessTokenValidator, wrapRequestHandler(updateRatingsByBooking))
 export default carsRoutes

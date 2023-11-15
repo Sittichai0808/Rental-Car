@@ -7,7 +7,7 @@ export const Feedback = ({ dataRatings }) => {
     <div className="flex items-center w-full h-[140px] gap-4 rounded-md p-6 border border-solid border-gray-200">
       <div className="aspect-square relative w-[60px] rounded-full overflow-hidden h-[60px] ml-6">
         <Image
-          src={dataRatings.postBy.profilePicture[0]}
+          src={dataRatings.postBy.profilePicture}
           layout="fill"
           alt="avatar"
         />

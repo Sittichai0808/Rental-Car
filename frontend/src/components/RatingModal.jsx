@@ -1,7 +1,11 @@
 import React from "react";
 import { Modal, Button, Input, Rate, notification } from "antd";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { createRating, getRatingByBooking } from "@/apis/ratings.api";
+import {
+  createRating,
+  getRatingByBooking,
+  updateRatingByBooking,
+} from "@/apis/ratings.api";
 import { GET_RATING_BY_BOOKING } from "@/constants/react-query-key.constant";
 
 const RatingModal = ({ open, handleCancel, bookingId, carId, accessToken }) => {
@@ -20,7 +24,11 @@ const RatingModal = ({ open, handleCancel, bookingId, carId, accessToken }) => {
       checkRated.refetch(); // Cập nhật lại dữ liệu đánh giá sau khi thêm mới
     },
   });
-
+  const { mutate: updateRating } = useMutation(updateRatingByBooking, {
+    onSuccess: () => {
+      checkRated.refetch(); // Cập nhật lại dữ liệu đánh giá sau khi cập nhật
+    },
+  });
   const handleRatingChange = (value) => {
     setStar(value);
   };
@@ -29,13 +37,23 @@ const RatingModal = ({ open, handleCancel, bookingId, carId, accessToken }) => {
     setComment(e.target.value);
   };
 
+  const hasRatings = checkRated.data?.result.length > 0;
+
   const handleRatingSubmit = async () => {
     try {
-      await rate({ accessToken, bookingId, carId, star, comment });
-      notification.success({
-        message: "Đánh giá thành công",
-        description: "Cảm ơn bạn đã đánh giá xe!",
-      });
+      if (hasRatings) {
+        await updateRating({ accessToken, bookingId, star, comment });
+        notification.success({
+          message: "Cập nhật đánh giá thành công",
+          description: "Cảm ơn bạn đã cập nhật đánh giá xe!",
+        });
+      } else {
+        await rate({ accessToken, bookingId, carId, star, comment });
+        notification.success({
+          message: "Đánh giá thành công",
+          description: "Cảm ơn bạn đã đánh giá xe!",
+        });
+      }
       handleCancel();
     } catch (error) {
       notification.error({
@@ -45,76 +63,38 @@ const RatingModal = ({ open, handleCancel, bookingId, carId, accessToken }) => {
     }
   };
 
-  const hasRatings = checkRated.data?.result.length > 0;
-
-  if (!checkRated.isLoading) {
-    if (hasRatings) {
-      const { star, comment } = checkRated.data.result[0];
-
-      return (
-        <Modal
-          open={open}
-          onCancel={handleCancel}
-          footer={[
-            <Button key="back" onClick={handleCancel}>
-              Hủy
-            </Button>,
-            <Button key="submit" type="primary">
-              Edit
-            </Button>,
-          ]}
-        >
-          <div>
-            <h3>Đánh giá</h3>
-            <div>
-              <Rate className="mb-5" disabled allowHalf value={star} /> ({star}{" "}
-              sao)
-              <TextArea
-                value={comment}
-                allowClear
-                disabled
-                className="bg-white"
-              />
-            </div>
-          </div>
-        </Modal>
-      );
-    }
-
-    return (
-      <Modal
-        open={open}
-        onCancel={handleCancel}
-        footer={[
-          <Button key="back" onClick={handleCancel}>
-            Hủy
-          </Button>,
-          <Button key="submit" type="primary" onClick={handleRatingSubmit}>
-            Đánh giá
-          </Button>,
-        ]}
-      >
-        <div className="mt-10">
-          <h3>Đánh giá</h3>
+  return (
+    <Modal
+      open={open}
+      onCancel={handleCancel}
+      footer={[
+        <Button key="back" onClick={handleCancel}>
+          Hủy
+        </Button>,
+        <Button key="submit" type="primary" onClick={handleRatingSubmit}>
+          {hasRatings ? "Cập nhật" : "Đánh giá"}
+        </Button>,
+      ]}
+    >
+      <div>
+        <h3>Đánh giá</h3>
+        <div>
           <Rate
             className="mb-5"
             allowHalf
-            defaultValue={star}
+            value={star}
             onChange={handleRatingChange}
           />
-          <div className="flex flex-col">
-            <TextArea
-              allowClear
-              value={comment}
-              onChange={handleCommentChange}
-            />
-          </div>
+          <TextArea
+            value={comment}
+            allowClear
+            className="bg-white"
+            onChange={handleCommentChange}
+          />
         </div>
-      </Modal>
-    );
-  }
-
-  return null;
+      </div>
+    </Modal>
+  );
 };
 
 export default RatingModal;

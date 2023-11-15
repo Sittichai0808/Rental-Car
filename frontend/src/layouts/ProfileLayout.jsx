@@ -60,44 +60,6 @@ export const ProfileLayout = ({ children }) => {
     ""
   );
 
-  // const onSubmit = async ({ file }) => {
-  //   console.log("User Object:", user);
-  //   console.log("value:", file);
-  //   console.log("user._id:", user?.result?._id);
-  //   console.log("Access Token:", accessToken);
-
-  //   try {
-  //     const formData = new FormData();
-  //     formData.append("profilePicture", file);
-  //     const userId = user?.result?._id;
-  //     const response = await axios.put(
-  //       `${process.env.NEXT_PUBLIC_REACT_APP_BACKEND_URL}/users/upload-image/${userId}`,
-  //       formData,
-
-  //       {
-  //         headers: {
-  //           "Content-Type": "multipart/form-data",
-  //           withCredentials: true,
-  //         },
-  //       }
-  //     );
-
-  //     if (response.status === 200) {
-  //       console.log(response.data);
-
-  //       setUser({ ...response.data });
-
-  //       router.push(window.location.reload());
-  //     } else {
-  //       console.log(error.response.data.errors[0].msg);
-  //     }
-  //   } catch (error) {
-  //     toast.error(error.response.data.errors[0].msg, {
-  //       position: toast.POSITION.TOP_CENTER,
-  //     });
-  //   }
-  // };
-
   return (
     <Layout className="flex max-w-6xl  mx-auto border-b bg-slate-100  ">
       <HeaderComponent />
@@ -135,13 +97,6 @@ export const ProfileLayout = ({ children }) => {
               <LogoutOutlined />
             </Button>
 
-            {/* <input
-              className=""
-              type="file"
-              accept="image/*"
-              onChange={onSubmit}
-            /> */}
-
             <Image
               className="flex justify-center items-center rounded object-cover "
               height={100}
@@ -150,14 +105,7 @@ export const ProfileLayout = ({ children }) => {
               src={user?.result?.profilePicture}
               alt="Image"
             />
-            {/* 
-            <Upload
-              customRequest={onSubmit}
-              showUploadList={false}
-              accept="image/*"
-            >
-              <Button icon={<UploadOutlined />}></Button>
-            </Upload> */}
+
             <div className="flex flex-col  ">
               <h5 className="text-lg font-semibold text-center mt-1 mb-2 ">
                 {user?.result?.username}

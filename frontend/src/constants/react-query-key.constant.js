@@ -6,3 +6,4 @@ export const GET_HISTORY_BOOKING_KEY = "get-history-booking";
 export const GET_RATINGS_CAR = "get-ratings-car";
 export const CREATE_RATINGS = "create-ratings";
 export const GET_RATING_BY_BOOKING = "get-rating-by-booking";
+export const UPDATE_RATING_BY_BOOKING = "update-rating-by-booking";

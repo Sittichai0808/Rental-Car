@@ -50,7 +50,13 @@ const carsSchema = new mongoose.Schema(
     totalRatings: {
       type: Number,
       default: 0
-    }
+    },
+    likes: [
+      {
+        type: mongoose.Types.ObjectId,
+        ref: 'User'
+      }
+    ]
   },
   { timestamps: true }
 )

@@ -87,21 +87,45 @@ class CarsService {
         star,
         comment
       })
-      const savedRating = await newRatings.save();
+      const savedRating = await newRatings.save()
 
-      const ratings = await Ratings.find({ carId: carId });
-      const totalStars = ratings.reduce((total, rating) => total + rating.star, 0);
-      const newTotalRatings = ratings.length > 0 ? totalStars / ratings.length : 0;
+      const ratings = await Ratings.find({ carId: carId })
+      const totalStars = ratings.reduce((total, rating) => total + rating.star, 0)
+      const newTotalRatings = ratings.length > 0 ? totalStars / ratings.length : 0
 
       // Cập nhật totalRatings của Car
-      await Cars.updateOne({ _id: carId }, { totalRatings: newTotalRatings });
+      await Cars.updateOne({ _id: carId }, { totalRatings: newTotalRatings })
 
-      return savedRating; // Trả về đánh giá đã lưu
+      return savedRating // Trả về đánh giá đã lưu
     } catch (error) {
-      throw error;
+      throw error
     }
   }
+  async updateRatingsByBooking(bookingId, payload) {
+    try {
+      //Tìm đánh giá liên quan đến bookingId được cung cấp
+      const existingRating = await Ratings.findOne({ bookingId })
 
+      if (!existingRating) {
+        throw new Error('Rating not found for the given bookingId')
+      }
+
+      // Cập nhật đánh giá
+      const updatedRating = await Ratings.findByIdAndUpdate(existingRating._id, payload, { new: true })
+
+      // Recalculate the average rating for the associated car
+      const ratings = await Ratings.find({ carId: updatedRating.carId })
+      const totalStars = ratings.reduce((total, rating) => total + rating.star, 0)
+      const newTotalRatings = ratings.length > 0 ? totalStars / ratings.length : 0
+
+      // Cập nhật TotalRatings của car tương ứng
+      await Cars.updateOne({ _id: updatedRating.carId }, { totalRatings: newTotalRatings })
+
+      return updatedRating // Trả về đánh giá đã cập nhật
+    } catch (error) {
+      throw error
+    }
+  }
 
   async getRatingsOfCar(carId) {
     try {

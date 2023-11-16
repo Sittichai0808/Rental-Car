@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from "react";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import { useUserState } from "@/recoils/user.state.js";
+import { useDriverState } from "@/recoils/driver.state.js";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import axios from "axios";
-import { Button, Input, Form } from "antd";
+import { Button, Input, Form, Upload, notification } from "antd";
 import Image from "next/image";
 import styled from "@emotion/styled";
 import { useRouter } from "next/router";
 import Link from "next/link";
+import { UploadOutlined } from "@ant-design/icons";
 
 const StyleInput = styled(Input)`
   display: flex;
@@ -41,38 +43,45 @@ const ButtonSummit = styled(Button)`
   padding: 30px auto;
 `;
 
-export default function EditPage() {
+export default function DriverPage() {
   const router = useRouter();
   const [form] = Form.useForm();
-
+  const [loading, setLoading] = useState(false);
   const [profile, setProfile, clearProfile] = useLocalStorage("profile", "");
+  const [driver, setDriver] = useDriverState();
   const [user, setUser] = useUserState();
   const [accessToken, setAccessToken, clearAccessToken] =
     useLocalStorage("access_token");
 
   const onSubmit = async (values) => {
-    console.log("User Object:", user);
-    console.log("value:", values);
-    console.log("user._id:", user._id);
-    console.log("Access Token:", accessToken);
+    const formData = new FormData();
+    formData.append("fullName", values.fullName);
+    formData.append("drivingLicenseNo", values.drivingLicenseNo);
+    formData.append("dob", values.dob);
+    formData.append("class", values.class);
+    formData.append("status", values.status);
+    formData.append("image", values.image.file.originFileObj);
+
     try {
-      const response = await axios.put(
-        `${process.env.NEXT_PUBLIC_REACT_APP_BACKEND_URL}/users/update-user/${user._id}`,
-        values,
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_REACT_APP_BACKEND_URL}/drivers/registerDriver`,
+        formData,
 
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
-            "Content-Type": "application/json",
-            withCredentials: true,
+            "Content-Type": "multipart/form-data",
           },
         }
       );
 
       if (response.status === 200) {
         console.log(response.data);
-        setUser({ ...response.data.result });
-        setProfile({ ...response.data.result });
+
+        setDriver({ ...response.data });
+        notification.success({
+          message: "Đăng kí thành công",
+        });
         router.push("/profile");
       } else {
         console.log(error.response.data.errors[0].msg);
@@ -84,12 +93,19 @@ export default function EditPage() {
     }
   };
 
-  const { mutate } = useMutation(onSubmit);
+  const { mutate, isLoading } = useMutation(onSubmit, {
+    onMutate: () => {
+      setLoading(true);
+      setTimeout(() => {
+        setLoading(false);
+      }, 1000);
+    },
+  });
   return (
     <div className="flex flex-col mt-10 items-center justify-center border-b bg-slate-100 py-4 sm:flex-row sm:px-5 lg:px-5 xl:px-12">
       <div className="flex flex-col justify-center  pl-10 pr-5  pb-6 w-1/2 ">
         <p className="flex justify-center items-center w-full text-2xl font-bold">
-          Cập nhật thông tin
+          Đăng kí GPLX
         </p>
         <Form
           form={form}
@@ -99,66 +115,94 @@ export default function EditPage() {
             mutate(values);
           }}
           label
-          initialValues={{}}
+          initialValues={{ status: driver?.result?.status || "Chưa xác thực" }}
           autoComplete="off"
           className="mt-5 "
         >
           <Form.Item
-            label="UserName"
-            name="username"
+            label="FullName"
+            name="fullName"
             rules={[
               {
                 type: "text",
                 message: "Please input your name",
               },
+              {
+                required: true,
+                message: "Please input your name!",
+              },
             ]}
           >
-            <StyleInputModal
-              type="text"
-              placeholder={user?.username}
-              size="large"
-            />
+            <StyleInputModal type="text" size="large" />
           </Form.Item>
           <Form.Item
-            label="Address"
-            name="address"
+            label="drivingLicenseNo"
+            name="drivingLicenseNo"
             rules={[
               {
                 type: "text",
-                message: "The input is not valid name",
+                message: "The input is not valid drivingLicenseNo",
               },
-            ]}
-          >
-            <StyleInputModal placeholder={user?.address} size="large" />
-          </Form.Item>
-          <Form.Item
-            label="Email"
-            name="email"
-            rules={[
               {
-                type: "email",
-                message: "The input is not valid E-mail!",
+                required: true,
+                message: "Please input your drivingLicenseNo!",
               },
             ]}
           >
-            <StyleInputModal placeholder={user?.email} size="large" />
+            <StyleInputModal size="large" />
           </Form.Item>
           <Form.Item
-            label="PhoneNumber"
-            name="phoneNumber"
+            label="Dob"
+            name="dob"
             rules={[
               {
                 type: "text",
-                message: "The input is not valid phonenumber!",
+                message: "The input is not valid dob!",
+              },
+              {
+                required: true,
+                message: "Please input your drivingLicenseNo!",
               },
             ]}
           >
-            <StyleInputModal placeholder={user?.phoneNumber} size="large" />
+            <StyleInputModal size="large" />
           </Form.Item>
-
+          <Form.Item
+            label="Class"
+            name="class"
+            rules={[
+              {
+                type: "text",
+                message: "The input is not valid class!",
+              },
+              {
+                required: true,
+                message: "Please input your class!",
+              },
+            ]}
+          >
+            <StyleInputModal size="large" />
+          </Form.Item>
+          <Form.Item
+            label="Status"
+            name="status"
+            rules={[
+              {
+                type: "text",
+                message: "The input is not valid status!",
+              },
+            ]}
+          >
+            <StyleInputModal size="large" disabled />
+          </Form.Item>
+          <Form.Item label="image" name="image">
+            <Upload showUploadList={true} accept="image/*">
+              <Button icon={<UploadOutlined />}>Click to upload</Button>
+            </Upload>
+          </Form.Item>
           <Form.Item>
-            <ButtonSummit type="primary" htmlType="submit">
-              Cập nhập
+            <ButtonSummit type="primary" htmlType="submit" loading={isLoading}>
+              Đăng kí
             </ButtonSummit>
           </Form.Item>
         </Form>

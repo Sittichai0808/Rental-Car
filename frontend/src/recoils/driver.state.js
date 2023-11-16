@@ -12,9 +12,9 @@ const getProfile = (key) => {
   }
 };
 
-export const userAtom = atom({
-  key: "user",
+export const driverAtom = atom({
+  key: "driver",
   default: getProfile("profile"),
 });
-export const useUserState = () => useRecoilState(userAtom);
-export const useUserValue = () => useRecoilValue(userAtom);
+export const useDriverState = () => useRecoilState(driverAtom);
+export const useDriverValue = () => useRecoilValue(driverAtom);

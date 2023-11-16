@@ -8,6 +8,7 @@ import {
   ratings,
   getRatingsOfCar,
   getRatingByBooking,
+  updateRatingsByBooking,
   likeCars,
   getCarLikedByUser
 } from '../controllers/cars.controllers.js'
@@ -33,6 +34,7 @@ carsRoutes.post(
 carsRoutes.post('/rating/create', accessTokenValidator, wrapRequestHandler(ratings))
 carsRoutes.get('/ratings/:carId', wrapRequestHandler(getRatingsOfCar))
 carsRoutes.get('/rating/:bookingId', accessTokenValidator, wrapRequestHandler(getRatingByBooking))
+carsRoutes.put('/rating/update/:bookingId', accessTokenValidator, wrapRequestHandler(updateRatingsByBooking))
 carsRoutes.put('/:carId/like', accessTokenValidator, wrapRequestHandler(likeCars))
 
 export default carsRoutes

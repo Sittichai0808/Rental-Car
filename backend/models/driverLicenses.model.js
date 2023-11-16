@@ -1,27 +1,29 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose'
 
-const driverLicensesSchema = new mongoose.Schema({
+const driverLicensesSchema = new mongoose.Schema(
+  {
     image: {
-        type: String,
+      type: String
     },
     drivingLicenseNo: {
-        type: String,
+      type: String
     },
     fullName: {
-        type: String,
+      type: String
     },
     dob: {
-        type: Date,
+      type: Date
     },
     class: {
-        type: String,
+      type: String
     },
     status: {
-        type: String,
-        enum: ['Chưa xác thực', 'Đã xác thực'],
-        default: 'Chưa xác thực'
-    },
-}, { timestamps: true }
+      type: String,
+      enum: ['Chưa xác thực', 'Đã xác thực'],
+      default: 'Chưa xác thực'
+    }
+  },
+  { timestamps: true }
 )
 
 const DriverLicenses = mongoose.model('DriverLicenses', driverLicensesSchema)

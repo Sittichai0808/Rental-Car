@@ -1,5 +1,11 @@
 import express from 'express'
-import { registerValidator, loginValidator, accessTokenValidator, adminValidator, staffValidator } from '../middlewares/users.middlewares.js'
+import {
+  registerValidator,
+  loginValidator,
+  accessTokenValidator,
+  adminValidator,
+  staffValidator
+} from '../middlewares/users.middlewares.js'
 import { wrapRequestHandler } from '../utils/handlers.js'
 import {
   registerController,

@@ -52,7 +52,9 @@ export default function DriverPage() {
   const [user, setUser] = useUserState();
   const [accessToken, setAccessToken, clearAccessToken] =
     useLocalStorage("access_token");
-
+  useEffect(() => {
+    setDriver(profile);
+  }, [driver]);
   const onSubmit = async (values) => {
     const formData = new FormData();
     formData.append("fullName", values.fullName);
@@ -78,7 +80,8 @@ export default function DriverPage() {
       if (response.status === 200) {
         console.log(response.data);
 
-        setDriver({ ...response.data });
+        setDriver({ ...response.data.result });
+        setProfile({ ...response.data.result });
         notification.success({
           message: "Đăng kí thành công",
         });

@@ -54,19 +54,18 @@ export default function AccountPage() {
   const [open, setOpen] = useState(false);
   const showModal = () => setOpen(true);
   const handleOk = () => {
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      setOpen(false);
-    });
+    setOpen(false);
   };
   const handleCancle = () => setOpen(false);
 
   const [user, setUser] = useUserState();
+  const [profile, setProfile, clearProfile] = useLocalStorage("profile", "");
   const [driver, setDriver] = useDriverState();
   const [accessToken, setAccessToken, clearAccessToken] =
     useLocalStorage("access_token");
-
+  useEffect(() => {
+    setDriver(profile);
+  }, [driver]);
   const updateProfile = async (values) => {
     console.log("User Object:", user);
     console.log("value:", values);
@@ -126,7 +125,7 @@ export default function AccountPage() {
       setLoading(true);
       setTimeout(() => {
         setLoading(false);
-      }, 1000);
+      });
     },
   });
   return (
@@ -328,8 +327,14 @@ export default function AccountPage() {
         <div className="flex title items-center justify-between">
           <Title className="flex items-center font-semibold text-xl" level={3}>
             Giấy phép lái xe
-            <p className="rounded-lg border-solid border-black text-xs bg-orange-400 ">
-              {driver?.result?.status || "Chưa xác thực"}
+            <p
+              className="rounded-lg border-solid  text-xs ml-1 "
+              style={{
+                background: "#ffd0cd",
+                color: "red",
+              }}
+            >
+              {driver?.status || "Chưa xác thực"}
             </p>
           </Title>
           <div className="flex items-baseline ">
@@ -365,7 +370,7 @@ export default function AccountPage() {
                   type="text"
                   className="flex items-center text-base font-semibold text-slate-950"
                   size="small"
-                  value={driver?.result?.drivingLicenseNo}
+                  value={driver?.drivingLicenseNo}
                 />
               </div>
               <div className="flex flex-col  justify-between">
@@ -380,7 +385,7 @@ export default function AccountPage() {
                   type="text"
                   className="flex items-center text-base font-semibold text-slate-950"
                   size="small"
-                  value={driver?.result?.fullName}
+                  value={driver?.fullName}
                 />
               </div>
               <div className="flex flex-col justify-between">
@@ -396,9 +401,9 @@ export default function AccountPage() {
                   className="flex items-center text-base font-semibold text-slate-950"
                   size="small"
                   value={
-                    driver?.result?.dob
-                      ? moment(driver?.result?.dob).format("DD/MM/YYYY")
-                      : driver?.result?.dob
+                    driver?.dob
+                      ? moment(driver?.dob).format("DD/MM/YYYY")
+                      : driver?.dob
                   }
                 />
               </div>
@@ -414,7 +419,7 @@ export default function AccountPage() {
                   type="text"
                   className="flex items-center text-base font-semibold text-slate-950"
                   size="small"
-                  value={driver?.result?.class}
+                  value={driver?.class}
                 />
               </div>
             </div>
@@ -426,7 +431,7 @@ export default function AccountPage() {
             <div className="flex flex-col justify-evenly h-full">
               <Image
                 className="w-full object-cover rounded-xl"
-                src={driver?.result?.image}
+                src={driver?.image}
                 alt="Image"
                 width={300}
                 height={200}

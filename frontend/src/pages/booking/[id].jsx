@@ -5,14 +5,7 @@
 import moment from "moment";
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import {
-  CheckCircleOutlined,
-  CloseCircleOutlined,
-  LoadingOutlined,
-  SmileOutlined,
-  SolutionOutlined,
-  PayCircleOutlined,
-} from "@ant-design/icons";
+import { CheckCircleOutlined, CloseCircleOutlined } from "@ant-design/icons";
 import styled from "@emotion/styled";
 import dayjs from "dayjs";
 import { useMutation } from "@tanstack/react-query";
@@ -24,16 +17,12 @@ import {
   Steps,
   Radio,
   Space,
-  DateRangePicker,
-  Divider,
-  BorderlessTable,
   DatePicker,
 } from "antd";
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import Image from "next/image";
-import { useAccessTokenState } from "@/recoils/accessToken.state";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import { useDatesState } from "@/recoils/dates.state";
 import { useUserState } from "@/recoils/user.state";
@@ -332,7 +321,7 @@ const BookingPage = () => {
                 </Radio.Group>
               </form>
             </div>
-            <div class="mt-14 bg-gray-50 px-10 pt-8 lg:mt-5 rounded-sm">
+            <div class="mt-14 bg-gray-50 px-10 pt-8 lg:mt-5">
               <p class="text-xl font-medium">Thông tin thuê chi tiết</p>
               <p class="text-gray-400">Thời gian thuê xe</p>
               <Space direction="vertical" size={12}>

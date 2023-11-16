@@ -1,10 +1,20 @@
 import { apiClient } from "./client";
 
 
-export async function getHistoryBooking(accessToken) {
+export async function getCarDetail(carId) {
     const { data } = await apiClient.request({
         method: "GET",
-        url: `/bookings/historyBooking`,
+        url: `/cars/${carId}`,
+        withCredentials: true
+    });
+
+    return data;
+}
+
+export async function likeCars(accessToken, carId) {
+    const { data } = await apiClient.request({
+        method: "PUT",
+        url: `/cars/${carId}/like`,
         headers: {
             Authorization: `Bearer ${accessToken}`,
             "Content-Type": "application/json",
@@ -15,11 +25,12 @@ export async function getHistoryBooking(accessToken) {
     return data;
 }
 
-export async function getScheduleCar(carId) {
+export async function getCarsLiked(accessToken) {
     const { data } = await apiClient.request({
-        method: "GET",
-        url: `/bookings/${carId}`,
+        method: 'GET',
+        url: `cars/get/liked`,
         headers: {
+            Authorization: `Bearer ${accessToken}`,
             "Content-Type": "application/json",
         },
         withCredentials: true

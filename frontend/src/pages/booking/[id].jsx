@@ -5,7 +5,15 @@
 import moment from "moment";
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { CheckCircleOutlined, CloseCircleOutlined } from "@ant-design/icons";
+import {
+  CheckCircleOutlined,
+  CloseCircleOutlined,
+  LoadingOutlined,
+  SmileOutlined,
+  SolutionOutlined,
+  PayCircleOutlined,
+} from "@ant-design/icons";
+import styled from "@emotion/styled";
 import dayjs from "dayjs";
 import { useMutation } from "@tanstack/react-query";
 import {
@@ -130,15 +138,7 @@ const BookingPage = () => {
       }
     },
   });
-  const handleCheckoutVNPAY = () => {
-    setCurrent(1);
-    setPaymentMethod("vnpay");
-  };
-  const handleCheckoutMOMO = () => {
-    setCurrent(1);
-    setPaymentMethod("momo");
-  };
-  //   vnp_TransactionStatus;
+
   const onSubmit = async (values) => {
     try {
       if (from === undefined || to === undefined) {
@@ -222,7 +222,7 @@ const BookingPage = () => {
 
     // Cập nhật initialValues
     form.setFieldsValue({
-      amount: newAmount, // Định dạng số tiền theo ý muốn
+      amount: newAmount || 0, // Định dạng số tiền theo ý muốn
     });
   }, [totalDays, data?.cost, costGetCar]);
 
@@ -239,27 +239,25 @@ const BookingPage = () => {
       } else {
         setValidationMessage("");
       }
+      setFrom(moment(value[0]?.format("DD MM YYYY HH mm") || "")._i);
+      setTo(moment(value[1]?.format("DD MM YYYY HH mm") || "")._i);
+      setTotalDays(Math.ceil(value[1]?.diff(value[0], "hours") / 24));
     }
-
-    setFrom(moment(value[0]?.format("DD MM YYYY HH mm"))._i);
-    setTo(moment(value[1]?.format("DD MM YYYY HH mm"))._i);
-    setTotalDays(value[1]?.diff(value[0], "days"));
   };
   const { mutate } = useMutation(onSubmit);
-  const handleCheckout = (value) => {
-    setTotalDays(totalDays);
-    console.log(totalDays);
-    setCurrent(1);
+  const handleCheckout = () => {
+    if (from === undefined || to === undefined) {
+      setValidationMessage("Hãy chọn ngày thuê");
+    } else {
+      setTotalDays(totalDays);
+      setCurrent(1);
+    }
   };
   console.log(current);
   return (
-    <div>
+    <div className="mb-10">
       <>
-        {" "}
-        <div class="flex flex-col mt-10 items-center justify-center border-b bg-slate-100 py-4 sm:flex-row sm:px-5 lg:px-5 xl:px-12">
-          {/* <a href="#" class="text-2xl font-bold text-gray-800 w-1/3">
-              My Checkout
-            </a> */}
+        <div class="flex flex-col mt-10 items-center justify-center border rounded-sm bg-slate-100 p-2 pb-4 sm:flex-row sm:px-5 lg:px-5 xl:px-12">
           <div class="flex  w-full mt-4 py-2 text-xs sm:mt-0 sm:ml-auto sm:text-base ">
             <Steps
               className="mt-5"
@@ -267,20 +265,24 @@ const BookingPage = () => {
               items={[
                 {
                   title: "Thủ tục thanh toán",
+                  icon: <SolutionOutlined />,
                 },
 
                 {
                   title: "Thanh toán",
+                  icon:
+                    current === 1 ? <LoadingOutlined /> : <PayCircleOutlined />,
                 },
                 {
                   title: "Kết quả",
+                  icon: <SmileOutlined />,
                 },
               ]}
             />
           </div>
         </div>
         {current === 0 && (
-          <div class="grid sm:px-10 lg:grid-cols-2 p-5  bg-slate-100">
+          <div class="grid sm:px- mt-3 lg:grid-cols-2 p-5 rounded-sm  bg-slate-100 ">
             <div class="px-10 pt-8 ">
               <p class="text-xl font-medium">Tổng kết đơn hàng</p>
               <p class="text-gray-400"></p>
@@ -337,6 +339,7 @@ const BookingPage = () => {
                   size="large"
                   disabledDate={disabledDate}
                   defaultValue={[startDate, endDate]}
+
                   // locale={locale}
                 />
                 {validationMessage && (
@@ -350,7 +353,7 @@ const BookingPage = () => {
                 {data?.cost.toLocaleString("it-IT", {
                   style: "currency",
                   currency: "VND",
-                })}
+                }) || 0}
               </p>
               <p className="text-lg">
                 Tổng giá thuê:{" "}
@@ -372,6 +375,7 @@ const BookingPage = () => {
             </div>
           </div>
         )}
+
         {current === 1 && (
           <Form
             form={form}
@@ -390,17 +394,14 @@ const BookingPage = () => {
               bankCode: "",
               language: "vn",
               amount: "0",
-              fullname: `${user?.result?.fullname}`,
-              phone: `${user?.result?.phoneNumber}`,
+              fullname: `${user?.result?.fullname || ""}`,
+              phone: `${user?.result?.phoneNumber || ""}`,
               address: `${user?.result?.address || ""}`,
             }}
-            // style={{
-            //   width: 450,
-            // }}
             size="large"
             className=""
           >
-            <div className="grid sm:px-10 lg:grid-cols-2 p-5  bg-slate-100">
+            <div className="grid sm:px-10 lg:grid-cols-2 p-5 mt-3 rounded-sm  bg-slate-100">
               <div class="px-10 pt-8 ">
                 <Form.Item
                   name="fullname"
@@ -441,7 +442,7 @@ const BookingPage = () => {
                 <Form.Item name="date" label="Thời gian thuê xe">
                   <RangePicker
                     showTime={{ format: "HH mm" }}
-                    format="DD MM YYYY HH mm"
+                    format="DD MM YYYY HH:mm"
                     onChange={selectTimeSlots}
                     defaultValue={[
                       dayjs(from || startDate, "DD MM YYYY HH mm"),
@@ -455,9 +456,9 @@ const BookingPage = () => {
                   <Input readOnly />
                 </Form.Item>
               </div>
-              <div class="mt-14 bg-gray-50 px-10 pt-8 lg:mt-5">
-                <Form.Item name="bankCode" label="Chọn Phương thức thanh toán:">
-                  <Radio.Group name="bankCode">
+              <div class="mt-14 bg-gray-50 px-10 pt-8 lg:mt-5 rounded-sm">
+                <Form.Item name="bankCode" label="Thanh toán:">
+                  <Radio.Group name="bankCode" className="mt-2">
                     <Space direction="vertical">
                       <Radio value="" checked={true}>
                         Cổng thanh toán VNPAYQR
@@ -476,7 +477,7 @@ const BookingPage = () => {
                 </Form.Item>
 
                 <Form.Item name="language" label="Ngôn ngữ:">
-                  <Radio.Group name="language">
+                  <Radio.Group name="language" className="mt-2">
                     <Space direction="vertical">
                       <Radio value="vn">Tiếng việt</Radio>
                       <Radio value="en">Tiếng anh</Radio>
@@ -485,11 +486,11 @@ const BookingPage = () => {
                 </Form.Item>
 
                 <Form.Item>
-                  <Space direction="horizontal">
+                  <Space direction="horizontal" className="ml-12">
                     <Button type="primary" htmlType="submit">
                       Thanh Toán
                     </Button>
-                    <Button type="primary" onClick={handleBack}>
+                    <Button type="dashed" onClick={handleBack}>
                       Trở về thủ tục thanh toán
                     </Button>
                   </Space>

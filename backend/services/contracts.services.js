@@ -15,7 +15,7 @@ class ContractsService {
       // Cập nhật trường 'contract' trong bản ghi booking tương ứng
       const booking = await Bookings.findByIdAndUpdate(
         bookingId,
-        { contract: savedContract._id },
+        { contract: savedContract._id, status: 'Đã có hợp đồng' },
         { new: true } // Để nhận kết quả cập nhật mới
       )
 
@@ -36,6 +36,7 @@ class ContractsService {
             model: 'User'
           }
         })
+        .sort({ createdAt: -1 })
       return getContract
     } catch (error) {
       throw error

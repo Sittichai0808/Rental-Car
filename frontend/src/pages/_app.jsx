@@ -20,26 +20,22 @@ function MyApp({ Component, pageProps }) {
   const [isI18nInitialised, setIsI18nInitialised] = useState(false);
   useEffect(() => {
     async function initializeI18n() {
-      await i18n
+      await i18n.use(initReactI18next).init({
+        // backend: {
+        //   loadPath: "/locales/en/translation.json", // Specify the path to your translation files
+        // },
 
-        .use(initReactI18next)
-        .use(Backend)
-        .init({
-          backend: {
-            loadPath: "/locales/en/translation.json", // Specify the path to your translation files
-          },
-          fallbackLng: "en", // Default language
-          debug: true, // Enable debug mode for development
-          interpolation: {
-            escapeValue: false, // React already escapes values by default
-          },
-          detection: {
-            order: ["localStorage", "cookie", "navigator"],
-          },
-          react: {
-            useSuspense: false, // Disable Suspense for React
-          },
-        });
+        debug: true, // Enable debug mode for development
+        interpolation: {
+          escapeValue: false, // React already escapes values by default
+        },
+        detection: {
+          order: ["localStorage", "cookie", "navigator"],
+        },
+        react: {
+          useSuspense: false, // Disable Suspense for React
+        },
+      });
       setIsI18nInitialised(true);
     }
 

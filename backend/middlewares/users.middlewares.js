@@ -214,28 +214,6 @@ export const accessTokenValidator = validate(
   )
 )
 
-// export const accessTokenValidator = async (req, res, next) => {
-//   const token = req.access_token
-
-//   if (!token) {
-//     next(new ErrorWithStatus(USER_MESSAGES.ACCESS_TOKEN_IS_REQUESTED, HTTP_STATUS.UNAUTHORIZED).errorHandler())
-//   }
-//   try {
-//     const decoded_authorization = await verifyToken({
-//       token: token,
-//       secretOrPublickey: process.env.JWT_SECRET_ACCESS_TOKEN
-//     })
-
-//     req.decoded_authorization = decoded_authorization
-//     next()
-//   } catch (error) {
-//     if (typeof error === JsonWebTokenError) {
-//       const error = new ErrorWithStatus(error?.message, HTTP_STATUS.UNAUTHORIZED)
-//       next(error.errorHandler())
-//     }
-//   }
-// }
-
 export const staffValidator = validate(
   checkSchema(
     {
@@ -260,23 +238,21 @@ export const staffValidator = validate(
 
             try {
               const decoded_authorization = await verifyToken({
-                token: token,
+                token: access_token,
                 secretOrPublickey: process.env.JWT_SECRET_ACCESS_TOKEN
               })
               const { role } = decoded_authorization
-              console.log(role)
-
               if (role === 'staff') {
                 req.decoded_authorization = decoded_authorization
-
               } else {
-                next(new ErrorWithStatus('You not staff', HTTP_STATUS.UNAUTHORIZED).errorHandler())
+                next(new ErrorWithStatus('You not staff', HTTP_STATUS.UNAUTHORIZED))
               }
+              req.decoded_authorization = decoded_authorization
             } catch (error) {
-              if (typeof error === JsonWebTokenError) {
-                const error = new ErrorWithStatus(error?.message, HTTP_STATUS.UNAUTHORIZED)
-                next(error.errorHandler())
-              }
+              throw new ErrorWithStatus({
+                message: capitalize(error.message),
+                status: HTTP_STATUS.UNAUTHORIZED
+              })
             }
 
             return true
@@ -287,6 +263,7 @@ export const staffValidator = validate(
     ['headers']
   )
 )
+
 export const adminValidator = validate(
   checkSchema(
     {
@@ -311,21 +288,71 @@ export const adminValidator = validate(
 
             try {
               const decoded_authorization = await verifyToken({
-                token: token,
+                token: access_token,
                 secretOrPublickey: process.env.JWT_SECRET_ACCESS_TOKEN
               })
               const { role } = decoded_authorization
               if (role === 'admin') {
                 req.decoded_authorization = decoded_authorization
-
               } else {
-                next(new ErrorWithStatus('You not admin', HTTP_STATUS.UNAUTHORIZED).errorHandler())
+                next(new ErrorWithStatus('You not admin', HTTP_STATUS.UNAUTHORIZED))
               }
+              req.decoded_authorization = decoded_authorization
             } catch (error) {
-              if (typeof error === JsonWebTokenError) {
-                const error = new ErrorWithStatus(error?.message, HTTP_STATUS.UNAUTHORIZED)
-                next(error.errorHandler())
+              throw new ErrorWithStatus({
+                message: capitalize(error.message),
+                status: HTTP_STATUS.UNAUTHORIZED
+              })
+            }
+
+            return true
+          }
+        }
+      }
+    },
+    ['headers']
+  )
+)
+
+export const adminAnhStaffValidator = validate(
+  checkSchema(
+    {
+      authorization: {
+        trim: true,
+        custom: {
+          options: async (value, { req }) => {
+            if (!value) {
+              throw new ErrorWithStatus({
+                message: USER_MESSAGES.ACCESS_TOKEN_IS_REQUESTED,
+                status: HTTP_STATUS.UNAUTHORIZED
+              })
+            }
+            const access_token = (value || '').split(' ')[1]
+
+            if (!access_token) {
+              throw new ErrorWithStatus({
+                message: USER_MESSAGES.ACCESS_TOKEN_IS_REQUESTED,
+                status: HTTP_STATUS.UNAUTHORIZED
+              })
+            }
+
+            try {
+              const decoded_authorization = await verifyToken({
+                token: access_token,
+                secretOrPublickey: process.env.JWT_SECRET_ACCESS_TOKEN
+              })
+              const { role } = decoded_authorization
+              if (role === 'admin' || role === 'staff') {
+                req.decoded_authorization = decoded_authorization
+              } else {
+                next(new ErrorWithStatus('You not admin', HTTP_STATUS.UNAUTHORIZED))
               }
+              req.decoded_authorization = decoded_authorization
+            } catch (error) {
+              throw new ErrorWithStatus({
+                message: capitalize(error.message),
+                status: HTTP_STATUS.UNAUTHORIZED
+              })
             }
 
             return true

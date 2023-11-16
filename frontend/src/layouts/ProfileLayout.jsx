@@ -23,9 +23,7 @@ import Image from "next/image";
 const { TabPane } = Tabs;
 import axios from "axios";
 const { Sider, Content } = Layout;
-const onChange = (key) => {
-  console.log(key);
-};
+const onChange = (key) => {};
 
 const items = [
   {

@@ -164,7 +164,7 @@ export const likeCars = async (req, res) => {
 
 export const getCarLikedByUser = async (req, res) => {
   try {
-    const userId = req.params.userId
+    const userId = req.decoded_authorization.user_id;
     const result = await carsService.getCarsLikedByUser(userId)
     return res.status(HTTP_STATUS.OK).json({
       message: 'Get cars liked by user successfully',

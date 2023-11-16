@@ -18,6 +18,7 @@ const carsRoutes = express.Router()
 
 carsRoutes.post('/createCar', [accessTokenValidator, adminValidator, staffValidator], wrapRequestHandler(createCar))
 carsRoutes.put('/updateCar/:carId', accessTokenValidator, adminValidator, wrapRequestHandler(updateCar))
+carsRoutes.get('/get/liked', accessTokenValidator, wrapRequestHandler(getCarLikedByUser))
 carsRoutes.get('/:carId', wrapRequestHandler(getCarById))
 carsRoutes.get('/', wrapRequestHandler(getListCars))
 carsRoutes.post(
@@ -33,6 +34,5 @@ carsRoutes.post('/rating/create', accessTokenValidator, wrapRequestHandler(ratin
 carsRoutes.get('/ratings/:carId', wrapRequestHandler(getRatingsOfCar))
 carsRoutes.get('/rating/:bookingId', accessTokenValidator, wrapRequestHandler(getRatingByBooking))
 carsRoutes.put('/:carId/like', accessTokenValidator, wrapRequestHandler(likeCars))
-carsRoutes.get('/liked/:userId', accessTokenValidator, wrapRequestHandler(getCarLikedByUser))
 
 export default carsRoutes

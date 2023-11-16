@@ -12,7 +12,6 @@ import {
   Button,
   Input,
   Modal,
-  Divider,
   Form,
   Upload,
   notification,
@@ -34,18 +33,7 @@ const StyleInput = styled(Input)`
   padding: 12px;
   width: 100%;
 `;
-const StyleButton = styled(Button)`
-  border-color: #5fcf86;
-  background-color: #5fcf86;
-  margin-top: 20px;
-  height: 60px;
-  justify-content: center;
-  align-items: center;
-  font-weight: 700;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-`;
+
 const StyleInputModal = styled(Input)`
   border-color: #949494;
   height: 50px;
@@ -114,7 +102,6 @@ export default function AccountPage() {
           headers: {
             Authorization: `Bearer ${accessToken}`,
             "Content-Type": "multipart/form-data",
-            withCredentials: true,
           },
         }
       );

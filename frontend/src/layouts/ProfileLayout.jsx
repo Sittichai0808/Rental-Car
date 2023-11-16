@@ -1,29 +1,22 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import { useUserState } from "@/recoils/user.state.js";
 import { useDriverState } from "@/recoils/driver.state";
 import { Tabs } from "antd";
 import moment from "moment";
-import { useMutation } from "@tanstack/react-query";
-import { Layout, Avatar, Button, Upload, message } from "antd";
+import { Layout, Button } from "antd";
 import Account from "@/pages/profile/index";
 import CarRental from "@/pages/profile/car-rental/index";
 // import CarFavorite from "@/pages/profile/car-favorite/index";
 import HeaderComponent from "@/components/HeaderComponent";
 import FooterComponent from "@/components/FooterComponent";
 import { useRouter } from "next/router";
-import {
-  LogoutOutlined,
-  UploadOutlined,
-  UserOutlined,
-} from "@ant-design/icons";
-import { toast } from "react-toastify";
-import avatar from "../../public/avatar.jpg";
+import { LogoutOutlined, UserOutlined } from "@ant-design/icons";
 import Image from "next/image";
 
 const { TabPane } = Tabs;
-import axios from "axios";
-const { Sider, Content } = Layout;
+
+const { Content } = Layout;
 const onChange = (key) => {
   console.log(key);
 };

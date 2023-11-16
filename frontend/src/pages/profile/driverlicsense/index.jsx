@@ -71,7 +71,6 @@ export default function DriverPage() {
           headers: {
             Authorization: `Bearer ${accessToken}`,
             "Content-Type": "multipart/form-data",
-            withCredentials: true,
           },
         }
       );

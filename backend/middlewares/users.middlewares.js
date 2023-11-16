@@ -314,7 +314,7 @@ export const adminValidator = validate(
   )
 )
 
-export const adminAnhStaffValidator = validate(
+export const adminAndStaffValidator = validate(
   checkSchema(
     {
       authorization: {

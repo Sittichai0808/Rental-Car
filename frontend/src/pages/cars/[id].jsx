@@ -58,10 +58,6 @@ export default function CarDetailPage() {
   const [user, setUser] = useUserState();
 
   const [liked, setLiked] = useState(false);
-  const { data: car } = useQuery({
-    queryKey: [GET_CAR_DETAILS, carId],
-    queryFn: () => getCarDetail(carId),
-  });
 
   const handleLikeClick = () => {
     setLiked(!liked);
@@ -130,6 +126,15 @@ export default function CarDetailPage() {
     return isPastDate || isBookedDate;
   };
 
+  const { data: ratings } = useQuery({
+    queryKey: [GET_RATINGS_OF_CAR, carId],
+    queryFn: () => getRatingsOfCar(carId),
+  });
+  const { data: car } = useQuery({
+    queryKey: [GET_CAR_DETAILS, carId],
+    queryFn: () => getCarDetail(carId),
+  });
+
   const result = useQuery({
     queryKey: ["getScheduleCar", carId],
     queryFn: async () => {
@@ -151,11 +156,6 @@ export default function CarDetailPage() {
         console.log(error);
       }
     },
-  });
-
-  const { data: ratings } = useQuery({
-    queryKey: [GET_RATINGS_OF_CAR, carId],
-    queryFn: () => getRatingsOfCar(carId),
   });
   return (
     <div>

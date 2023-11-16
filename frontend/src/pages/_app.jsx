@@ -10,6 +10,7 @@ import { UserWebLayout } from "@/layouts/UserLayout";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import dynamic from "next/dynamic";
+import Head from "next/head";
 
 function MyApp({ Component, pageProps }) {
   const { Layout = UserWebLayout, title = "Rental Car" } = Component;
@@ -19,6 +20,9 @@ function MyApp({ Component, pageProps }) {
       <QueryClientProvider client={queryClient}>
         <ConfigProvider theme={themeConfigs}>
           <Layout>
+            <Head>
+              <title>{title}</title>
+            </Head>
             <ToastContainer />
             <Component {...pageProps} />
           </Layout>

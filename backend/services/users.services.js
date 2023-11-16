@@ -101,11 +101,11 @@ class UsersService {
     } catch (error) {}
   }
 
-  async updateUser(user_id, payload) {
+  async updateUser(user_id, payload, payloadFile) {
     try {
-      // if (payload.password) {
-      //   password =
-      // }
+      if (payloadFile && payloadFile.path) {
+        payload.profilePicture = payloadFile.path
+      }
       const updateUser = await User.findByIdAndUpdate(
         user_id.toString(),
         { ...payload, password: hashPassword(payload.password).toString() },
@@ -115,32 +115,6 @@ class UsersService {
       return updateUser
     } catch (error) {
       throw Error(error)
-    }
-  }
-  async uploadImagesUser(user_id, payload) {
-    try {
-      const { profilePicture } = payload
-
-      // Tạo mảng mới của đường dẫn hình ảnh
-      const profilePictureToUpdate = profilePicture.map((el) => el.path)
-
-      const updateData = {}
-
-      // Kiểm tra và cập nhật trường "images" nếu có
-      if (profilePictureToUpdate.length > 0) {
-        updateData.profilePicture = profilePictureToUpdate
-      }
-
-      if (Object.keys(updateData).length === 0) {
-        // Không có dữ liệu để cập nhật, không thực hiện gì cả
-        return null
-      }
-
-      const uploadImagesUser = await User.findByIdAndUpdate(user_id.toString(), updateData, { new: true })
-
-      return uploadImagesUser
-    } catch (error) {
-      throw new Error('Error uploading images')
     }
   }
 

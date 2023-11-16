@@ -2,19 +2,15 @@
 import moment from "moment";
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-<<<<<<<<< Temporary merge branch 1
+import styled from "@emotion/styled";
 import {
   CheckCircleOutlined,
   CloseCircleOutlined,
-  LoadingOutlined,
-  SmileOutlined,
   SolutionOutlined,
   PayCircleOutlined,
+  SmileOutlined,
+  LoadingOutlined,
 } from "@ant-design/icons";
-import styled from "@emotion/styled";
-=========
-import { CheckCircleOutlined, CloseCircleOutlined } from "@ant-design/icons";
->>>>>>>>> Temporary merge branch 2
 import dayjs from "dayjs";
 import { useMutation } from "@tanstack/react-query";
 import {

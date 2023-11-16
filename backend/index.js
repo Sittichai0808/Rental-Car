@@ -5,6 +5,7 @@ import modelsRoutes from './routes/models.routes.js'
 import carsRoutes from './routes/cars.routes.js'
 import driverLicensesRoutes from './routes/driverLicenses.routes.js'
 import couponsRoutes from './routes/coupons.routes.js'
+import adminRoutes from './routes/admin.routes.js'
 import databaseServices from './services/database.services.js'
 import { defaultErrorHandler } from './middlewares/errors.middlewares.js'
 import pkg from 'lodash'
@@ -49,6 +50,7 @@ app.use('/drivers', driverLicensesRoutes)
 app.use('/bookings', bookingRoutes)
 app.use('/coupons', couponsRoutes)
 app.use('/contracts', contractsRoutes)
+app.use('/admin', adminRoutes)
 
 app.use(defaultErrorHandler)
 app.listen(port, () => {

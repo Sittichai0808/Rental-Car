@@ -1,9 +1,9 @@
 import { apiClient } from "./client";
 
-export async function getCars() {
+export async function getMOdels(brandId) {
   const { data } = await apiClient.request({
     method: "GET",
-    url: `/cars`,
+    url: `/models/${brandId}`,
   });
 
   return data;

@@ -5,6 +5,6 @@ import { adminValidator, staffValidator } from '../middlewares/users.middlewares
 const modelsRoutes = express.Router()
 
 modelsRoutes.post('/createModel', adminValidator || staffValidator, wrapRequestHandler(createModels))
-modelsRoutes.get('/:brandId', adminValidator || staffValidator, wrapRequestHandler(getModelByBrand))
+modelsRoutes.get('/:brandId', wrapRequestHandler(getModelByBrand))
 
 export default modelsRoutes

@@ -49,10 +49,6 @@ export const ProfileLayout = ({ children }) => {
   const router = useRouter();
   const [user, setUser] = useUserState();
   const [driver, setDriver] = useDriverState();
-  const [accessToken, setAccessToken, clearAccessToken] = useLocalStorage(
-    "access_token",
-    ""
-  );
 
   return (
     <Layout className="flex max-w-6xl  mx-auto border-b bg-slate-100  ">

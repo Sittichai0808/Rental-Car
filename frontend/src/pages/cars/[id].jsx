@@ -344,7 +344,7 @@ export default function CarDetailPage() {
 
           <div className="flex flex-col gap-4 border border-solid rounded-lg border-gray-300 p-4 bg-green-50 mt-10">
             <h1>
-              {car?.result.cost.toLocaleString("it-IT", {
+              {car?.result?.cost?.toLocaleString("it-IT", {
                 style: "currency",
                 currency: "VND",
               })}

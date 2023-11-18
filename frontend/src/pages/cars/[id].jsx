@@ -24,7 +24,7 @@ import Image from "next/image";
 import styled from "@emotion/styled";
 import { Feedback } from "@/components/Feedback";
 import { useRouter } from "next/router";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import Link from "next/link";
 import axios from "axios";
 import useLocalStorage from "@/hooks/useLocalStorage";
@@ -36,7 +36,7 @@ import {
   GET_CAR_DETAILS,
   GET_RATINGS_OF_CAR,
 } from "@/constants/react-query-key.constant";
-import { getCarDetail } from "@/apis/user-cars.api";
+import { getCarDetail, likeCars } from "@/apis/user-cars.api";
 import { getRatingsOfCar } from "@/apis/ratings.api";
 
 const carServices = [
@@ -54,15 +54,16 @@ const BorderlessTable = styled(Table)`
 `;
 
 export default function CarDetailPage() {
+  const router = useRouter();
+  const carId = router.query.id;
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [user, setUser] = useUserState();
-
-  const [liked, setLiked] = useState(false);
-
-  const handleLikeClick = () => {
-    setLiked(!liked);
-  };
-
+  const [accessToken, setAccessToken, clearAccessToken] = useLocalStorage(
+    "access_token",
+    ""
+  );
+  const [liked, setLiked] = useState();
+  console.log(liked);
   const handleOk = () => {
     setIsModalOpen(false);
   };
@@ -78,9 +79,6 @@ export default function CarDetailPage() {
       router.push(`/booking/${car?.result._id}`);
     }
   };
-
-  const router = useRouter();
-  const carId = router.query.id;
 
   const [dates, setDates] = useDatesState();
   const [bookedTimeSlots, setBookedTimeSlots] = useState([]);
@@ -134,6 +132,35 @@ export default function CarDetailPage() {
     queryKey: [GET_CAR_DETAILS, carId],
     queryFn: () => getCarDetail(carId),
   });
+
+  useEffect(() => {
+    const checkLikeStatus = async () => {
+      try {
+        // Fetch chi tiết xe từ API
+        const response = await axios.get(
+          `${process.env.NEXT_PUBLIC_REACT_APP_BACKEND_URL}/cars/${carId}`
+        );
+        const carData = response.data.result;
+
+        // Kiểm tra xem user hiện tại có trong mảng likes không
+        const userLiked = carData.likes.includes(user?.id);
+        setLiked(userLiked);
+      } catch (error) {
+        console.error("Error fetching car details", error);
+      }
+    };
+
+    checkLikeStatus();
+  }, [carId]);
+
+  const apiLikeCar = useMutation({
+    mutationFn: likeCars,
+  });
+
+  const handleLikeClick = () => {
+    setLiked(!liked);
+    apiLikeCar.mutateAsync({ accessToken, carId });
+  };
 
   const result = useQuery({
     queryKey: ["getScheduleCar", carId],

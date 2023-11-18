@@ -46,7 +46,7 @@ class UsersService {
     const { password: hashedPassword, role, _id, ...rest } = user._doc
 
     const access_token = await this.signAccessToken(_id.toString(), role)
-    return { rest, access_token, role }
+    return { rest, access_token, role, _id }
   }
 
   async google(payload) {
@@ -71,11 +71,11 @@ class UsersService {
         })
         await newUser.save()
         const user2 = await User.findOne({ email: user.email })
-        const { _id } = user2._doc
-        const access_token = await this.signAccessToken(_id.toString(), 'user')
+        const { _id: id } = user2._doc
+        const access_token = await this.signAccessToken(id.toString(), 'user')
 
-        const { password: hashedPassword2, ...rest } = newUser._doc
-        return { rest, access_token }
+        const { password: hashedPassword2, _id, ...rest } = newUser._doc
+        return { rest, access_token, _id }
       }
     } catch (error) {
       console.log(error)
@@ -87,7 +87,7 @@ class UsersService {
 
     try {
       const getUser = await User.findOne({ _id: user_id.toString() })
-      return getUser
+      return { getUser, user_id }
     } catch (error) { }
   }
 

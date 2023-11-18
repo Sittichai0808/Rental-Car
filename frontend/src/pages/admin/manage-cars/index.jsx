@@ -2,6 +2,7 @@ import { getBrands } from "@/apis/brands.api";
 import { createCar, getCars, updateCar } from "@/apis/cars.api";
 import { getMOdels } from "@/apis/model.api";
 import { UploadImage } from "@/components/UploadImage";
+import { UploadMultipleImage } from "@/components/UploadMultipleImage";
 import { GET_BRANDS_KEY, GET_CARS_KEY, GET_MODEL_KEY } from "@/constants/react-query-key.constant";
 import { AdminLayout } from "@/layouts/AdminLayout";
 import { useUserState } from "@/recoils/user.state";
@@ -94,6 +95,10 @@ function UpsertCarForm({ carId, onOk }) {
         <div className="grow w-1/3">
           <Form.Item label="Thumbnail" name="thumb">
             <UploadImage />
+          </Form.Item>
+
+          <Form.Item label="Images" name="images">
+            <UploadMultipleImage />
           </Form.Item>
         </div>
       </div>

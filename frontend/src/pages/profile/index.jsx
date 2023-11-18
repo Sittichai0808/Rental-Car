@@ -31,9 +31,9 @@ export default function AccountPage() {
   const [user, setUser] = useUserState();
   const [driver, setDriver] = useDriverState();
   const [profile, setProfile, clearProfile] = useLocalStorage("profile", "");
+
   const [loading, setLoading] = useState(false);
 
-  console.log(user);
   return (
     <div className="flex flex-col  mt-5">
       <div className="flex flex-col  pl-10 pr-5  pb-6 ">

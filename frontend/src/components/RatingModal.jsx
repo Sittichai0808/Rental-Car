@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Modal, Button, Input, Rate, notification } from "antd";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import {
@@ -10,7 +10,7 @@ import { GET_RATING_BY_BOOKING } from "@/constants/react-query-key.constant";
 
 const RatingModal = ({ open, handleCancel, bookingId, carId, accessToken }) => {
   const checkRated = useQuery({
-    queryKey: [GET_RATING_BY_BOOKING, bookingId],
+    queryKey: [GET_RATING_BY_BOOKING, { accessToken, bookingId }],
     queryFn: () => getRatingByBooking(accessToken, bookingId),
     enabled: open, // Chỉ gọi khi modal được mở
     refetchOnWindowFocus: false, // Tắt tự động gọi lại khi cửa sổ focus
@@ -18,7 +18,13 @@ const RatingModal = ({ open, handleCancel, bookingId, carId, accessToken }) => {
   const { TextArea } = Input;
   const [star, setStar] = React.useState(5);
   const [comment, setComment] = React.useState("");
-
+  useEffect(() => {
+    if (checkRated.isSuccess && checkRated.data?.result.length > 0) {
+      const existingRating = checkRated.data.result[0];
+      setStar(existingRating.star);
+      setComment(existingRating.comment);
+    }
+  }, [checkRated.isSuccess, checkRated.data]);
   const { mutate: rate } = useMutation(createRating, {
     onSuccess: () => {
       checkRated.refetch(); // Cập nhật lại dữ liệu đánh giá sau khi thêm mới
@@ -43,12 +49,14 @@ const RatingModal = ({ open, handleCancel, bookingId, carId, accessToken }) => {
     try {
       if (hasRatings) {
         await updateRating({ accessToken, bookingId, star, comment });
+
         notification.success({
           message: "Cập nhật đánh giá thành công",
           description: "Cảm ơn bạn đã cập nhật đánh giá xe!",
         });
       } else {
         await rate({ accessToken, bookingId, carId, star, comment });
+
         notification.success({
           message: "Đánh giá thành công",
           description: "Cảm ơn bạn đã đánh giá xe!",

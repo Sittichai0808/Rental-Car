@@ -95,15 +95,15 @@ export default function AdminManageCars() {
 
   const dataSource = data?.result.map((item, idx) => ({
     id: idx + 1,
-    _id: item._id,
-    thumb: item.thumb,
-    brand: item.brand.name,
-    numberSeat: item.numberSeat,
-    transmissions: item.transmissions,
-    numberCar: item.numberCar,
-    description: item.description,
+    _id: item?._id,
+    thumb: item?.thumb,
+    brand: item?.brand?.name,
+    numberSeat: item?.numberSeat,
+    transmissions: item?.transmissions,
+    numberCar: item?.numberCar,
+    description: item?.description,
     cost: formatCurrency(item.cost),
-    owner: item.user.username,
+    owner: item?.user?.username,
   }));
 
   const handleInsertCar = () => {

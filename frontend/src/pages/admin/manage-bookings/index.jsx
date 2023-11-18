@@ -46,6 +46,8 @@ import Docxtemplater from "docxtemplater";
 import PizZip from "pizzip";
 import { saveAs } from "file-saver";
 import { useUserState } from "@/recoils/user.state.js";
+import ConvertAPI from "convertapi";
+
 let PizZipUtils = null;
 if (typeof window !== "undefined") {
   import("pizzip/utils/index.js").then(function (r) {
@@ -69,7 +71,9 @@ export default function AdminManageBookings() {
   const [searchedColumn, setSearchedColumn] = useState("");
   const [bookings, setBookings] = useState({});
   const searchInput = useRef(null);
+
   const router = useRouter();
+
   const generateDocument = () => {
     loadFile(
       "https://firebasestorage.googleapis.com/v0/b/rental-945b7.appspot.com/o/pdfs%2Fhop_dong.docx?alt=media&token=fa09173a-80e1-4972-aad4-747f2784ddab",
@@ -128,7 +132,7 @@ export default function AdminManageBookings() {
           }
           throw error;
         }
-        console.log("aaa");
+
         var out = doc.getZip().generate({
           type: "blob",
           mimeType:
@@ -254,33 +258,35 @@ export default function AdminManageBookings() {
         text
       ),
   });
+
   const onSubmit = async (values) => {
     try {
-      if (!file) {
-        message.error("Please upload a PDF file.");
-        return;
-      }
+      //     const convertapi = new ConvertAPI('HwQQ18bFTPBXQcoj', { conversionTimeout: 60 });
 
-      // Handle file upload to Firebase Cloud Storage
+      //     convertapi.convert('pdf', { File: file })
+      // .then(function(result) {
+      //   // get converted file url
+      //   console.log("Converted file url: " + result.file.url);
+
+      //   // save to file
+      //   return result.file.save('/path/to/save/file.pdf');
+      // })
+      // .then(function(file) {
+      //   console.log("File saved: " + file);
+      // })
+      // .catch(function(e) {
+      //   console.error(e.toString());
+      // });
       const filename = file.name;
       const storageRef = ref(storage, "pdfs/" + filename); // 'pdfs/' is the folder in storage
 
       const uploadTask = uploadBytesResumable(storageRef, file);
 
-      uploadTask.on("state_changed", (snapshot) => {
-        // Handle upload progress, if needed
-      });
+      uploadTask.on("state_changed", (snapshot) => {});
 
       uploadTask.then(async (snapshot) => {
-        // Handle successful upload, e.g., save download URL to the database
         const downloadURL = await getDownloadURL(storageRef);
 
-        // You can now use downloadURL to store in your MongoDB or perform other actions
-
-        // You may also want to send the user's information to your Node.js server
-
-        // Send the user data to your server (e.g., using Axios)
-        // axios.post('/api/user', userData);
         try {
           setTimeout(() => {
             setOpen(false);
@@ -309,6 +315,13 @@ export default function AdminManageBookings() {
           message.error("Error submitting the form. Please try again later.");
         }
       });
+      // save to file
+      // return result.file.save("/path/to/save/file.pdf");
+
+      // if (!file) {
+      //   message.error("Please upload a file.");
+      //   return;
+      // }
     } catch (error) {
       console.error("Error uploading PDF: ", error);
       message.error("Error submitting the form. Please try again later.");
@@ -319,14 +332,17 @@ export default function AdminManageBookings() {
 
   const beforeUpload = (file) => {
     // Check if the uploaded file is a PDF
-    if (file.type !== "application/pdf") {
-      message.error("Only PDF files are allowed.");
-      return false;
+    if (
+      file.type === "application/pdf" ||
+      file.type ===
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    ) {
+      setFile(file);
+      return false; // Prevent the default upload action
     }
 
-    // Update the state with the selected file
-    setFile(file);
-    return false; // Prevent the default upload action
+    message.error("Only PDF files are allowed.");
+    return false;
   };
 
   const showModal = (booking) => {
@@ -383,7 +399,7 @@ export default function AdminManageBookings() {
     <>
       <div className="pt-14">
         <Table
-          onChange={handleChange}
+          // onChange={handleChange}
           scroll={{ x: 2400 }}
           columns={[
             { key: "id", title: "ID", dataIndex: "id", width: "2%" },
@@ -430,8 +446,6 @@ export default function AdminManageBookings() {
               title: "Total Cost",
               dataIndex: "totalCost",
               ...getColumnSearchProps("totalCost"),
-              sorter: (a, b) => a.totalCost - b.totalCost,
-              sortDirections: ["descend", "ascend"],
             },
             {
               key: "timeBookingStart",
@@ -474,7 +488,7 @@ export default function AdminManageBookings() {
                   value: "Đã hủy",
                 },
               ],
-              filteredValue: filteredInfo.status || null,
+              // filteredValue: filteredInfo.status || null,
               onFilter: (value, record) => record.status.includes(value),
 
               // ellipsis: true,

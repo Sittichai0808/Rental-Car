@@ -11,7 +11,8 @@ export async function getCarDetail(carId) {
     return data;
 }
 
-export async function likeCars(accessToken, carId) {
+
+export async function likeCars({ accessToken, carId }) {
     const { data } = await apiClient.request({
         method: "PUT",
         url: `/cars/${carId}/like`,

@@ -51,6 +51,14 @@ const BorderlessTable = styled(Table)`
 export default function CarDetailPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [user, setUser] = useUserState();
+  const router = useRouter();
+  const carId = router.query.id;
+  const [accessToken, setAccessToken, clearAccessToken] = useLocalStorage(
+    "access_token",
+    ""
+  );
+  const [dates, setDates] = useDatesState();
+  const [bookedTimeSlots, setBookedTimeSlots] = useState([]);
 
   const handleOk = () => {
     setIsModalOpen(false);
@@ -61,7 +69,6 @@ export default function CarDetailPage() {
   };
 
   const handleRent = () => {
-    console.log(user);
     if (user === null) {
       setIsModalOpen(true);
     } else {
@@ -69,22 +76,12 @@ export default function CarDetailPage() {
     }
   };
 
-  const router = useRouter();
-  const carId = router.query.id;
-  const [accessToken, setAccessToken, clearAccessToken] = useLocalStorage(
-    "access_token",
-    ""
-  );
-  const [dates, setDates] = useDatesState();
-  const [bookedTimeSlots, setBookedTimeSlots] = useState([]);
-
   const [validationMessage, setValidationMessage] = useState("");
   function isDateBooked(startDate, endDate) {
     for (const slot of bookedTimeSlots) {
       const bookedStart = new Date(slot.from);
       const bookedEnd = new Date(slot.to);
-      console.log(bookedStart, bookedEnd);
-      console.log(bookedStart >= startDate, bookedEnd <= endDate);
+
       if (bookedStart >= startDate && bookedEnd <= endDate) return true;
     }
 
@@ -130,7 +127,7 @@ export default function CarDetailPage() {
             withCredentials: true,
           }
         );
-        console.log(response.data.result);
+
         return response.data.result;
       } catch (error) {
         console.log(error);
@@ -153,7 +150,7 @@ export default function CarDetailPage() {
             withCredentials: true,
           }
         );
-        console.log(response.data.result);
+
         setBookedTimeSlots(response.data.result);
         return response.data.result;
       } catch (error) {
@@ -174,14 +171,14 @@ export default function CarDetailPage() {
             withCredentials: true,
           }
         );
-        console.log(response.data.result);
+
         return response.data.result;
       } catch (error) {
         console.log(error);
       }
     },
   });
-  console.log(ratings);
+
   return (
     <div>
       <div className="grid h-[600px] gap-4 grid-cols-4 grid-rows-3 relative">
@@ -350,7 +347,7 @@ export default function CarDetailPage() {
 
           <div className="flex flex-col gap-4 border border-solid rounded-lg border-gray-300 p-4 bg-green-50 mt-10">
             <h1>
-              {data?.cost.toLocaleString("it-IT", {
+              {data?.cost?.toLocaleString("it-IT", {
                 style: "currency",
                 currency: "VND",
               })}

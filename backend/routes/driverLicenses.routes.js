@@ -11,6 +11,7 @@ driverLicensesRoutes.post(
   uploadCloud.single('image'),
   wrapRequestHandler(regisLicensesDriver)
 )
+
 driverLicensesRoutes.put(
   '/acceptDriver/:did',
   adminValidator || staffValidator,

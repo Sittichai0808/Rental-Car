@@ -31,18 +31,19 @@ const userSchema = new mongoose.Schema(
     date_of_birth: {
       type: String
     },
-    userCars: {
-      type: Array
-    },
     driverLicenses: {
       type: ObjectId
     },
-
     profilePicture: {
       type: String
     },
     address: {
       type: String
+    },
+    status: {
+      type: String,
+      enum: ['Hoạt động', 'Không hoạt động'],
+      default: 'Hoạt động'
     }
   },
   { timestamps: true }

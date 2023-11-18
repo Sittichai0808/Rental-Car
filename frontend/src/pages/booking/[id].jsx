@@ -2,6 +2,7 @@
 import moment from "moment";
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
+import { CheckCircleOutlined, CloseCircleOutlined } from "@ant-design/icons";
 import styled from "@emotion/styled";
 import {
   CheckCircleOutlined,

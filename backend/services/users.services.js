@@ -108,7 +108,7 @@ class UsersService {
       }
       const updateUser = await User.findByIdAndUpdate(
         user_id.toString(),
-        { ...payload, password: hashPassword(payload.password).toString() },
+        { ...payload },
         { new: true }
       )
 

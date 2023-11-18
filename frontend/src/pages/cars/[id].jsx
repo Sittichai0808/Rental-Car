@@ -1,10 +1,12 @@
 "use-client";
+import { Feedback } from "@/components/Feedback";
+import { DateRangePicker } from "@/components/antd";
+import useLocalStorage from "@/hooks/useLocalStorage";
 import {
   BackCameraIcon,
   BagFilledIcon,
   BluetoothIcon,
   DriverLicenceIcon,
-  GasIcon,
   GpsIcon,
   IdCardIcon,
   ImageFilledIcon,
@@ -16,23 +18,17 @@ import {
   TransmissionIcon,
   UsbIcon,
 } from "@/icons";
-import moment from "moment";
-import dayjs from "dayjs";
-import { Button, Divider, Table, Tag, DatePicker, Modal } from "antd";
-import { DateRangePicker } from "@/components/antd";
-import Image from "next/image";
-import styled from "@emotion/styled";
-import { Feedback } from "@/components/Feedback";
-import { useRouter } from "next/router";
-import { useQuery } from "@tanstack/react-query";
-import Link from "next/link";
-import axios from "axios";
-import useLocalStorage from "@/hooks/useLocalStorage";
-import { useState } from "react";
 import { useDatesState } from "@/recoils/dates.state";
-import { isSameOrAfter, isSameOrBefore } from "moment";
 import { useUserState } from "@/recoils/user.state";
-import { BugOutlined } from "@ant-design/icons";
+import styled from "@emotion/styled";
+import { useQuery } from "@tanstack/react-query";
+import { Button, Divider, Modal, Table, Tag } from "antd";
+import axios from "axios";
+import moment from "moment";
+import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/router";
+import { useState } from "react";
 
 const carServices = [
   { icon: MapIcon, name: "Bản đồ" },
@@ -71,10 +67,7 @@ export default function CarDetailPage() {
 
   const router = useRouter();
   const carId = router.query.id;
-  const [accessToken, setAccessToken, clearAccessToken] = useLocalStorage(
-    "access_token",
-    ""
-  );
+  const [accessToken, setAccessToken, clearAccessToken] = useLocalStorage("access_token", "");
   const [dates, setDates] = useDatesState();
   const [bookedTimeSlots, setBookedTimeSlots] = useState([]);
 
@@ -224,9 +217,7 @@ export default function CarDetailPage() {
           </div>
 
           <div className="flex gap-2 mt-4">
-            <Tag className="rounded-full border-none bg-green-100">
-              {data?.transmissions}
-            </Tag>
+            <Tag className="rounded-full border-none bg-green-100">{data?.transmissions}</Tag>
             {/* <Tag className="rounded-full border-none bg-rose-100">
               Đặt xe nhanh
             </Tag> */}
@@ -308,9 +299,7 @@ export default function CarDetailPage() {
             <h2 className="font-medium">Điều khoản</h2>
             <ul>
               <li>Sử dụng xe đúng mục đích.</li>
-              <li>
-                Không sử dụng xe thuê vào mục đích phi pháp, trái pháp luật.
-              </li>
+              <li>Không sử dụng xe thuê vào mục đích phi pháp, trái pháp luật.</li>
               <li>Không sử dụng xe thuê để cầm cố, thế chấp.</li>
               <li>Không hút thuốc, nhả kẹo cao su, xả rác trong xe.</li>
               <li>Không chở hàng quốc cấm dễ cháy nổ.</li>
@@ -339,12 +328,8 @@ export default function CarDetailPage() {
           <div className="flex gap-4 border border-solid rounded-lg border-gray-300 p-4 items-center">
             <ShieldCheckOutlineIcon className="text-green-500" />
             <div className="flex flex-col gap-2">
-              <span className="text-lg text-green-500 font-bold">
-                Hỗ trợ bảo hiểm với VNI
-              </span>
-              <span className="font-medium text-xs text-gray-900">
-                Xem chi tiết
-              </span>
+              <span className="text-lg text-green-500 font-bold">Hỗ trợ bảo hiểm với VNI</span>
+              <span className="font-medium text-xs text-gray-900">Xem chi tiết</span>
             </div>
           </div>
 
@@ -368,18 +353,14 @@ export default function CarDetailPage() {
               value={dates}
               onChange={handleDateChange}
             />
-            {validationMessage && (
-              <p className="text-red-500 ml-2">{validationMessage}</p>
-            )}
+            {validationMessage && <p className="text-red-500 ml-2">{validationMessage}</p>}
 
             <div className="border border-solid rounded-lg border-gray-300 bg-white p-4">
-              <h4 className="m-0 mb-3 font-medium text-gray-800">
-                Địa điểm giao xe
-              </h4>
+              <h4 className="m-0 mb-3 font-medium text-gray-800">Địa điểm giao xe</h4>
               <span className="text-xl font-bold">Ngũ Hành Sơn, Đà Nẵng</span>
               <p className="text-sm text-gray-500">
-                Bạn sẽ nhận trả xe tại địa chỉ xe do chủ xe không hỗ trợ giao
-                nhận tận nơi. Địa chỉ cụ thể sẽ được hiển thị sau khi đặt cọc.
+                Bạn sẽ nhận trả xe tại địa chỉ xe do chủ xe không hỗ trợ giao nhận tận nơi. Địa chỉ cụ thể sẽ được hiển
+                thị sau khi đặt cọc.
               </p>
             </div>
 

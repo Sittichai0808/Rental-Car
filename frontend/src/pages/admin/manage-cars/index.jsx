@@ -1,15 +1,15 @@
 import { getBrands } from "@/apis/brands.api";
-import { createCar, getCars, updateCar } from "@/apis/cars.api";
+import { createCar, getCar, getCars, updateCar } from "@/apis/cars.api";
 import { getMOdels } from "@/apis/model.api";
 import { UploadImage } from "@/components/UploadImage";
 import { UploadMultipleImage } from "@/components/UploadMultipleImage";
-import { GET_BRANDS_KEY, GET_CARS_KEY, GET_MODEL_KEY } from "@/constants/react-query-key.constant";
+import { GET_BRANDS_KEY, GET_CARS_KEY, GET_CAR_KEY, GET_MODEL_KEY } from "@/constants/react-query-key.constant";
 import { AdminLayout } from "@/layouts/AdminLayout";
 import { useUserState } from "@/recoils/user.state";
 import { formatCurrency } from "@/utils/number.utils";
 import { PlusOutlined, SearchOutlined } from "@ant-design/icons";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { Button, Form, Image, Input, InputNumber, Modal, Popconfirm, Select, Table } from "antd";
+import { Button, Form, Image, Input, InputNumber, Modal, Popconfirm, Select, Skeleton, Table } from "antd";
 import { useState } from "react";
 
 function UpsertCarForm({ carId, onOk }) {
@@ -19,6 +19,14 @@ function UpsertCarForm({ carId, onOk }) {
 
   const [form] = Form.useForm();
   const brandId = Form.useWatch(["brand"], form);
+
+  console.log("8734643", carId);
+  const carDetail = useQuery({
+    queryFn: () => getCar(carId),
+    queryKey: [GET_CAR_KEY, carId],
+  });
+
+  console.log(carDetail.data?.result);
 
   const apiCreateCar = useMutation({
     mutationFn: createCar,
@@ -49,11 +57,21 @@ function UpsertCarForm({ carId, onOk }) {
     label: item.name,
   }));
 
+  if (carDetail.isLoading) {
+    return <Skeleton active />;
+  }
+
+  console.log(carDetail.data?.results);
   return (
     <Form
       form={form}
       layout="vertical"
       className="flex flex-col gap-4 mt-10"
+      initialValues={{
+        ...carDetail.data?.result,
+        brand: carDetail.data?.result?.brand._id,
+        model: carDetail.data?.result?.model._id,
+      }}
       onFinish={async (values) => {
         console.log(values, carId);
 
@@ -189,7 +207,9 @@ export default function AdminManageCars() {
                 <div className="flex gap-2">
                   <Button
                     className="bg-blue-500 text-white border-none hover:bg-blue-500/70"
-                    onClick={() => setUpsertCarModal({ actionType: "update", carId: car.id })}
+                    onClick={() => {
+                      setUpsertCarModal({ actionType: "update", carId: car._id });
+                    }}
                   >
                     Edit
                   </Button>

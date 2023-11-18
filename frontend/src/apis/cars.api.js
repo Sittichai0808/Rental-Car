@@ -9,6 +9,15 @@ export async function getCars() {
   return data;
 }
 
+export async function getCar(carId) {
+  const { data } = await apiClient.request({
+    method: "GET",
+    url: `/cars/${carId}`,
+  });
+
+  return data;
+}
+
 export async function createCar(body) {
   const { data } = await apiClient.request({
     method: "POST",

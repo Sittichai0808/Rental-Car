@@ -19,8 +19,7 @@ export const updateCar = async (req, res, next) => {
       return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
         message: 'Something went wrong!'
       })
-    }
-    else {
+    } else {
       return res.status(HTTP_STATUS.OK).json({
         message: CARS_MESSAGE.UPDATE_CAR_SUCCESS,
         result
@@ -65,10 +64,10 @@ export const getListCars = async (req, res, next) => {
 
 export const uploadImagesCar = async (req, res, next) => {
   try {
-    const { images, thumb } = req.files;
+    const { images, thumb } = req.files
 
-    const imageLinks = images.map((image) => image.path);
-    const thumbLink = thumb && thumb[0] ? thumb[0].path : null;
+    const imageLinks = images.map((image) => image.path)
+    const thumbLink = thumb && thumb[0] ? thumb[0].path : null
 
     console.log(imageLinks)
     console.log(thumbLink)
@@ -76,13 +75,13 @@ export const uploadImagesCar = async (req, res, next) => {
     const imageUrls = {
       images: imageLinks,
       thumb: thumbLink
-    };
+    }
 
-    return res.status(200).json(imageUrls);
+    return res.status(200).json(imageUrls)
   } catch (error) {
-    return res.status(500).json({ error: 'Lỗi tải lên ảnh' });
+    return res.status(500).json({ error: 'Lỗi tải lên ảnh' })
   }
-};
+}
 
 export const ratings = async (req, res) => {
   try {
@@ -97,7 +96,27 @@ export const ratings = async (req, res) => {
     res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ message: 'Cannot rating' })
   }
 }
-
+export const updateRatingsByBooking = async (req, res, next) => {
+  try {
+    const { bookingId } = req.params
+    const result = await carsService.updateRatingsByBooking(bookingId, req.body)
+    if (!result) {
+      return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
+        message: 'Something went wrong!'
+      })
+    } else {
+      return res.status(HTTP_STATUS.OK).json({
+        message: CARS_MESSAGE.UPDATE_RATING_SUCCESS,
+        result
+      })
+    }
+  } catch (error) {
+    return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
+      message: 'Something went wrong!',
+      error: error.message
+    })
+  }
+}
 export const getRatingsOfCar = async (req, res, next) => {
   try {
     const { carId } = req.params
@@ -130,6 +149,46 @@ export const getRatingByBooking = async (req, res, next) => {
         result
       })
     }
+  } catch (error) {
+    return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
+      message: 'Something went wrong',
+      error: error.message
+    })
+  }
+}
+
+export const likeCars = async (req, res) => {
+  try {
+    const { carId } = req.params
+    const user_id = req.decoded_authorization.user_id
+    const result = await carsService.likeCars(user_id, carId)
+    if (!result) {
+      return res.status(HTTP_STATUS.NOT_FOUND).json({ error: 'Car not found' })
+    }
+
+    const isLiked = result.likes.some((el) => el.toString() === user_id)
+    const message = isLiked ? 'Liked the car' : 'Unliked the car'
+
+    return res.status(HTTP_STATUS.OK).json({
+      message,
+      car: result
+    })
+  } catch (error) {
+    return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
+      message: 'Something went wrong',
+      error: error.message
+    })
+  }
+}
+
+export const getCarLikedByUser = async (req, res) => {
+  try {
+    const userId = req.decoded_authorization.user_id
+    const result = await carsService.getCarsLikedByUser(userId)
+    return res.status(HTTP_STATUS.OK).json({
+      message: 'Get cars liked by user successfully',
+      result
+    })
   } catch (error) {
     return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
       message: 'Something went wrong',

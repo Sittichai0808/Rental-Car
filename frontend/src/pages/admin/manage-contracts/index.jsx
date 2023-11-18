@@ -415,7 +415,7 @@ export default function AdminManageContracts() {
                   value: "Đã tất toán",
                 },
               ],
-              filteredValue: filteredInfo.status || null,
+
               onFilter: (value, record) => record.status.includes(value),
 
               fixed: "right",

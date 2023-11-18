@@ -15,3 +15,15 @@ export async function getHistoryBooking(accessToken) {
     return data;
 }
 
+export async function getScheduleCar(carId) {
+    const { data } = await apiClient.request({
+        method: "GET",
+        url: `/bookings/${carId}`,
+        headers: {
+            "Content-Type": "application/json",
+        },
+        withCredentials: true
+    })
+    return data
+}
+

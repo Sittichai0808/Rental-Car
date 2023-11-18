@@ -1,5 +1,5 @@
 import { atom, useRecoilState, useRecoilValue } from "recoil";
-import { apiClient } from "../apis/client";
+
 const getProfile = async () => {
   try {
     if (typeof window !== "undefined") {

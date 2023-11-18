@@ -11,8 +11,9 @@ import CarLiked from "@/pages/profile/car-liked";
 import HeaderComponent from "@/components/HeaderComponent";
 import FooterComponent from "@/components/FooterComponent";
 import { useRouter } from "next/router";
-import { LogoutOutlined, UserOutlined } from "@ant-design/icons";
-import Image from "next/image";
+import { LogoutOutlined } from "@ant-design/icons";
+
+import { UploadProfilePicture } from "@/components/UploadProfilePicture";
 
 const { TabPane } = Tabs;
 
@@ -49,6 +50,7 @@ export const ProfileLayout = ({ children }) => {
   const router = useRouter();
   const [user, setUser] = useUserState();
   const [driver, setDriver] = useDriverState();
+  const [profile, setProfile, clearProfile] = useLocalStorage("profile", "");
   const [accessToken, setAccessToken, clearAccessToken] =
     useLocalStorage("access_token");
 
@@ -82,21 +84,13 @@ export const ProfileLayout = ({ children }) => {
               onClick={() => {
                 clearAccessToken();
                 setUser(null);
-                setDriver(null);
+                setProfile(null);
                 router.push("/");
               }}
             >
               <LogoutOutlined />
             </Button>
-
-            <Image
-              className="flex justify-center items-center rounded object-cover "
-              height={100}
-              width={90}
-              icon={<UserOutlined />}
-              src={user?.result?.profilePicture}
-              alt="Image"
-            />
+            <UploadProfilePicture />
 
             <div className="flex flex-col  ">
               <h5 className="text-lg font-semibold text-center mt-1 mb-2 ">

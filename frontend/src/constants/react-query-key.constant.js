@@ -12,3 +12,5 @@ export const GET_RATINGS_OF_CAR = "get-ratings-of-car"
 export const GET_CARS_LIKED = "get-cars-liked"
 export const GET_COUPONS = "get-coupons"
 export const UPDATE_RATING_BY_BOOKING = "update-rating-by-booking";
+export const GET_BRANDS_KEY = "brands";
+export const GET_MODEL_KEY = "models";

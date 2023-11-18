@@ -5,7 +5,14 @@
 import moment from "moment";
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { CheckCircleOutlined, CloseCircleOutlined } from "@ant-design/icons";
+import {
+  CheckCircleOutlined,
+  CloseCircleOutlined,
+  SolutionOutlined,
+  PayCircleOutlined,
+  SmileOutlined,
+  LoadingOutlined,
+} from "@ant-design/icons";
 import styled from "@emotion/styled";
 import dayjs from "dayjs";
 import { useMutation } from "@tanstack/react-query";

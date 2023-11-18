@@ -1,10 +1,9 @@
 import { atom, useRecoilState, useRecoilValue } from "recoil";
-
-const getProfile = (key) => {
+import { apiClient } from "../apis/client";
+const getProfile = async () => {
   try {
     if (typeof window !== "undefined") {
-      const value = window.localStorage.getItem(key);
-      return value ? JSON.parse(value) : null;
+      const value = window.localStorage.getItem("access_token");
     }
     return null;
   } catch (error) {

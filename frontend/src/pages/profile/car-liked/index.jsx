@@ -17,7 +17,35 @@ export default function CarLiked() {
   console.log(data?.result);
   return (
     <div>
-      <CarLikeCard />
+      <div className="mb-20">
+        {isLoading ? (
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              minHeight: "70vh",
+            }}
+          >
+            <Spin
+              indicator={
+                <LoadingOutlined
+                  style={{
+                    fontSize: 24,
+                  }}
+                  spin
+                />
+              }
+            />
+          </div>
+        ) : (
+          <div className="flex flex-col gap-5 ">
+            {data?.result.map((value, index) => (
+              <CarLikeCard key={index} info={value} accessToken={accessToken} />
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

@@ -2,30 +2,15 @@ import React, { useState, useEffect } from "react";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import { useUserState } from "@/recoils/user.state.js";
 import { useDriverState } from "@/recoils/driver.state";
-import { useMutation } from "@tanstack/react-query";
-import { toast } from "react-toastify";
 import moment from "moment";
-import { useRouter } from "next/router";
-import axios from "axios";
-import {
-  Typography,
-  Button,
-  Input,
-  Modal,
-  Form,
-  Upload,
-  notification,
-} from "antd";
-import {
-  EditOutlined,
-  QuestionCircleOutlined,
-  UploadOutlined,
-} from "@ant-design/icons";
+
+import { Typography, Button, Input, Spin } from "antd";
+import { EditOutlined, QuestionCircleOutlined } from "@ant-design/icons";
 import Image from "next/image";
 import styled from "@emotion/styled";
 import { ProfileLayout } from "@/layouts/ProfileLayout";
-import Link from "next/link";
-
+import EditProfileModal from "@/components/EditProfileModal";
+import RegisterDriverModal from "@/components/RegisterDriverModal";
 const { Title } = Typography;
 const StyleInput = styled(Input)`
   display: flex;
@@ -34,220 +19,43 @@ const StyleInput = styled(Input)`
   width: 100%;
 `;
 
-const StyleInputModal = styled(Input)`
-  border-color: #949494;
-  height: 50px;
-  width: 100%;
-`;
-const ButtonSummit = styled(Button)`
-  width: 100%;
-  height: 50px;
-  font-size: 18px;
-  font-weight: 700;
-  padding: 30px auto;
-`;
-
 export default function AccountPage() {
-  const router = useRouter();
-  const [form] = Form.useForm();
-  const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const showModal = () => setOpen(true);
-  const handleOk = () => {
-    setOpen(false);
-  };
   const handleCancle = () => setOpen(false);
 
+  const [open2, setOpen2] = useState(false);
+  const showModal2 = () => setOpen2(true);
+  const handleCancle2 = () => setOpen2(false);
+
   const [user, setUser] = useUserState();
-  const [profile, setProfile, clearProfile] = useLocalStorage("profile", "");
   const [driver, setDriver] = useDriverState();
-  const [accessToken, setAccessToken, clearAccessToken] =
-    useLocalStorage("access_token");
-  useEffect(() => {
-    setDriver(profile);
-  }, [driver]);
-  const updateProfile = async (values) => {
-    console.log("User Object:", user);
-    console.log("value:", values);
-    console.log("user._id:", user?.result?._id);
-    console.log("Access Token:", accessToken);
-    try {
-      const formData = new FormData();
-      if (values.address !== undefined) {
-        formData.append("address", values.address);
-      }
-      if (values.email !== undefined) {
-        formData.append("email", values.email);
-      }
-      if (values.username !== undefined) {
-        formData.append("username", values.username);
-      }
-      if (values.phoneNumber !== undefined) {
-        formData.append("phoneNumber", values.phoneNumber);
-      }
-      if (values.profilePicture !== undefined) {
-        formData.append(
-          "profilePicture",
-          values.profilePicture.file.originFileObj
-        );
-      }
+  const [profile, setProfile, clearProfile] = useLocalStorage("profile", "");
+  const [loading, setLoading] = useState(false);
 
-      const userId = user?.result?._id;
-      const response = await axios.put(
-        `${process.env.NEXT_PUBLIC_REACT_APP_BACKEND_URL}/users/update-user/${userId}`,
-        formData,
-
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-            "Content-Type": "multipart/form-data",
-            withCredentials: true,
-          },
-        }
-      );
-      if (response.status === 200) {
-        console.log(response.data);
-        setUser({ ...response.data });
-        handleOk();
-        notification.success({
-          message: "Cập nhật thành công",
-        });
-      } else {
-        console.log(error.response.data.errors[0].msg);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const { mutate, isLoading } = useMutation(updateProfile, {
-    onMutate: () => {
-      setLoading(true);
-      setTimeout(() => {
-        setLoading(false);
-      });
-    },
-  });
+  console.log(user);
   return (
     <div className="flex flex-col  mt-5">
       <div className="flex flex-col  pl-10 pr-5  pb-6 ">
         <div className="flex flex-col mb-3  mt-3 ">
           <div className="flex flex-row w-full    ">
-            <p className="m-0 text-lg font-semibold flex w-full "> Address</p>
+            <p className="m-0 text-lg font-semibold flex w-full "> Địa chỉ</p>
             <p className="m-0 text-xl font-semibold text-gray-500 flex w-full">
               {user?.result?.address}
-
-              <Button
-                className="items-center absolute right-5"
-                style={{
-                  border: "1px solid #e0e0e0",
-
-                  borderRadius: "100%",
-                  cursor: "pointer",
-                }}
-                onClick={showModal}
-              >
-                <EditOutlined />
-              </Button>
-              <Modal
-                open={open}
-                onCancel={handleCancle}
-                footer={[
-                  <ButtonSummit
-                    loading={isLoading}
-                    htmlType="submit"
-                    type="primary"
-                    onClick={() => mutate(form.getFieldsValue())}
-                  >
-                    Cập nhập
-                  </ButtonSummit>,
-                ]}
-              >
-                <p className="flex justify-center items-center w-full text-2xl font-bold">
-                  Cập nhật thông tin
-                </p>
-                <Form
-                  form={form}
-                  layout="vertical"
-                  name="basic"
-                  onFinish={(values) => {
-                    mutate(values);
-                  }}
-                  label
-                  initialValues={{}}
-                  autoComplete="off"
-                  className="mt-5 "
-                >
-                  <Form.Item
-                    label="UserName"
-                    name="username"
-                    rules={[
-                      {
-                        type: "text",
-                        message: "Please input your name",
-                      },
-                    ]}
-                  >
-                    <StyleInputModal
-                      type="text"
-                      defaultValue={user?.result?.username}
-                      size="large"
-                    />
-                  </Form.Item>
-                  <Form.Item
-                    label="Address"
-                    name="address"
-                    rules={[
-                      {
-                        type: "text",
-                        message: "The input is not valid name",
-                      },
-                    ]}
-                  >
-                    <StyleInputModal
-                      defaultValue={user?.result?.address}
-                      size="large"
-                    />
-                  </Form.Item>
-                  <Form.Item
-                    label="Email"
-                    name="email"
-                    rules={[
-                      {
-                        type: "email",
-                        message: "The input is not valid E-mail!",
-                      },
-                    ]}
-                  >
-                    <StyleInputModal
-                      defaultValue={user?.result?.email}
-                      size="large"
-                    />
-                  </Form.Item>
-                  <Form.Item
-                    label="PhoneNumber"
-                    name="phoneNumber"
-                    rules={[
-                      {
-                        type: "text",
-                        message: "The input is not valid phonenumber!",
-                      },
-                    ]}
-                  >
-                    <StyleInputModal
-                      defaultValue={user?.result?.phoneNumber}
-                      size="large"
-                    />
-                  </Form.Item>
-
-                  <Form.Item label="ProfilePicture" name="profilePicture">
-                    <Upload showUploadList={true} accept="image/*">
-                      <Button icon={<UploadOutlined />}>Click to upload</Button>
-                    </Upload>
-                  </Form.Item>
-                </Form>
-              </Modal>
             </p>
+            <Button
+              className="items-center absolute right-5"
+              style={{
+                border: "1px solid #e0e0e0",
+
+                borderRadius: "100%",
+                cursor: "pointer",
+              }}
+              onClick={showModal}
+            >
+              <EditOutlined />
+            </Button>
+            <EditProfileModal open={open} handleCancle={handleCancle} />
           </div>
           <hr
             className="w-full"
@@ -284,7 +92,7 @@ export default function AccountPage() {
           <div className="flex flex-row w-full ">
             <p className="mt-0 mb-0 text-lg font-semibold flex w-full ">
               {" "}
-              PhoneNumber
+              Số điện thoại
             </p>
             <p className="mt-0 mb-0 text-xl font-semibold text-gray-500 flex w-full">
               {" "}
@@ -328,22 +136,26 @@ export default function AccountPage() {
           <Title className="flex items-center font-semibold text-xl" level={3}>
             Giấy phép lái xe
             <p
-              className="rounded-lg border-solid  text-xs ml-1 "
+              className="rounded-lg   text-xs ml-1 "
               style={{
                 background: "#ffd0cd",
                 color: "red",
+                borderRadius: "100px",
+                padding: "4px 6px",
               }}
             >
-              {driver?.status || "Chưa xác thực"}
+              {driver?.result?.status || "Chưa xác thực"}
             </p>
           </Title>
           <div className="flex items-baseline ">
-            <Link href={`profile/driverlicsense`}>
-              <Button className="rounded-lg border-solid border-black font-bold text-xs">
-                Chỉnh sửa
-                <EditOutlined />
-              </Button>
-            </Link>
+            <Button
+              className="rounded-lg border-solid border-black font-bold text-xs"
+              onClick={showModal2}
+            >
+              Chỉnh sửa
+              <EditOutlined />
+            </Button>
+            <RegisterDriverModal open2={open2} handleCancle2={handleCancle2} />
           </div>
         </div>
         <div className="flex items-center ">
@@ -370,7 +182,7 @@ export default function AccountPage() {
                   type="text"
                   className="flex items-center text-base font-semibold text-slate-950"
                   size="small"
-                  value={driver?.drivingLicenseNo}
+                  value={driver?.result?.drivingLicenseNo}
                 />
               </div>
               <div className="flex flex-col  justify-between">
@@ -385,7 +197,7 @@ export default function AccountPage() {
                   type="text"
                   className="flex items-center text-base font-semibold text-slate-950"
                   size="small"
-                  value={driver?.fullName}
+                  value={driver?.result?.fullName}
                 />
               </div>
               <div className="flex flex-col justify-between">
@@ -401,9 +213,9 @@ export default function AccountPage() {
                   className="flex items-center text-base font-semibold text-slate-950"
                   size="small"
                   value={
-                    driver?.dob
-                      ? moment(driver?.dob).format("DD/MM/YYYY")
-                      : driver?.dob
+                    driver?.result?.dob
+                      ? moment(driver?.result?.dob).format("DD/MM/YYYY")
+                      : driver?.result?.dob
                   }
                 />
               </div>
@@ -412,14 +224,14 @@ export default function AccountPage() {
                   level={5}
                   className="flex items-center text-xs font-medium"
                 >
-                  Class
+                  Hạng
                 </Title>
                 <StyleInput
                   disabled
                   type="text"
                   className="flex items-center text-base font-semibold text-slate-950"
                   size="small"
-                  value={driver?.class}
+                  value={driver?.result?.class}
                 />
               </div>
             </div>
@@ -428,14 +240,24 @@ export default function AccountPage() {
             <Title level={5} className="font-semibold">
               Hình ảnh
             </Title>
-            <div className="flex flex-col justify-evenly h-full">
-              <Image
-                className="w-full object-cover rounded-xl"
-                src={driver?.image}
-                alt="Image"
-                width={300}
-                height={200}
-              />
+
+            <div className="flex flex-col justify-evenly h-full ">
+              {driver?.result?.image ? (
+                <Image
+                  className="w-full object-cover rounded-xl"
+                  src={driver?.result?.image}
+                  alt="Image"
+                  width={300}
+                  height={200}
+                />
+              ) : (
+                <Image
+                  className="w-full object-cover rounded-xl "
+                  src="https://res.cloudinary.com/djllhxlfc/image/upload/v1700240517/cars/default-thumbnail_ycj6n3.jpg"
+                  width={300}
+                  height={200}
+                />
+              )}
             </div>
           </div>
         </div>

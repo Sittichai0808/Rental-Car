@@ -63,7 +63,7 @@ function UpsertCarForm({ carId, onOk }) {
     queryKey: [GET_BRANDS_KEY],
   });
 
-  const brandOptions = getBrandsRes?.result.map((item) => ({
+  const brandOptions = getBrandsRes?.result?.map((item) => ({
     value: item._id,
     label: item.name,
   }));
@@ -112,14 +112,14 @@ function UpsertCarForm({ carId, onOk }) {
           <Form.Item label="Model" required name="model">
             <Select options={modelOptions} disabled={!brandId} />
           </Form.Item>
-          <Form.Item label="No. Seat" required name="numSeat">
+          <Form.Item label="No. Seat" required name="numberSeat">
             <Select
               options={[
-                { value: 1 },
-                { value: 2 },
-                { value: 3 },
-                { value: 4 },
-                { value: 5 },
+                { value: "1 chỗ" },
+                { value: "2 chỗ" },
+                { value: "3 chỗ" },
+                { value: "4 chỗ" },
+                { value: "5 chỗ" },
               ]}
             />
           </Form.Item>

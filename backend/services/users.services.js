@@ -88,7 +88,7 @@ class UsersService {
     try {
       const getUser = await User.findOne({ _id: user_id.toString() })
       return getUser
-    } catch (error) { }
+    } catch (error) {}
   }
 
   async getUserByEmail(payload) {
@@ -98,7 +98,7 @@ class UsersService {
     try {
       const getUser = await User.findOne({ email: email.toString() })
       return getUser
-    } catch (error) { }
+    } catch (error) {}
   }
 
   async updateUser(user_id, payload, payloadFile) {
@@ -106,11 +106,7 @@ class UsersService {
       if (payloadFile && payloadFile.path) {
         payload.profilePicture = payloadFile.path
       }
-      const updateUser = await User.findByIdAndUpdate(
-        user_id.toString(),
-        { ...payload, password: hashPassword(payload.password).toString() },
-        { new: true }
-      )
+      const updateUser = await User.findByIdAndUpdate(user_id.toString(), { ...payload }, { new: true })
 
       return updateUser
     } catch (error) {

@@ -192,9 +192,6 @@ export default function RegisterDriverModal({ open2, handleCancle2 }) {
 
         <Form.Item label="Hình ảnh" name="image">
           <Upload.Dragger listType="picture-card" showUploadList={true}>
-            {/* <Upload showUploadList={true} accept="image/*">
-              <Button icon={<UploadOutlined />}>Click to upload</Button>
-            </Upload> */}
             <Button icon={<UploadOutlined />}>Click to upload</Button>
           </Upload.Dragger>
         </Form.Item>

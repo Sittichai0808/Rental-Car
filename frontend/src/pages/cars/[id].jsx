@@ -88,8 +88,7 @@ export default function CarDetailPage() {
     for (const slot of bookedTimeSlots) {
       const bookedStart = new Date(slot.from);
       const bookedEnd = new Date(slot.to);
-      console.log(bookedStart, bookedEnd);
-      console.log(bookedStart >= startDate, bookedEnd <= endDate);
+
       if (bookedStart >= startDate && bookedEnd <= endDate) return true;
     }
 

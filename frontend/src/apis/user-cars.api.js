@@ -11,7 +11,8 @@ export async function getCarDetail(carId) {
     return data;
 }
 
-export async function likeCars(accessToken, carId) {
+
+export async function likeCars({ accessToken, carId }) {
     const { data } = await apiClient.request({
         method: "PUT",
         url: `/cars/${carId}/like`,
@@ -38,3 +39,14 @@ export async function getCarsLiked(accessToken) {
     return data
 }
 
+export async function getCoupons() {
+    const { data } = await apiClient.request({
+        method: 'GET',
+        url: `/coupons`,
+        headers: {
+            "Content-Type": "application/json"
+        },
+        withCredentials: true
+    })
+    return data
+}

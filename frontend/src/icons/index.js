@@ -19,3 +19,5 @@ export { default as TestIcon } from "./test.svg";
 export { default as TransmissionIcon } from "./transmission.svg";
 export { default as UsbIcon } from "./usb.svg";
 export { default as UserFilledIcon } from "./user-filled.svg";
+export { default as CouponIcon } from "./coupon.svg";
+export { default as SaleIcon } from "./sale.svg";

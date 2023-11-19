@@ -17,9 +17,10 @@ export const UploadProfilePicture = () => {
     setLoading(true);
     const formData = new FormData();
     formData.append("profilePicture", file);
+    const userId = user?.result?._id;
 
     try {
-      const userId = user?.result?._id;
+      console.log(userId);
       const response = await axios.put(
         `${process.env.NEXT_PUBLIC_REACT_APP_BACKEND_URL}/users/update-user/${userId}`,
         formData,

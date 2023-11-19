@@ -46,7 +46,6 @@ export const getUserController = async (req, res, next) => {
 
 export const updateUserController = async (req, res, next) => {
   const user_id = req.params.userId
-
   const result = await usersService.updateUser(user_id, req.body, req?.file)
   return res.json({
     message: USER_MESSAGES.UPDATE_PROFILE_SUCCESS,

@@ -33,13 +33,13 @@ export default function AccountPage() {
   const [profile, setProfile, clearProfile] = useLocalStorage("profile", "");
 
   const [loading, setLoading] = useState(false);
-
+  console.log("abc1", user);
   return (
     <div className="flex flex-col  mt-5">
       <div className="flex flex-col  pl-10 pr-5  pb-6 ">
         <div className="flex flex-col mb-3  mt-3 ">
           <div className="flex flex-row w-full    ">
-            <p className="m-0 text-lg font-semibold flex w-full "> Địa chỉ</p>
+            <p className="m-0 text-lg font-semibold flex w-full "> Địa chỉ </p>
             <p className="m-0 text-xl font-semibold text-gray-500 flex w-full">
               {user?.result?.address}
             </p>

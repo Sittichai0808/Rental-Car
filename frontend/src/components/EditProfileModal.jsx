@@ -32,7 +32,7 @@ export default function EditProfileModal({ open, handleCancle }) {
   const [form] = Form.useForm();
   const [user, setUser] = useUserState();
   const [loading, setLoading] = useState(false);
-
+  console.log("abc2", user);
   const [accessToken, setAccessToken, clearAccessToken] =
     useLocalStorage("access_token");
 

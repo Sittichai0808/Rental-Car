@@ -57,7 +57,9 @@ const LoginPage = () => {
       );
 
       if (response.status === 200) {
+        console.log(response.data);
         setUser({ ...response.data });
+        console.log("userA", user);
         setAccessToken(response.data.access_token);
         console.log(response.data.result.role);
         if (response.data.role === "user") {

@@ -87,7 +87,7 @@ class UsersService {
 
     try {
       const getUser = await User.findOne({ _id: user_id.toString() })
-      return getUser
+      return { getUser, user_id }
     } catch (error) {}
   }
 

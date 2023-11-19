@@ -21,6 +21,7 @@ export const loginController = async (req, res) => {
     message: USER_MESSAGES.LOGIN_SUCCESS,
     access_token: result.access_token.toString(),
     result: result.rest,
+    id: result._id.toString(),
     role: result.role
   })
 }
@@ -32,7 +33,8 @@ export const googleController = async (req, res, next) => {
   return res.json({
     message: USER_MESSAGES.LOGIN_SUCCESS,
     access_token: result.access_token.toString(),
-    result: result.rest
+    result: result.rest,
+    id: result._id.toString(),
   })
 }
 
@@ -40,7 +42,8 @@ export const getUserController = async (req, res, next) => {
   const result = await usersService.getUser(req.decoded_authorization)
   return res.json({
     message: USER_MESSAGES.GET_PROFILE_SUCCESS,
-    result: result
+    result: result.getUser,
+    id: result.user_id
   })
 }
 

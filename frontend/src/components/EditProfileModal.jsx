@@ -39,6 +39,7 @@ export default function EditProfileModal({ open, handleCancle }) {
   const updateProfile = async (values) => {
     try {
       const userId = user?.result?._id;
+      console.log(userId);
       const response = await axios.put(
         `${process.env.NEXT_PUBLIC_REACT_APP_BACKEND_URL}/users/update-user/${userId}`,
         values,

@@ -1,10 +1,8 @@
 "use client";
-// import locale from "antd/en/date-picker/locale/zh_CN";
-
-// import "dayjs/locale/zh-cn";
 import moment from "moment";
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
+import styled from "@emotion/styled";
 import {
   CheckCircleOutlined,
   CloseCircleOutlined,
@@ -13,7 +11,6 @@ import {
   SmileOutlined,
   LoadingOutlined,
 } from "@ant-design/icons";
-import styled from "@emotion/styled";
 import dayjs from "dayjs";
 import { useMutation } from "@tanstack/react-query";
 import {
@@ -33,6 +30,8 @@ import Image from "next/image";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import { useDatesState } from "@/recoils/dates.state";
 import { useUserState } from "@/recoils/user.state";
+import Coupon from "@/components/Coupon";
+
 const { Title } = Typography;
 const { RangePicker } = DatePicker;
 const BookingPage = () => {
@@ -46,7 +45,7 @@ const BookingPage = () => {
   const [amount, setAmount] = useState();
   const [value, setValue] = useState(1);
   const [costGetCar, setCostGetCar] = useState(0);
-
+  const [amoutDiscount, setAmountDiscount] = useState(0);
   const [dates, setDates] = useDatesState();
 
   const onChange = (e) => {
@@ -81,7 +80,7 @@ const BookingPage = () => {
               `${process.env.NEXT_PUBLIC_REACT_APP_BACKEND_URL}/bookings/${carId}`,
               {
                 codeTransaction,
-                totalCost,
+                totalCost: totalCost / 100,
                 timeTransaction,
 
                 phone: orderInfo[1],
@@ -142,9 +141,9 @@ const BookingPage = () => {
   const onSubmit = async (values) => {
     try {
       if (from === undefined || to === undefined) {
-        moment(value[0]?.format("DD MM YYYY HH mm"))._i;
-        from = moment(startDate?.format("DD MM YYYY HH mm"))._i;
-        to = moment(endDate?.format("DD MM YYYY HH mm"))._i;
+        moment(value[0]?.format("DD-MM-YYYY HH:mm"))._i;
+        from = moment(startDate?.format("DD-MM-YYYY HH:mm"))._i;
+        to = moment(endDate?.format("DD-MM-YYYY HH:mm"))._i;
       }
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_REACT_APP_BACKEND_URL}/payments/create_payment_url`,
@@ -218,7 +217,10 @@ const BookingPage = () => {
   });
   useEffect(() => {
     // Tính toán giá trị mới cho amount dựa trên totalDays
-    const newAmount = totalDays * (data?.cost || 0) + (costGetCar || 0);
+    const newAmount =
+      totalDays * data?.cost +
+        costGetCar -
+        ((totalDays * data?.cost + costGetCar) * amoutDiscount) / 100 || 0;
 
     // Cập nhật initialValues
     form.setFieldsValue({
@@ -239,8 +241,8 @@ const BookingPage = () => {
       } else {
         setValidationMessage("");
       }
-      setFrom(moment(value[0]?.format("DD MM YYYY HH mm") || "")._i);
-      setTo(moment(value[1]?.format("DD MM YYYY HH mm") || "")._i);
+      setFrom(moment(value[0]?.format("DD-MM-YYYY HH:mm") || "")._i);
+      setTo(moment(value[1]?.format("DD-MM-YYYY HH:mm") || "")._i);
       setTotalDays(Math.ceil(value[1]?.diff(value[0], "hours") / 24));
     }
   };
@@ -254,6 +256,11 @@ const BookingPage = () => {
     }
   };
   console.log(current);
+
+  const applyCoupon = (coupon) => {
+    const discount = coupon?.discount || 0;
+    setAmountDiscount(discount);
+  };
   return (
     <div className="mb-10">
       <>
@@ -328,13 +335,13 @@ const BookingPage = () => {
                 </Radio.Group>
               </form>
             </div>
-            <div class="mt-14 bg-gray-50 px-10 pt-8 lg:mt-5">
+            <div class="mt-14 bg-gray-50 px-10 pt-4 lg:mt-5 rounded-sm">
               <p class="text-xl font-medium">Thông tin thuê chi tiết</p>
               <p class="text-gray-400">Thời gian thuê xe</p>
               <Space direction="vertical" size={12}>
                 <RangePicker
-                  showTime={{ format: "HH mm" }}
-                  format="DD MM YYYY HH mm"
+                  showTime={{ format: "HH:mm" }}
+                  format="DD-MM-YYYY HH:mm"
                   onChange={selectTimeSlots}
                   size="large"
                   disabledDate={disabledDate}
@@ -346,7 +353,6 @@ const BookingPage = () => {
                   <p className="text-red-500">{validationMessage}</p>
                 )}
               </Space>
-
               <p class="text-gray-400">Tổng Số ngày thuê: {totalDays} </p>
               <p class="text-gray-400">
                 Giá 1 ngày thuê:{" "}
@@ -355,15 +361,18 @@ const BookingPage = () => {
                   currency: "VND",
                 }) || 0}
               </p>
+              <Coupon applyCoupon={applyCoupon} />
               <p className="text-lg">
                 Tổng giá thuê:{" "}
-                {(totalDays * data?.cost + costGetCar || 0).toLocaleString(
-                  "it-IT",
-                  {
-                    style: "currency",
-                    currency: "VND",
-                  }
-                )}
+                {(
+                  totalDays * data?.cost +
+                    costGetCar -
+                    ((totalDays * data?.cost + costGetCar) * amoutDiscount) /
+                      100 || 0
+                ).toLocaleString("it-IT", {
+                  style: "currency",
+                  currency: "VND",
+                })}
               </p>
 
               <button
@@ -442,11 +451,11 @@ const BookingPage = () => {
                 <Form.Item name="date" label="Thời gian thuê xe">
                   <RangePicker
                     showTime={{ format: "HH mm" }}
-                    format="DD MM YYYY HH:mm"
+                    format="DD-MM-YYYY HH:mm"
                     onChange={selectTimeSlots}
                     defaultValue={[
-                      dayjs(from || startDate, "DD MM YYYY HH mm"),
-                      dayjs(to || endDate, "DD MM YYYY HH mm"),
+                      dayjs(from || startDate, "DD-MM-YYYY HH:mm"),
+                      dayjs(to || endDate, "DD-MM-YYYY HH mm"),
                     ]}
                     disabled
                     style={{ color: "white" }}

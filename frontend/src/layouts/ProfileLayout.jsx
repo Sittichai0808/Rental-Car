@@ -84,7 +84,8 @@ export const ProfileLayout = ({ children }) => {
               onClick={() => {
                 clearAccessToken();
                 setUser(null);
-                setProfile(null);
+                setDriver(null);
+                clearProfile();
                 router.push("/");
               }}
             >

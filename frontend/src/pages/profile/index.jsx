@@ -33,7 +33,9 @@ export default function AccountPage() {
   const [profile, setProfile, clearProfile] = useLocalStorage("profile", "");
 
   const [loading, setLoading] = useState(false);
-  console.log("abc1", user);
+
+  console.log("user", user);
+  console.log("driver", driver);
   return (
     <div className="flex flex-col  mt-5">
       <div className="flex flex-col  pl-10 pr-5  pb-6 ">

@@ -32,13 +32,13 @@ export default function EditProfileModal({ open, handleCancle }) {
   const [form] = Form.useForm();
   const [user, setUser] = useUserState();
   const [loading, setLoading] = useState(false);
-  console.log("abc2", user);
+
   const [accessToken, setAccessToken, clearAccessToken] =
     useLocalStorage("access_token");
 
   const updateProfile = async (values) => {
+    const userId = user?.id;
     try {
-      const userId = user?.result?._id;
       console.log(userId);
       const response = await axios.put(
         `${process.env.NEXT_PUBLIC_REACT_APP_BACKEND_URL}/users/update-user/${userId}`,

@@ -36,12 +36,12 @@ export default function RegisterDriverModal({ open2, handleCancle2 }) {
   const [loading, setLoading] = useState(false);
   const [profile, setProfile, clearProfile] = useLocalStorage("profile", "");
   const [driver, setDriver] = useDriverState();
+
+  const [accessToken, setAccessToken, clearAccessToken] =
+    useLocalStorage("access_token");
   useEffect(() => {
     setDriver(profile);
   });
-  const [accessToken, setAccessToken, clearAccessToken] =
-    useLocalStorage("access_token");
-
   const onSubmit = async (values) => {
     setLoading(true);
     const formData = new FormData();
@@ -70,6 +70,7 @@ export default function RegisterDriverModal({ open2, handleCancle2 }) {
 
         setDriver({ ...response.data });
         setProfile({ ...response.data });
+
         handleCancle2();
         notification.success({
           message: "Đăng kí thành công",

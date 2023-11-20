@@ -17,7 +17,7 @@ export const UploadProfilePicture = () => {
     setLoading(true);
     const formData = new FormData();
     formData.append("profilePicture", file);
-    const userId = user?.result?._id;
+    const userId = user?.id;
 
     try {
       console.log(userId);

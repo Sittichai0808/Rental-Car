@@ -10,7 +10,8 @@ export const registerController = async (req, res, next) => {
   return res.json({
     message: USER_MESSAGES.REGISTER_SUCCESS,
     access_token: result.access_token.toString(),
-    result: result.user
+    result: result.user,
+    id: result.user_id
   })
 }
 
@@ -34,7 +35,7 @@ export const googleController = async (req, res, next) => {
     message: USER_MESSAGES.LOGIN_SUCCESS,
     access_token: result.access_token.toString(),
     result: result.rest,
-    id: result._id.toString(),
+    id: result._id.toString()
   })
 }
 
@@ -52,7 +53,8 @@ export const updateUserController = async (req, res, next) => {
   const result = await usersService.updateUser(user_id, req.body, req?.file)
   return res.json({
     message: USER_MESSAGES.UPDATE_PROFILE_SUCCESS,
-    result: result
+    result: result.updateUser,
+    id: result.user_id
   })
 }
 

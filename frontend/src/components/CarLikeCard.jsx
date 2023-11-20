@@ -30,15 +30,6 @@ export const CarLikeCard = ({ info }) => {
             </h5>
           </div>
           <div className="flex  justify-between items-center">
-            {/* <div className="">
-              <span className=" line-clamp-1 text-green-500 font-black ml-2">
-                3000
-              </span>
-
-              <span className="flex items-center gap-1 line-clamp-1 text-neutral-500 text-base ml-2">
-                <StarFilledIcon className="text-yellow-300" /> 3
-              </span>
-            </div> */}
             <div className="flex items-center gap-1">
               <StarFilledIcon className="text-yellow-300 " />
               <span className="text-neutral-500 text-base">

@@ -29,7 +29,8 @@ class UsersService {
     try {
       const user = await newUser.save()
       const access_token = await this.signAccessToken(user_id.toString())
-      return { user, access_token }
+
+      return { user, access_token, user_id }
     } catch (error) {
       throw Error(error)
     }
@@ -108,7 +109,7 @@ class UsersService {
       }
       const updateUser = await User.findByIdAndUpdate(user_id.toString(), { ...payload }, { new: true })
 
-      return updateUser
+      return { updateUser, user_id }
     } catch (error) {
       throw Error(error)
     }

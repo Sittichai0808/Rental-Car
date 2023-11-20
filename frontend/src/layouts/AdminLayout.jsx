@@ -5,12 +5,15 @@ import {
   CarOutlined,
   BookOutlined,
   ContactsOutlined,
+  UserOutlined,
 } from "@ant-design/icons";
 import { useRouter } from "next/router";
+import { useUserState } from "@/recoils/user.state.js";
 
 const { Sider, Header, Content } = Layout;
 
 export const AdminLayout = ({ children }) => {
+  const [user, setUser] = useUserState();
   const { pathname, push } = useRouter();
 
   const selectedKeys = [pathname.replace("/admin/", "")];
@@ -44,6 +47,11 @@ export const AdminLayout = ({ children }) => {
               label: "Contracts management",
               icon: <ContactsOutlined />,
             },
+            {
+              key: "profile-admin",
+              label: "Profile",
+              icon: <UserOutlined />,
+            },
           ]}
           onClick={(item) => push(`/admin/${item.key}`)}
         />
@@ -53,7 +61,8 @@ export const AdminLayout = ({ children }) => {
           <div className="text-2xl font-bold">Dashboard</div>
           <div className="flex gap-4 items-center">
             <BellOutlined className="text-xl" />
-            <Avatar />
+            <Avatar icon={<UserOutlined />} />
+            <span>{user?.result?.username}</span>
           </div>
         </Header>
         <Content className="p-4 bg-white">{children}</Content>

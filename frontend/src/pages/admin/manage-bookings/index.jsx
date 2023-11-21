@@ -21,6 +21,7 @@ import {
   CheckCircleOutlined,
   MinusCircleOutlined,
   DownloadOutlined,
+  ScanOutlined,
 } from "@ant-design/icons";
 import { useQuery } from "@tanstack/react-query";
 import {
@@ -37,17 +38,19 @@ import {
   Table,
   Upload,
   Space,
+  Tooltip,
 } from "antd";
-import { useEffect, useState, useCallback, useRef } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 
 import Highlighter from "react-highlight-words";
 import { useRouter } from "next/router";
 import Docxtemplater from "docxtemplater";
 import PizZip from "pizzip";
-import { saveAs } from "file-saver";
+import { saveAs, FileSaver } from "file-saver";
 import { useUserState } from "@/recoils/user.state.js";
-import ConvertAPI from "convertapi";
-
+import ConvertApi from "convertapi-js";
+import { useAccessTokenValue } from "@/recoils/accessToken.state.js";
+import base64 from "base64topdf";
 let PizZipUtils = null;
 if (typeof window !== "undefined") {
   import("pizzip/utils/index.js").then(function (r) {
@@ -60,13 +63,60 @@ function loadFile(url, callback) {
 }
 
 export default function AdminManageBookings() {
+  const [fileScan, setFileScan] = useState(null);
+  const [uploading, setUploading] = useState(false);
+
+  const props = {
+    beforeUpload: (file) => {
+      if (
+        file.type ===
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+      ) {
+        setFileScan(file);
+        return false;
+      }
+      message.error("Hãy chọn file docx");
+    },
+    fileScan,
+  };
+
+  const handleUpload = () => {
+    setUploading(true);
+    let convertApi = ConvertApi.auth("HwQQ18bFTPBXQcoj");
+    let params = convertApi.createParams();
+    params.add("file", fileScan);
+    convertApi
+      .convert("docx", "pdf", params)
+      .then(async (result) => {
+        let url = result.files[0].Url;
+        console.log(url);
+
+        saveAs(url, `${result.files[0].FileName}`);
+        message.success("Scan file successfully.");
+        setIsModalOpen(false);
+        setFileScan(null);
+      })
+      .catch((err) => {
+        message.error("Scan file failed.");
+        setFileScan(null);
+      })
+      .finally(() => {
+        setUploading(false);
+        setIsModalOpen(false);
+        setFileScan(null);
+      });
+  };
+
+  ////////////////////////////////
   const [form] = Form.useForm();
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [user, setUser] = useUserState();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [filteredInfo, setFilteredInfo] = useState({});
   const [file, setFile] = useState(null);
-  const [accessToken] = useLocalStorage("access_token", "");
+
+  const accessToken = useAccessTokenValue();
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState("");
   const [bookings, setBookings] = useState({});
@@ -74,7 +124,18 @@ export default function AdminManageBookings() {
 
   const router = useRouter();
 
-  const generateDocument = () => {
+  const showModalScanPDF = () => {
+    setIsModalOpen(true);
+  };
+  const handleOkScan = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleCancelScan = () => {
+    setIsModalOpen(false);
+  };
+
+  const generateDocument = (booking) => {
     loadFile(
       "https://firebasestorage.googleapis.com/v0/b/rental-945b7.appspot.com/o/pdfs%2Fhop_dong.docx?alt=media&token=fa09173a-80e1-4972-aad4-747f2784ddab",
       function (error, content) {
@@ -84,21 +145,21 @@ export default function AdminManageBookings() {
         var zip = new PizZip(content);
         var doc = new Docxtemplater().loadZip(zip);
         doc.setData({
-          address: bookings.address,
-          fullName: bookings.username,
-          phone: bookings.phone,
+          address: booking.address,
+          fullName: booking.username,
+          phone: booking.phone,
 
           phoneNumber: user?.result.phoneNumber,
           nameStaff: user?.result.username,
           role: user?.result.role === "staff" ? "Nhân viên" : "Quản lý",
 
-          model: bookings.model,
-          yearManufacture: bookings.yearManufacture,
-          numberSeat: bookings.numberSeat,
-          numberCar: bookings.numberCar,
-          totalCost: bookings.totalCost,
-          timeBookingStart: bookings.timeBookingStart,
-          timeBookingEnd: bookings.timeBookingEnd,
+          model: booking.model,
+          yearManufacture: booking.yearManufacture,
+          numberSeat: booking.numberSeat,
+          numberCar: booking.numberCar,
+          totalCost: booking.totalCost,
+          timeBookingStart: booking.timeBookingStart,
+          timeBookingEnd: booking.timeBookingEnd,
         });
         try {
           // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
@@ -139,7 +200,7 @@ export default function AdminManageBookings() {
             "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
         });
 
-        saveAs(out, "hợp_đồng.docx");
+        saveAs(out, `hop_dong_${booking.username}_${booking.numberCar}.docx`);
       }
     );
   };
@@ -261,26 +322,20 @@ export default function AdminManageBookings() {
 
   const onSubmit = async (values) => {
     try {
-      //     const convertapi = new ConvertAPI('HwQQ18bFTPBXQcoj', { conversionTimeout: 60 });
+      if (!file) {
+        message.error("Please upload a PDF file.");
+        return;
+      }
 
-      //     convertapi.convert('pdf', { File: file })
-      // .then(function(result) {
-      //   // get converted file url
-      //   console.log("Converted file url: " + result.file.url);
-
-      //   // save to file
-      //   return result.file.save('/path/to/save/file.pdf');
-      // })
-      // .then(function(file) {
-      //   console.log("File saved: " + file);
-      // })
-      // .catch(function(e) {
-      //   console.error(e.toString());
-      // });
+      // Handle file upload to Firebase Cloud Storage
       const filename = file.name;
       const storageRef = ref(storage, "pdfs/" + filename); // 'pdfs/' is the folder in storage
 
       const uploadTask = uploadBytesResumable(storageRef, file);
+
+      uploadTask.on("state_changed", (snapshot) => {
+        // Handle upload progress, if needed
+      });
 
       uploadTask.on("state_changed", (snapshot) => {});
 
@@ -288,9 +343,10 @@ export default function AdminManageBookings() {
         const downloadURL = await getDownloadURL(storageRef);
 
         try {
-          setTimeout(() => {
-            setOpen(false);
-          }, 1000);
+          // setTimeout(() => {
+          //   setOpen(false);
+          // }, 1000);
+          console.log(accessToken);
           const response = await axios.post(
             `${process.env.NEXT_PUBLIC_REACT_APP_BACKEND_URL}/contracts/create/${values._id}`,
             { file: downloadURL },
@@ -315,6 +371,9 @@ export default function AdminManageBookings() {
           message.error("Error submitting the form. Please try again later.");
         }
       });
+
+      // });
+
       // save to file
       // return result.file.save("/path/to/save/file.pdf");
 
@@ -398,9 +457,23 @@ export default function AdminManageBookings() {
   return (
     <>
       <div className="pt-14">
+        <div className="mb-4 flex justify-between items-center">
+          <div className="max-w-[30%] flex gap-2 items-center"></div>
+
+          <div>
+            <Button
+              type="primary"
+              icon={<ScanOutlined />}
+              onClick={showModalScanPDF}
+            >
+              {" "}
+              Scan PDF
+            </Button>
+          </div>
+        </div>
         <Table
           // onChange={handleChange}
-          scroll={{ x: 2400 }}
+          scroll={{ x: 2400, y: 460 }}
           columns={[
             { key: "id", title: "ID", dataIndex: "id", width: "2%" },
             {
@@ -541,26 +614,61 @@ export default function AdminManageBookings() {
               key: "action",
               title: "Action",
               fixed: "right",
-              width: "10%",
+              width: "8%",
               render: (_, booking) => (
                 <div className="flex gap-2">
-                  <Button
-                    type="primary"
-                    className=" border border-solid border-green-400 "
-                    onClick={() => showModal(booking)}
-                  >
-                    <PlusCircleOutlined style={{ fontSize: "14px" }} />
-                    Hợp Đồng
-                  </Button>
-                  <Popconfirm
-                    title="Are you sure to deactivate this car?"
-                    okText="Deactivate"
-                  >
-                    <Button className="bg-red-500 text-white border-none hover:bg-red-500/70">
-                      <DeleteOutlined style={{ fontSize: "14px" }} />
-                      Hủy
+                  {booking.status === "Đã có hợp đồng" ||
+                  booking.status === "Đã hủy" ? (
+                    <Button
+                      type="primary"
+                      className=" border border-solid  "
+                      onClick={() => showModal(booking)}
+                      disabled
+                    >
+                      <PlusCircleOutlined style={{ fontSize: "14px" }} />
                     </Button>
-                  </Popconfirm>
+                  ) : (
+                    <Tooltip
+                      placement="topLeft"
+                      title={"Tạo hợp đồng"}
+                      color={"rgb(74 222 128)"}
+                    >
+                      <Button
+                        type="primary"
+                        className=" border border-solid border-green-400 "
+                        onClick={() => showModal(booking)}
+                      >
+                        <PlusCircleOutlined style={{ fontSize: "14px" }} />
+                      </Button>
+                    </Tooltip>
+                  )}
+
+                  <Tooltip
+                    placement="top"
+                    title={"Tải file để tạo hợp đồng"}
+                    color="cyan"
+                  >
+                    <Button
+                      className=" border border-solid border-green-400 bg-cyan-400"
+                      onClick={() => generateDocument(booking)}
+                    >
+                      <DownloadOutlined style={{ fontSize: "14px" }} />
+                    </Button>
+                  </Tooltip>
+                  <Tooltip
+                    placement="topRight"
+                    title={"Vô hiệu hóa thuê xê"}
+                    color={"red"}
+                  >
+                    <Popconfirm
+                      title="Are you sure to deactivate this booking?"
+                      okText="Deactivate"
+                    >
+                      <Button className="bg-red-500 text-white border-none hover:bg-red-500/70">
+                        <DeleteOutlined style={{ fontSize: "14px" }} />
+                      </Button>
+                    </Popconfirm>
+                  </Tooltip>
                 </div>
               ),
             },
@@ -619,17 +727,6 @@ export default function AdminManageBookings() {
             </div>
 
             <div className="grow">
-              <Button
-                type="primary"
-                shape="round"
-                icon={<DownloadOutlined />}
-                onClick={generateDocument}
-                className="px-8 mt-7 mb-4"
-              >
-                {" "}
-                Hợp đồng
-              </Button>
-
               <Form.Item label="" name="file">
                 <Upload
                   beforeUpload={beforeUpload}
@@ -637,11 +734,38 @@ export default function AdminManageBookings() {
                   listType="text"
                   showUploadList={true}
                 >
-                  <Button icon={<UploadOutlined />}>Click to upload</Button>
+                  <Button className="px-8 mt-7 mb-4" icon={<UploadOutlined />}>
+                    Click to upload
+                  </Button>
                 </Upload>
               </Form.Item>
             </div>
           </Form>
+        </>
+      </Modal>
+
+      <Modal
+        title="Scan PDF"
+        open={isModalOpen}
+        onOk={handleOkScan}
+        onCancel={handleCancelScan}
+        footer={false}
+      >
+        <>
+          <Upload {...props} maxCount={1}>
+            <Button icon={<UploadOutlined />}>Select File</Button>
+          </Upload>
+          <Button
+            type="primary"
+            onClick={handleUpload}
+            disabled={!fileScan}
+            loading={uploading}
+            style={{
+              marginTop: 16,
+            }}
+          >
+            {uploading ? "Scanning" : "Start Scan"}
+          </Button>
         </>
       </Modal>
     </>

@@ -6,6 +6,18 @@ export const apiClient = axios.create({
   timeout: 1000,
 });
 
+// apiClient.interceptors.request.use(function (config) {
+//   const token = localStorage.getItem("access_token");
+
+//   if (!token) {
+//     return config;
+//   }
+
+//   config.headers.Authorization = `Bearer ${token}`;
+
+//   return config;
+// });
+
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {

@@ -46,7 +46,7 @@ class UsersService {
     const { password: hashedPassword, role, _id, ...rest } = user._doc
 
     const access_token = await this.signAccessToken(_id.toString(), role)
-    return { rest, access_token, role }
+    return { rest, access_token, role, _id }
   }
 
   async google(payload) {
@@ -71,11 +71,11 @@ class UsersService {
         })
         await newUser.save()
         const user2 = await User.findOne({ email: user.email })
-        const { _id } = user2._doc
-        const access_token = await this.signAccessToken(_id.toString(), 'user')
+        const { _id: id } = user2._doc
+        const access_token = await this.signAccessToken(id.toString(), 'user')
 
-        const { password: hashedPassword2, ...rest } = newUser._doc
-        return { rest, access_token }
+        const { password: hashedPassword2, _id, ...rest } = newUser._doc
+        return { rest, access_token, _id }
       }
     } catch (error) {
       console.log(error)
@@ -87,8 +87,8 @@ class UsersService {
 
     try {
       const getUser = await User.findOne({ _id: user_id.toString() })
-      return getUser
-    } catch (error) {}
+      return { getUser, user_id }
+    } catch (error) { }
   }
 
   async getUserByEmail(payload) {
@@ -98,49 +98,23 @@ class UsersService {
     try {
       const getUser = await User.findOne({ email: email.toString() })
       return getUser
-    } catch (error) {}
+    } catch (error) { }
   }
 
-  async updateUser(user_id, payload) {
+  async updateUser(user_id, payload, payloadFile) {
     try {
-      // if (payload.password) {
-      //   password =
-      // }
+      if (payloadFile && payloadFile.path) {
+        payload.profilePicture = payloadFile.path
+      }
       const updateUser = await User.findByIdAndUpdate(
         user_id.toString(),
-        { ...payload, password: hashPassword(payload.password).toString() },
+        { ...payload },
         { new: true }
       )
 
       return updateUser
     } catch (error) {
       throw Error(error)
-    }
-  }
-  async uploadImagesUser(user_id, payload) {
-    try {
-      const { profilePicture } = payload
-
-      // Tạo mảng mới của đường dẫn hình ảnh
-      const profilePictureToUpdate = profilePicture.map((el) => el.path)
-
-      const updateData = {}
-
-      // Kiểm tra và cập nhật trường "images" nếu có
-      if (profilePictureToUpdate.length > 0) {
-        updateData.profilePicture = profilePictureToUpdate
-      }
-
-      if (Object.keys(updateData).length === 0) {
-        // Không có dữ liệu để cập nhật, không thực hiện gì cả
-        return null
-      }
-
-      const uploadImagesUser = await User.findByIdAndUpdate(user_id.toString(), updateData, { new: true })
-
-      return uploadImagesUser
-    } catch (error) {
-      throw new Error('Error uploading images')
     }
   }
 
@@ -154,31 +128,6 @@ class UsersService {
         { new: true }
       )
       return resetPassword
-    } catch (error) {
-      console.log(error)
-    }
-  }
-
-  async getUsers() {
-    try {
-      return await User.find({ role: 'user' }).populate('driverLicenses')
-    } catch (error) {
-      throw Error(error)
-    }
-  }
-
-  async getStaffs() {
-    try {
-      return await User.find({ role: 'staff' })
-    } catch (error) {
-      throw Error(error)
-    }
-  }
-
-  async getDetailUser(userId) {
-    try {
-      const getDetailUser = await User.findById(userId).populate('driverLicenses')
-      return getDetailUser
     } catch (error) {
       console.log(error)
     }

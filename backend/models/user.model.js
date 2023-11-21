@@ -31,19 +31,19 @@ const userSchema = new mongoose.Schema(
     date_of_birth: {
       type: String
     },
-    userCars: {
-      type: Array
-    },
     driverLicenses: {
       type: ObjectId
     },
-
     profilePicture: {
-      type: Array,
-      default: 'https://res.cloudinary.com/djllhxlfc/image/upload/v1699417003/cars/default_avatar_jwbg8s.jpg'
+      type: String
     },
     address: {
       type: String
+    },
+    status: {
+      type: String,
+      enum: ['Hoạt động', 'Không hoạt động'],
+      default: 'Hoạt động'
     }
   },
   { timestamps: true }

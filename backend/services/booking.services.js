@@ -121,7 +121,7 @@ class BookingServices {
           // model: 'numberCar numberSeat yearManufacture'
         })
         .populate('contract')
-        .sort({ createdAt: -1 })
+        .sort({ createdAt: 1 })
       return getListBooking
     } catch (error) {
       throw error

@@ -8,9 +8,9 @@ const contractsRoutes = express.Router()
 
 contractsRoutes.post(
   '/create/:bookingId',
-  accessTokenValidator,
-  adminValidator,
+  // accessTokenValidator,
   staffValidator,
+
   wrapRequestHandler(createContract)
 )
 

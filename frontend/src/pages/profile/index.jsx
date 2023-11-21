@@ -1,25 +1,16 @@
 import React, { useState, useEffect } from "react";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import { useUserState } from "@/recoils/user.state.js";
-import { useMutation } from "@tanstack/react-query";
-import { toast } from "react-toastify";
-import axios from "axios";
-import {
-  Typography,
-  Button,
-  Avatar,
-  Input,
-  Modal,
-  Select,
-  Divider,
-  Form,
-} from "antd";
+import { useDriverState } from "@/recoils/driver.state";
+import moment from "moment";
+
+import { Typography, Button, Input, Spin } from "antd";
 import { EditOutlined, QuestionCircleOutlined } from "@ant-design/icons";
 import Image from "next/image";
 import styled from "@emotion/styled";
 import { ProfileLayout } from "@/layouts/ProfileLayout";
-import Link from "next/link";
-
+import EditProfileModal from "@/components/EditProfileModal";
+import RegisterDriverModal from "@/components/RegisterDriverModal";
 const { Title } = Typography;
 const StyleInput = styled(Input)`
   display: flex;
@@ -27,62 +18,44 @@ const StyleInput = styled(Input)`
   padding: 12px;
   width: 100%;
 `;
-const StyleButton = styled(Button)`
-  border-color: #5fcf86;
-  background-color: #5fcf86;
-  margin-top: 20px;
-  height: 60px;
-  justify-content: center;
-  align-items: center;
-  font-weight: 700;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-`;
-const StyleInputModal = styled(Input)`
-  border-color: #949494;
-  height: 50px;
-  width: 100%;
-`;
-const ButtonSummit = styled(Button)`
-  width: 100%;
-  height: 50px;
-  font-size: 18px;
-  font-weight: 700;
-  padding: 30px auto;
-`;
 
 export default function AccountPage() {
-  const [form] = Form.useForm();
   const [open, setOpen] = useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleOk = () => setOpen(false);
+  const showModal = () => setOpen(true);
   const handleCancle = () => setOpen(false);
 
+  const [open2, setOpen2] = useState(false);
+  const showModal2 = () => setOpen2(true);
+  const handleCancle2 = () => setOpen2(false);
+
   const [user, setUser] = useUserState();
+  const [driver, setDriver] = useDriverState();
+  const [profile, setProfile, clearProfile] = useLocalStorage("profile", "");
+
+  const [loading, setLoading] = useState(false);
 
   return (
     <div className="flex flex-col  mt-5">
       <div className="flex flex-col  pl-10 pr-5  pb-6 ">
         <div className="flex flex-col mb-3  mt-3 ">
           <div className="flex flex-row w-full    ">
-            <p className="m-0 text-lg font-semibold flex w-full "> Address</p>
+            <p className="m-0 text-lg font-semibold flex w-full "> Địa chỉ</p>
             <p className="m-0 text-xl font-semibold text-gray-500 flex w-full">
               {user?.result?.address}
-              <Link href={`/profile/edit-profile `}>
-                <Button
-                  className="items-center absolute right-5"
-                  style={{
-                    border: "1px solid #e0e0e0",
-
-                    borderRadius: "100%",
-                    cursor: "pointer",
-                  }}
-                >
-                  <EditOutlined />
-                </Button>
-              </Link>
             </p>
+            <Button
+              className="items-center absolute right-5"
+              style={{
+                border: "1px solid #e0e0e0",
+
+                borderRadius: "100%",
+                cursor: "pointer",
+              }}
+              onClick={showModal}
+            >
+              <EditOutlined />
+            </Button>
+            <EditProfileModal open={open} handleCancle={handleCancle} />
           </div>
           <hr
             className="w-full"
@@ -119,7 +92,7 @@ export default function AccountPage() {
           <div className="flex flex-row w-full ">
             <p className="mt-0 mb-0 text-lg font-semibold flex w-full ">
               {" "}
-              PhoneNumber
+              Số điện thoại
             </p>
             <p className="mt-0 mb-0 text-xl font-semibold text-gray-500 flex w-full">
               {" "}
@@ -162,12 +135,27 @@ export default function AccountPage() {
         <div className="flex title items-center justify-between">
           <Title className="flex items-center font-semibold text-xl" level={3}>
             Giấy phép lái xe
+            <p
+              className="rounded-lg   text-xs ml-1 "
+              style={{
+                background: "#ffd0cd",
+                color: "red",
+                borderRadius: "100px",
+                padding: "4px 6px",
+              }}
+            >
+              {driver?.result?.status || "Chưa xác thực"}
+            </p>
           </Title>
           <div className="flex items-baseline ">
-            <Button className="rounded-lg border-solid border-black font-bold text-xs">
+            <Button
+              className="rounded-lg border-solid border-black font-bold text-xs"
+              onClick={showModal2}
+            >
               Chỉnh sửa
               <EditOutlined />
             </Button>
+            <RegisterDriverModal open2={open2} handleCancle2={handleCancle2} />
           </div>
         </div>
         <div className="flex items-center ">
@@ -193,9 +181,8 @@ export default function AccountPage() {
                   disabled
                   type="text"
                   className="flex items-center text-base font-semibold text-slate-950"
-                  placeholder="Email"
                   size="small"
-                  defaultValue="09248205850"
+                  value={driver?.result?.drivingLicenseNo}
                 />
               </div>
               <div className="flex flex-col  justify-between">
@@ -209,9 +196,8 @@ export default function AccountPage() {
                   disabled
                   type="text"
                   className="flex items-center text-base font-semibold text-slate-950"
-                  placeholder="Email"
                   size="small"
-                  defaultValue="NGUYEN NGOC NGAN"
+                  value={driver?.result?.fullName}
                 />
               </div>
               <div className="flex flex-col justify-between">
@@ -225,9 +211,27 @@ export default function AccountPage() {
                   disabled
                   type="text"
                   className="flex items-center text-base font-semibold text-slate-950"
-                  defaultValue="22-01-2001"
                   size="small"
-                  value={user?.result?.date_of_birth}
+                  value={
+                    driver?.result?.dob
+                      ? moment(driver?.result?.dob).format("DD/MM/YYYY")
+                      : driver?.result?.dob
+                  }
+                />
+              </div>
+              <div className="flex flex-col justify-between">
+                <Title
+                  level={5}
+                  className="flex items-center text-xs font-medium"
+                >
+                  Hạng
+                </Title>
+                <StyleInput
+                  disabled
+                  type="text"
+                  className="flex items-center text-base font-semibold text-slate-950"
+                  size="small"
+                  value={driver?.result?.class}
                 />
               </div>
             </div>
@@ -236,14 +240,24 @@ export default function AccountPage() {
             <Title level={5} className="font-semibold">
               Hình ảnh
             </Title>
-            <div className="flex flex-col justify-evenly h-full">
-              <Image
-                className="w-full object-cover rounded-xl"
-                src="/images/car-detail.jpg"
-                alt="bgImage"
-                width={300}
-                height={200}
-              />
+
+            <div className="flex flex-col justify-evenly h-full ">
+              {driver?.result?.image ? (
+                <Image
+                  className="w-full object-cover rounded-xl"
+                  src={driver?.result?.image}
+                  alt="Image"
+                  width={300}
+                  height={200}
+                />
+              ) : (
+                <Image
+                  className="w-full object-cover rounded-xl "
+                  src="https://res.cloudinary.com/djllhxlfc/image/upload/v1700240517/cars/default-thumbnail_ycj6n3.jpg"
+                  width={300}
+                  height={200}
+                />
+              )}
             </div>
           </div>
         </div>

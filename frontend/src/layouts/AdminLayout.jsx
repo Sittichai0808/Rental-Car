@@ -5,7 +5,9 @@ import {
   CarOutlined,
   BookOutlined,
   ContactsOutlined,
+  IdcardOutlined,
 } from "@ant-design/icons";
+import { GPLXIcon } from "@/icons";
 import { useRouter } from "next/router";
 
 const { Sider, Header, Content } = Layout;
@@ -43,6 +45,11 @@ export const AdminLayout = ({ children }) => {
               key: "manage-contracts",
               label: "Contracts management",
               icon: <ContactsOutlined />,
+            },
+            {
+              key: "manage-gplx",
+              label: "GPLX management",
+              icon: <IdcardOutlined />,
             },
           ]}
           onClick={(item) => push(`/admin/${item.key}`)}

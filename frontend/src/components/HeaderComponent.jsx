@@ -22,9 +22,6 @@ const StyledMenu = styled(Menu)`
 const { Header } = Layout;
 export default function HeaderComponent() {
   const [user, setUser] = useUserState();
-  // useEffect(() => {
-  //   setUser(profile);
-  // }, [user]);
 
   return (
     <Header className="bg-white flex gap-2 items-center px-0">

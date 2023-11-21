@@ -1,29 +1,26 @@
 import { apiClient } from "./client";
 
-
-export async function getHistoryBooking(accessToken) {
+export async function getGPLX(accessToken) {
     const { data } = await apiClient.request({
         method: "GET",
-        url: `/bookings/historyBooking`,
+        url: `/drivers`,
         headers: {
             Authorization: `Bearer ${accessToken}`,
             "Content-Type": "application/json",
         },
-        withCredentials: true
     });
-
     return data;
 }
 
-export async function getScheduleCar(carId) {
+export async function acceptLicensesDriver(accessToken, driverId) {
     const { data } = await apiClient.request({
-        method: "GET",
-        url: `/bookings/${carId}`,
+        method: "PUT",
+        url: `/drivers/acceptDriver/${driverId}`,
         headers: {
+            Authorization: `Bearer ${accessToken}`,
             "Content-Type": "application/json",
         },
-        withCredentials: true
-    })
-    return data
+        data: { status: "Đã xác thực" }
+    });
+    return data;
 }
-

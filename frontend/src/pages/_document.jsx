@@ -4,8 +4,6 @@ export default function Document() {
   return (
     <Html lang="vi">
       <Head>
-        <title>CRT</title>
-
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
           rel="preconnect"

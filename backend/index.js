@@ -6,6 +6,7 @@ import carsRoutes from './routes/cars.routes.js'
 import driverLicensesRoutes from './routes/driverLicenses.routes.js'
 import finalContractsRoutes from './routes/finalContracts.routes.js'
 import couponsRoutes from './routes/coupons.routes.js'
+import adminRoutes from './routes/admin.routes.js'
 import databaseServices from './services/database.services.js'
 import { defaultErrorHandler } from './middlewares/errors.middlewares.js'
 import pkg from 'lodash'
@@ -51,6 +52,8 @@ app.use('/bookings', bookingRoutes)
 app.use('/coupons', couponsRoutes)
 app.use('/contracts', contractsRoutes)
 app.use('/final-contracts', finalContractsRoutes)
+app.use('/admin', adminRoutes)
+
 app.use(defaultErrorHandler)
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)

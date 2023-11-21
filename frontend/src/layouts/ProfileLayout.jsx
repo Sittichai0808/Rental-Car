@@ -1,28 +1,23 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import { useUserState } from "@/recoils/user.state.js";
+import { useDriverState } from "@/recoils/driver.state";
 import { Tabs } from "antd";
 import moment from "moment";
-import { useMutation } from "@tanstack/react-query";
-import { Layout, Avatar, Button, Upload, message } from "antd";
+import { Layout, Button } from "antd";
 import Account from "@/pages/profile/index";
 import CarRental from "@/pages/profile/car-rental/index";
-// import CarFavorite from "@/pages/profile/car-favorite/index";
+import CarLiked from "@/pages/profile/car-liked";
 import HeaderComponent from "@/components/HeaderComponent";
 import FooterComponent from "@/components/FooterComponent";
 import { useRouter } from "next/router";
-import {
-  LogoutOutlined,
-  UploadOutlined,
-  UserOutlined,
-} from "@ant-design/icons";
-import { toast } from "react-toastify";
-import avatar from "../../public/avatar.jpg";
-import Image from "next/image";
+import { LogoutOutlined } from "@ant-design/icons";
+
+import { UploadProfilePicture } from "@/components/UploadProfilePicture";
 
 const { TabPane } = Tabs;
-import axios from "axios";
-const { Sider, Content } = Layout;
+
+const { Content } = Layout;
 const onChange = (key) => {
   console.log(key);
 };
@@ -47,58 +42,17 @@ const items = [
     label: (
       <span className="text-lg font-semibold text-center">Xe yêu thích</span>
     ),
+    children: <CarLiked />,
   },
 ];
 
 export const ProfileLayout = ({ children }) => {
   const router = useRouter();
-
   const [user, setUser] = useUserState();
-
-  const [accessToken, setAccessToken, clearAccessToken] = useLocalStorage(
-    "access_token",
-    ""
-  );
-
-  const onSubmit = async ({ file }) => {
-    console.log("User Object:", user);
-    console.log("value:", file);
-    console.log("user._id:", user._id);
-    console.log("Access Token:", accessToken);
-
-    try {
-      const formData = new FormData();
-      formData.append("profilePicture", file);
-      const response = await axios.put(
-        `${process.env.NEXT_PUBLIC_REACT_APP_BACKEND_URL}/users/upload-image/${user._id}`,
-        formData,
-
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            withCredentials: true,
-          },
-        }
-      );
-
-      if (response.status === 200) {
-        const image_url = response.data.result.profilePicture;
-        console.log("Image URL:", image_url);
-
-        console.log(response.data);
-
-        setUser({ ...response.data });
-
-        router.push(window.location.reload());
-      } else {
-        console.log(error.response.data.errors[0].msg);
-      }
-    } catch (error) {
-      toast.error(error.response.data.errors[0].msg, {
-        position: toast.POSITION.TOP_CENTER,
-      });
-    }
-  };
+  const [driver, setDriver] = useDriverState();
+  const [profile, setProfile, clearProfile] = useLocalStorage("profile", "");
+  const [accessToken, setAccessToken, clearAccessToken] =
+    useLocalStorage("access_token");
 
   return (
     <Layout className="flex max-w-6xl  mx-auto border-b bg-slate-100  ">
@@ -130,35 +84,14 @@ export const ProfileLayout = ({ children }) => {
               onClick={() => {
                 clearAccessToken();
                 setUser(null);
+                setProfile(null);
                 router.push("/");
               }}
             >
               <LogoutOutlined />
             </Button>
+            <UploadProfilePicture />
 
-            {/* <input
-              className=""
-              type="file"
-              accept="image/*"
-              onChange={onSubmit}
-            /> */}
-
-            <Image
-              className="flex justify-center items-center rounded object-cover "
-              height={100}
-              width={90}
-              icon={<UserOutlined />}
-              src={user?.result?.profilePicture[0]}
-              alt="Image"
-            />
-
-            <Upload
-              customRequest={onSubmit}
-              showUploadList={false}
-              accept="image/*"
-            >
-              <Button icon={<UploadOutlined />}></Button>
-            </Upload>
             <div className="flex flex-col  ">
               <h5 className="text-lg font-semibold text-center mt-1 mb-2 ">
                 {user?.result?.username}

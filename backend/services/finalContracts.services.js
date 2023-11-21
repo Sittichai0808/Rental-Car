@@ -1,25 +1,26 @@
 import Bookings from '../models/booking.model.js'
 import Contracts from '../models/contracts.model.js'
 import FinalContracts from '../models/finalContracts.model.js'
+import moment from 'moment-timezone'
 class FinalContractsService {
-  async createFinalContract(createBy, contractId, payload) {
+  async createFinalContract(contractId, payload) {
     try {
-      // Tạo hợp đồng mới và lưu vào cơ sở dữ liệu
-      const newContract = new FinalContracts({
-        createBy: createBy,
-        bookingId: bookingId,
-        ...payload
+      const { file, cost_settlement, timeFinish, note } = payload
+      // Parse the input date using the 'DD-MM-YYYY' format and set the timezone to Asia/Ho_Chi_Minh (ICT)
+      const formattedTimeFinish = moment.tz(timeFinish, 'DD-MM-YYYY', 'Asia/Ho_Chi_Minh').toDate()
+      const newFinalContract = new FinalContracts({
+        contractId: contractId,
+        file: file,
+        cost_settlement: cost_settlement,
+        timeFinish: formattedTimeFinish,
+        note: note
       })
-      const savedContract = await newContract.save()
 
-      // Cập nhật trường 'contract' trong bản ghi booking tương ứng
-      const booking = await Bookings.findByIdAndUpdate(
-        bookingId,
-        { contract: savedContract._id, status: 'Đã có hợp đồng' },
-        { new: true } // Để nhận kết quả cập nhật mới
-      )
+      await newFinalContract.save()
 
-      return savedContract, booking // Trả về hợp đồng vừa tạo
+      await Contracts.findByIdAndUpdate(contractId, { $set: { status: 'Đã tất toán' } }, { new: true })
+
+      return newFinalContract
     } catch (error) {
       throw new Error(error)
     }

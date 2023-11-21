@@ -5,8 +5,8 @@ import {
   CarOutlined,
   BookOutlined,
   ContactsOutlined,
-  UserOutlined,
 } from "@ant-design/icons";
+import { GPLXIcon } from "@/icons";
 import { useRouter } from "next/router";
 import { useUserState } from "@/recoils/user.state.js";
 
@@ -46,11 +46,6 @@ export const AdminLayout = ({ children }) => {
               key: "manage-contracts",
               label: "Contracts management",
               icon: <ContactsOutlined />,
-            },
-            {
-              key: "profile-admin",
-              label: "Profile",
-              icon: <UserOutlined />,
             },
           ]}
           onClick={(item) => push(`/admin/${item.key}`)}

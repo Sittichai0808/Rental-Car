@@ -39,15 +39,14 @@ const BookingPage = () => {
   const router = useRouter();
   const { query, pathname } = useRouter();
   const carId = query?.id || "653912b7f01c77b98e74364c";
-  const [from, setFrom] = useState();
-  const [to, setTo] = useState();
 
   const [amount, setAmount] = useState();
   const [value, setValue] = useState(1);
   const [costGetCar, setCostGetCar] = useState(0);
   const [amoutDiscount, setAmountDiscount] = useState(0);
   const [dates, setDates] = useDatesState();
-
+  const [from, setFrom] = useState(dates?.[0]);
+  const [to, setTo] = useState(dates?.[1]);
   const onChange = (e) => {
     setCostGetCar(e.target.value);
   };
@@ -61,7 +60,7 @@ const BookingPage = () => {
   const totalCost = router.query?.vnp_Amount;
   const timeTransaction = router?.query?.vnp_PayDate;
 
-  const [startDate, endDate] = dates;
+  const [startDate, endDate] = dates || [null, null];
 
   const [totalDays, setTotalDays] = useState(endDate?.diff(startDate, "days"));
   const order = router.query?.vnp_OrderInfo;
@@ -229,7 +228,12 @@ const BookingPage = () => {
   }, [totalDays, data?.cost, costGetCar]);
 
   const handleBack = () => {
-    setTotalDays(endDate?.diff(startDate, "days"));
+    setFrom(null);
+    setTo(null);
+    setDates(null);
+    setTotalDays(0);
+    setAmountDiscount(0);
+    // setTotalDays(endDate?.diff(startDate, "days"));
     setCurrent(0);
   };
   const selectTimeSlots = (value) => {
@@ -248,7 +252,7 @@ const BookingPage = () => {
   };
   const { mutate } = useMutation(onSubmit);
   const handleCheckout = () => {
-    if (from === undefined || to === undefined) {
+    if (from == undefined || to == undefined) {
       setValidationMessage("Hãy chọn ngày thuê");
     } else {
       setTotalDays(totalDays);

@@ -15,3 +15,4 @@ export const GET_COUPONS = "get-coupons"
 export const UPDATE_RATING_BY_BOOKING = "update-rating-by-booking";
 export const GET_BRANDS_KEY = "brands";
 export const GET_MODEL_KEY = "models";
+export const GET_GPLX_KEY = "gplxs"

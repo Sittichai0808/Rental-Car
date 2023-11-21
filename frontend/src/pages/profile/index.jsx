@@ -18,6 +18,32 @@ const StyleInput = styled(Input)`
   padding: 12px;
   width: 100%;
 `;
+const getProfile = async () => {
+  try {
+    if (typeof window !== "undefined") {
+      const value = window.localStorage.getItem("access_token");
+
+      if (value !== null) {
+        const { data } = await apiClient.request({
+          method: "GET",
+          url: "/users/get-user",
+          headers: {
+            Authorization: `Bearer ${JSON.parse(value)}`,
+            "Content-Type": "application/json",
+          },
+          withCredentials: true,
+        });
+        console.log(data);
+
+        return data;
+      }
+    }
+    return null;
+  } catch (error) {
+    console.error(error);
+    throw error; // Re-throw the error to be caught later
+  }
+};
 
 export default function AccountPage() {
   const [open, setOpen] = useState(false);
@@ -34,8 +60,6 @@ export default function AccountPage() {
 
   const [loading, setLoading] = useState(false);
 
-  console.log("user", user);
-  console.log("driver", driver);
   return (
     <div className="flex flex-col  mt-5">
       <div className="flex flex-col  pl-10 pr-5  pb-6 ">
@@ -184,6 +208,7 @@ export default function AccountPage() {
                   type="text"
                   className="flex items-center text-base font-semibold text-slate-950"
                   size="small"
+                  // value={user?.result?.driverLicenses?.drivingLicenseNo}
                   value={driver?.result?.drivingLicenseNo}
                 />
               </div>
@@ -199,6 +224,7 @@ export default function AccountPage() {
                   type="text"
                   className="flex items-center text-base font-semibold text-slate-950"
                   size="small"
+                  // value={user?.result?.driverLicenses?.fullName}
                   value={driver?.result?.fullName}
                 />
               </div>
@@ -214,6 +240,13 @@ export default function AccountPage() {
                   type="text"
                   className="flex items-center text-base font-semibold text-slate-950"
                   size="small"
+                  // value={
+                  //   user?.result?.driverLicenses?.dob
+                  //     ? moment(user?.result?.driverLicenses?.dob).format(
+                  //         "DD/MM/YYYY"
+                  //       )
+                  //     : user?.result?.driverLicenses?.dob
+                  // }
                   value={
                     driver?.result?.dob
                       ? moment(driver?.result?.dob).format("DD/MM/YYYY")
@@ -233,6 +266,7 @@ export default function AccountPage() {
                   type="text"
                   className="flex items-center text-base font-semibold text-slate-950"
                   size="small"
+                  // value={user?.result?.driverLicenses?.class}
                   value={driver?.result?.class}
                 />
               </div>

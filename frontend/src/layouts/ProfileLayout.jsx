@@ -75,7 +75,6 @@ export const ProfileLayout = ({ children }) => {
             className="flex w-full flex-col justify-center items-center bg-gray-50 p-4 "
             style={{
               minHeight: "0vh",
-
               backgroundColor: "#fff",
             }}
           >

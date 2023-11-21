@@ -87,7 +87,7 @@ class UsersService {
     const { user_id } = { ...payload }
 
     try {
-      const getUser = await User.findOne({ _id: user_id.toString() })
+      const getUser = await User.findById({ _id: user_id.toString() }).populate('driverLicenses')
       return { getUser, user_id }
     } catch (error) {}
   }

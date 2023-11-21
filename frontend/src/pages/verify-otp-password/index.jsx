@@ -1,4 +1,4 @@
-import { Button, Form, Input, Typography } from "antd";
+import { Button, Form, Input, Typography, message } from "antd";
 import Image from "next/image";
 import forgotPassword from "../../../public/forgotPassword.png";
 import styled from "@emotion/styled";
@@ -41,11 +41,11 @@ const VerifyOTPPasswordPage = () => {
         }
       );
 
-      if (response.status === 200) {
+      if (response.data.message === "Invalid OTP") {
+        message.error(response.data.message);
+      } else {
         console.log("Data submitted successfully");
         router.push(`/reset-password?email=${email}`);
-      } else {
-        console.error("Failed to submit data");
       }
     } catch (error) {
       console.error("Error:", error);

@@ -21,16 +21,29 @@ export const acceptLicensesDriver = async (req, res, next) => {
   const { did } = req.params
   const newStatus = req.body
   try {
-    // console.log(typeof newStatus)
-    // if (newStatus !== 'Chưa xác thực' || newStatus !== 'Đã xác thực') {
-    //     return res.status(HTTP_STATUS.BAD_REQUEST).json({ error: 'Invalid Status' });
-    // }
-
     const result = await driverLicensesService.acceptLicensesDriver(did, newStatus)
     if (!result) return result.status(HTTP_STATUS.NOT_FOUND).json({ error: 'Can not found' })
     return res.status(HTTP_STATUS.OK).json({
       message: 'Accept Successfully',
       result
     })
-  } catch (error) {}
+  } catch (error) {
+    res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
+      error: "Something went wrong"
+    })
+  }
+}
+
+export const getLicensesDrivers = async (req, res) => {
+  try {
+    const result = await driverLicensesService.getLicensesDrivers()
+    return res.status(HTTP_STATUS.OK).json({
+      message: "Get LicensesDrivers successfully",
+      result
+    })
+  } catch (error) {
+    return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
+      error: "Couldn't get LicensesDrivers"
+    })
+  }
 }

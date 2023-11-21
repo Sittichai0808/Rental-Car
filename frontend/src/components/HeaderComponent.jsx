@@ -59,7 +59,7 @@ export default function HeaderComponent() {
           </Link>
         </Space>
       ) : (
-        <Link href="/profile">
+        <Link href={`/profile`}>
           <div className="flex items-center gap-2 shrink-0">
             <div className="flex bg-neutral-200 rounded-full p-1 cursor-pointer">
               <UserFilledIcon className="text-neutral-500" />

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import { useUserState } from "@/recoils/user.state.js";
+import { useDriverState } from "@/recoils/driver.state.js";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import axios from "axios";
@@ -31,6 +32,7 @@ const ButtonSummit = styled(Button)`
 export default function EditProfileModal({ open, handleCancle }) {
   const [form] = Form.useForm();
   const [user, setUser] = useUserState();
+  const [driver, setDriver] = useDriverState();
   const [loading, setLoading] = useState(false);
 
   const [accessToken, setAccessToken, clearAccessToken] =
@@ -55,6 +57,7 @@ export default function EditProfileModal({ open, handleCancle }) {
       if (response.status === 200) {
         console.log(response.data);
         setUser({ ...response.data });
+
         handleCancle();
         notification.success({
           message: "Cập nhật thành công",

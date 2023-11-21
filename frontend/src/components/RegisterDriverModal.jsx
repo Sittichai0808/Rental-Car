@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import { useDriverState } from "@/recoils/driver.state.js";
+import { useUserState } from "@/recoils/user.state.js";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import axios from "axios";
@@ -33,6 +34,7 @@ const ButtonSummit = styled(Button)`
 
 export default function RegisterDriverModal({ open2, handleCancle2 }) {
   const [form] = Form.useForm();
+  const [user, setUser] = useUserState();
   const [loading, setLoading] = useState(false);
   const [profile, setProfile, clearProfile] = useLocalStorage("profile", "");
   const [driver, setDriver] = useDriverState();
@@ -67,10 +69,8 @@ export default function RegisterDriverModal({ open2, handleCancle2 }) {
 
       if (response.status === 200) {
         console.log(response.data);
-
         setDriver({ ...response.data });
         setProfile({ ...response.data });
-
         handleCancle2();
         notification.success({
           message: "Đăng kí thành công",

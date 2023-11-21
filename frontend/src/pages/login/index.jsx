@@ -11,6 +11,7 @@ import { toast } from "react-toastify";
 import logo from "../../../public/logo.png";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import { useUserState } from "@/recoils/user.state.js";
+import { useDriverState } from "@/recoils/driver.state.js";
 const { Title } = Typography;
 
 const StyleInput = styled(Input)`
@@ -39,6 +40,7 @@ const LoginPage = () => {
   const [form] = Form.useForm();
   const router = useRouter();
   const [user, setUser] = useUserState();
+  const [driver, setDriver] = useDriverState();
   const [profile, setProfile, clearProfile] = useLocalStorage("profile", "");
   const [accessToken, setAccessToken, clearAccessToken] = useLocalStorage(
     "access_token",
@@ -58,7 +60,7 @@ const LoginPage = () => {
 
       if (response.status === 200) {
         console.log(response.data);
-        setUser({ ...response.data });
+        setUser({ ...driver, ...response.data });
 
         setAccessToken(response.data.access_token);
         console.log(response.data.result.role);

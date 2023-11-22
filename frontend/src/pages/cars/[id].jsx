@@ -20,7 +20,7 @@ import {
 } from "@/icons";
 
 import moment from "moment";
-import { Button, Divider, Table, Tag, Modal } from "antd";
+import { Button, Divider, Table, Tag, Modal, message } from "antd";
 import Image from "next/image";
 import styled from "@emotion/styled";
 import { useRouter } from "next/router";
@@ -153,10 +153,17 @@ export default function CarDetailPage() {
 
   const apiLikeCar = useMutation({
     mutationFn: likeCars,
+    onSuccess: () => {
+      setLiked(!liked);
+      if (!liked) {
+        message.success("Đã thêm vào danh sách xe yêu thích");
+      } else {
+        message.success("Đã xóa khỏi danh sách xe yêu thích");
+      }
+    },
   });
 
   const handleLikeClick = () => {
-    setLiked(!liked);
     apiLikeCar.mutateAsync({ accessToken, carId });
   };
 

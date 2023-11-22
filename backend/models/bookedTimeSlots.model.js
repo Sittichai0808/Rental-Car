@@ -10,11 +10,15 @@ const bookedTimeSlotsSchema = new mongoose.Schema(
     },
     from: {
       type: Date,
-      required: true
+      require: true,
+      get: (v) => moment(v).format('YYYY-MM-DD HH:mm'),
+      set: (v) => moment(v, 'YYYY-MM-DD HH:mm').toDate()
     },
     to: {
       type: Date,
-      required: true
+      require: true,
+      get: (v) => moment(v).format('YYYY-MM-DD HH:mm'),
+      set: (v) => moment(v, 'YYYY-MM-DD HH:mm').toDate()
     },
     carId: {
       type: mongoose.Types.ObjectId,

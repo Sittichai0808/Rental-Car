@@ -20,15 +20,18 @@ export const AdminLayout = ({ children }) => {
   return (
     <Layout hasSider className="h-screen">
       <Sider theme="light" className="border-r shadow bg-white p-6" width={300}>
-        <div className="w-full bg-green-100 h-32 flex justify-center items-center mb-10">
-          LOGO
-        </div>
+        <div className="w-full bg-green-100 h-32 flex justify-center items-center mb-10">LOGO</div>
         <Menu
           selectedKeys={selectedKeys}
           items={[
             {
               key: "manage-users",
               label: "Users management",
+              icon: <UsergroupAddOutlined />,
+            },
+            {
+              key: "manage-staffs",
+              label: "Staffs management",
               icon: <UsergroupAddOutlined />,
             },
             {

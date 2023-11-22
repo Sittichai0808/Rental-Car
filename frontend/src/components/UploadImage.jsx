@@ -4,7 +4,7 @@ import axios from "axios";
 import { useState } from "react";
 
 export const UploadImage = ({ value, onChange }) => {
-  const endpoint = `https://api.cloudinary.com/v1_1/dctfgio0e/image/upload`;
+  const endpoint = `https://api.cloudinary.com/v1_1/djllhxlfc/image/upload`;
   const [messageApi, contextHolder] = message.useMessage();
 
   const [loading, setLoading] = useState(false);

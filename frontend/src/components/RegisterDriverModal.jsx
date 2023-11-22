@@ -32,7 +32,10 @@ const ButtonSummit = styled(Button)`
   padding: 30px auto;
 `;
 
-export default function RegisterDriverModal({ open2, handleCancle2 }) {
+export default function RegisterDriverModal({
+  openRegisterDriver,
+  handleCancleRegisterDriver,
+}) {
   const [form] = Form.useForm();
   const [user, setUser] = useUserState();
   const [loading, setLoading] = useState(false);
@@ -71,7 +74,7 @@ export default function RegisterDriverModal({ open2, handleCancle2 }) {
         console.log(response.data);
         setDriver({ ...response.data });
         setProfile({ ...response.data });
-        handleCancle2();
+        handleCancleRegisterDriver();
         notification.success({
           message: "Đăng kí thành công",
         });
@@ -98,8 +101,8 @@ export default function RegisterDriverModal({ open2, handleCancle2 }) {
 
   return (
     <Modal
-      open={open2}
-      onCancel={handleCancle2}
+      open={openRegisterDriver}
+      onCancel={handleCancleRegisterDriver}
       footer={[
         <ButtonSummit
           loading={isLoading}

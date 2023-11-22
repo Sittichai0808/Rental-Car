@@ -36,8 +36,9 @@ class DriverLicensesService {
 
   async getLicensesDrivers() {
     try {
-      const getLicensesDrivers = await DriverLicenses.find().sort({ status: 1 }) // Sắp xếp theo trạng thái tăng dần (Chưa xác thực trước)
-        .exec();
+      const getLicensesDrivers = await DriverLicenses.find()
+        .sort({ status: 1 }) // Sắp xếp theo trạng thái tăng dần (Chưa xác thực trước)
+        .exec()
       return getLicensesDrivers
     } catch (error) {
       throw new Error(error)

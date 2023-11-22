@@ -38,7 +38,7 @@ const getProfile = async () => {
 
 export const driverAtom = atom({
   key: "driver",
-  default: getProfile("profile"),
+  default: getProfile(),
 });
 export const useDriverState = () => useRecoilState(driverAtom);
 export const useDriverValue = () => useRecoilValue(driverAtom);

@@ -29,7 +29,10 @@ const ButtonSummit = styled(Button)`
   padding: 30px auto;
 `;
 
-export default function EditProfileModal({ open, handleCancle }) {
+export default function EditProfileModal({
+  openEditModal,
+  handleCancleEditModal,
+}) {
   const [form] = Form.useForm();
   const [user, setUser] = useUserState();
   const [driver, setDriver] = useDriverState();
@@ -56,9 +59,18 @@ export default function EditProfileModal({ open, handleCancle }) {
       );
       if (response.status === 200) {
         console.log(response.data);
-        setUser({ ...response.data });
 
-        handleCancle();
+        setUser((user) => ({
+          ...user,
+          result: {
+            ...user.result,
+            address: response.data.result.address,
+            email: response.data.result.email,
+            phoneNumber: response.data.result.phoneNumber,
+            username: response.data.result.username,
+          },
+        }));
+        handleCancleEditModal();
         notification.success({
           message: "Cập nhật thành công",
         });
@@ -81,8 +93,8 @@ export default function EditProfileModal({ open, handleCancle }) {
 
   return (
     <Modal
-      open={open}
-      onCancel={handleCancle}
+      open={openEditModal}
+      onCancel={handleCancleEditModal}
       footer={[
         <ButtonSummit
           loading={isLoading}

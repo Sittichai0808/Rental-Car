@@ -42,6 +42,7 @@ const LoginPage = () => {
   const [user, setUser] = useUserState();
   const [driver, setDriver] = useDriverState();
   const [profile, setProfile, clearProfile] = useLocalStorage("profile", "");
+  const [getProfile] = useLocalStorage();
   const [accessToken, setAccessToken, clearAccessToken] = useLocalStorage(
     "access_token",
     ""
@@ -60,8 +61,7 @@ const LoginPage = () => {
 
       if (response.status === 200) {
         console.log(response.data);
-        setUser({ ...driver, ...response.data });
-
+        setUser({ ...response.data });
         setAccessToken(response.data.access_token);
         console.log(response.data.result.role);
         if (response.data.role === "user") {

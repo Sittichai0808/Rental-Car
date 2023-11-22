@@ -11,12 +11,12 @@ export default function AdminProfile() {
         className="flex flex-col mt-5 mx-5 relative border rounded-xl border-solid border-neutral-200 p-4 "
         style={{
           width: "30%",
-          height: "50%",
+          height: "60%",
           boxShadow: "0 .25rem 1.125rem rgba(75,70,92,.1)",
         }}
       >
         <h2 className="flex ml-0 text-2x">My Profile</h2>
-        <div className="flex w-full flex-col justify-center items-center ">
+        <div className="flex w-full flex-col justify-center items-center p-4 ">
           <UploadProfilePicture />
 
           <div className="flex flex-col  ">

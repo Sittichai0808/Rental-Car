@@ -116,7 +116,7 @@ class CarsService {
       // Recalculate the average rating for the associated car
       const ratings = await Ratings.find({ carId: updatedRating.carId })
       const totalStars = ratings.reduce((total, rating) => total + rating.star, 0)
-      const newTotalRatings = ratings.length > 0 ? totalStars / ratings.length : 0
+      const newTotalRatings = (ratings.length > 0 ? totalStars / ratings.length : 0).toFixed(1)
 
       // Cập nhật TotalRatings của car tương ứng
       await Cars.updateOne({ _id: updatedRating.carId }, { totalRatings: newTotalRatings })

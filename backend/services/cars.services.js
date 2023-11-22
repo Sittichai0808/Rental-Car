@@ -91,7 +91,7 @@ class CarsService {
 
       const ratings = await Ratings.find({ carId: carId })
       const totalStars = ratings.reduce((total, rating) => total + rating.star, 0)
-      const newTotalRatings = ratings.length > 0 ? totalStars / ratings.length : 0
+      const newTotalRatings = (ratings.length > 0 ? totalStars / ratings.length : 0).toFixed(1)
 
       // Cập nhật totalRatings của Car
       await Cars.updateOne({ _id: carId }, { totalRatings: newTotalRatings })

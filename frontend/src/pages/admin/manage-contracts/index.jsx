@@ -54,7 +54,7 @@ import "@react-pdf-viewer/core/lib/styles/index.css";
 import Highlighter from "react-highlight-words";
 
 import { defaultLayoutPlugin } from "@react-pdf-viewer/default-layout";
-
+import { useAccessTokenValue } from "@/recoils/accessToken.state.js";
 // Import styles
 import "@react-pdf-viewer/default-layout/lib/styles/index.css";
 export default function AdminManageContracts() {
@@ -68,7 +68,7 @@ export default function AdminManageContracts() {
   const [loading, setLoading] = useState(false);
 
   const [file, setFile] = useState(null);
-  const [accessToken] = useLocalStorage("access_token", "");
+  const accessToken = useAccessTokenValue();
 
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState("");
@@ -334,15 +334,15 @@ export default function AdminManageContracts() {
 
         <Table
           onChange={handleChange}
-          scroll={{ x: 2400 }}
+          scroll={{ x: 2400, y: 460 }}
           columns={[
             { key: "id", title: "ID", dataIndex: "id", width: "2%" },
-            {
-              key: "createBy",
-              title: "Người Tạo Hợp Đồng",
-              dataIndex: "createBy",
-              ...getColumnSearchProps("createBy"),
-            },
+            // {
+            //   key: "createBy",
+            //   title: "Người Tạo Hợp Đồng",
+            //   dataIndex: "createBy",
+            //   ...getColumnSearchProps("createBy"),
+            // },
             {
               key: "bookBy",
               title: "Tên Khách Hàng",
@@ -352,7 +352,7 @@ export default function AdminManageContracts() {
 
             {
               key: "email",
-              title: "Thư Điện Tử",
+              title: "Email",
               dataIndex: "email",
               ...getColumnSearchProps("email"),
             },
@@ -503,7 +503,7 @@ export default function AdminManageContracts() {
         />
       </div>
       <Modal
-        title="Tạo Hợp Đồng"
+        title="Tất toán hợp đồng"
         open={open}
         onOk={handleOk}
         footer={null}

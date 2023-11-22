@@ -391,7 +391,6 @@ export default function CarDetailPage() {
               // ]}
               disabledDate={disabledDate}
               className="rounded-full"
-              value={dates}
               onChange={handleDateChange}
             />
             {validationMessage && (

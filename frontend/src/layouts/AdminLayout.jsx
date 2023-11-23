@@ -1,4 +1,5 @@
-import { Avatar, Layout, Menu } from "antd";
+import React, { useState } from "react";
+import { Avatar, Layout, Menu, Dropdown, Space } from "antd";
 import {
   BellOutlined,
   UsergroupAddOutlined,
@@ -7,19 +8,50 @@ import {
   ContactsOutlined,
   UserOutlined,
   IdcardOutlined,
+  LogoutOutlined,
 } from "@ant-design/icons";
+
 import { GPLXIcon } from "@/icons";
 import { useRouter } from "next/router";
 import { useUserState } from "@/recoils/user.state.js";
+import useLocalStorage from "@/hooks/useLocalStorage";
 
 const { Sider, Header, Content } = Layout;
 
 export const AdminLayout = ({ children }) => {
   const [user, setUser] = useUserState();
   const { pathname, push } = useRouter();
-
+  const router = useRouter();
   const selectedKeys = [pathname.replace("/admin/", "")];
-
+  const [accessToken, setAccessToken, clearAccessToken] =
+    useLocalStorage("access_token");
+  const items = [
+    {
+      label: (
+        <div onClick={() => push("/admin/profile-admin")}>
+          <UserOutlined className="mr-2" />
+          My Profile
+        </div>
+      ),
+      key: "0",
+    },
+    {
+      label: (
+        <div
+          onClick={() => {
+            clearAccessToken();
+            setUser(null);
+            router.push("/");
+          }}
+        >
+          {" "}
+          <LogoutOutlined className=" text-red-600 mr-2" />
+          Logout
+        </div>
+      ),
+      key: "1",
+    },
+  ];
   return (
     <Layout hasSider className="h-screen">
       <Sider theme="light" className="border-r shadow bg-white p-6" width={300}>
@@ -68,8 +100,20 @@ export const AdminLayout = ({ children }) => {
           <div className="text-2xl font-bold">Dashboard</div>
           <div className="flex gap-4 items-center">
             <BellOutlined className="text-xl" />
-            <Avatar icon={<UserOutlined />} />
-            <span>{user?.result?.username}</span>
+            <Dropdown
+              className="cursor-pointer"
+              menu={{
+                items,
+              }}
+              placement="bottom"
+              trigger={["click"]}
+            >
+              <Space>
+                <Avatar src={user?.result?.profilePicture} />
+              </Space>
+            </Dropdown>
+
+            <span className="flex ">{user?.result?.username}</span>
           </div>
         </Header>
         <Content className="p-4 bg-white">{children}</Content>

@@ -13,7 +13,7 @@ import FooterComponent from "@/components/FooterComponent";
 import { useRouter } from "next/router";
 import { LogoutOutlined } from "@ant-design/icons";
 
-import { UploadProfilePicture } from "@/components/UploadProfilePicture";
+import { UploadProfilePicture } from "@/components/UploadProfilePictureAdmin";
 
 const { TabPane } = Tabs;
 
@@ -53,22 +53,7 @@ export const ProfileLayout = ({ children }) => {
   const [profile, setProfile, clearProfile] = useLocalStorage("profile", "");
   const [accessToken, setAccessToken, clearAccessToken] =
     useLocalStorage("access_token");
-  const handleLogout = async () => {
-    // Clear the access token from local storage
-    clearAccessToken();
 
-    // Update the user state to null
-    setUser(null);
-
-    // Clear the driver state
-    setDriver(null);
-
-    // Clear the profile from local storage
-    clearProfile();
-
-    // Navigate to the home page
-    await router.push("/");
-  };
   return (
     <Layout className="flex max-w-6xl  mx-auto border-b bg-slate-100  ">
       <HeaderComponent />

@@ -19,10 +19,12 @@ import paymentsRoutes from './routes/payments.routes.js'
 import { config } from 'dotenv'
 import bookingRoutes from './routes/booking.routes.js'
 import contractsRoutes from './routes/contracts.routes.js'
+
 config()
 const app = express()
 const port = 4000
 console.log('hello')
+
 databaseServices.connect()
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }))

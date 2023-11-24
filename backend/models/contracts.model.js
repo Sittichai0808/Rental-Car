@@ -3,7 +3,9 @@ const contractsSchema = new mongoose.Schema(
   {
     createBy: { type: mongoose.Types.ObjectId, ref: 'User' },
     bookingId: { type: mongoose.Types.ObjectId, ref: 'Bookings' },
-    file: { type: String, required: true },
+    images: {
+      type: Array
+    },
     status: {
       type: String,
       enum: ['Đang thực hiện', 'Đã tất toán', 'Đã Hủy'],

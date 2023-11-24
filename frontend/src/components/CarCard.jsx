@@ -33,10 +33,10 @@ export const CarCard = ({ dataCar }) => {
             </span>
           </div>
           <div className="flex items-center justify-between mt-4">
-            <Tag className="rounded-full" color="green">
+            <Tag className="rounded-full text-xs" color="green">
               {dataCar?.transmissions}
             </Tag>
-            <div className="text-green-500 font-black">
+            <div className="text-green-500 font-black text-xs">
               {formatCurrency(dataCar?.cost)}/ngày
             </div>
           </div>

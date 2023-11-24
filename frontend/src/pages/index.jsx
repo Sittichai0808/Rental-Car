@@ -66,7 +66,7 @@ export default function HomePage() {
   const fetchCars = async () => {
     try {
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_REACT_APP_BACKEND_URL}/cars?limit=6`,
+        `${process.env.NEXT_PUBLIC_REACT_APP_BACKEND_URL}/cars?limit=8`,
         {
           headers: { "Content-Type": "application/json" },
           withCredentials: true,
@@ -155,7 +155,7 @@ export default function HomePage() {
         ) : error ? (
           <div>Error: {error.message}</div>
         ) : (
-          <div className="w-5/6 mx-auto grid grid-cols-4 gap-6">
+          <div className="mx-auto grid grid-cols-4 gap-4">
             {data.map((car, CarIndex) => (
               <Link href={`/cars/${car?._id}`}>
                 <CarCard key={CarIndex} dataCar={car} />
@@ -165,7 +165,7 @@ export default function HomePage() {
         )}
       </div>
       <div className="mb-40">
-        <div className="mx-auto grid grid-cols-2 gap-4">
+        <div className="mx-auto grid grid-cols-3 gap-4">
           <div className="flex flex-col items-center">
             <div className="relative aspect-square w-60 h-60">
               <Image src="/images/ad-1.svg" alt="ad" layout="fill" />

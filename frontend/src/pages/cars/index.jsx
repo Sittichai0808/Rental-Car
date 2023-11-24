@@ -4,10 +4,11 @@ import { FilterFilledIcon, SearchBrokenIcon } from "@/icons";
 import { Button, Input, Space, Select, Spin, Slider, Modal, Radio } from "antd";
 import { useQuery, useInfiniteQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import axios from "axios";
 import { useRouter } from "next/router";
 import Link from "next/link";
-
+import { getListCars } from "@/apis/user-cars.api";
+import { getBrands } from "@/apis/brands.api";
+import { GET_BRANDS_KEY } from "@/constants/react-query-key.constant";
 export default function ListCarsPage() {
   const { query, pathname } = useRouter();
   const router = useRouter();
@@ -57,62 +58,43 @@ export default function ListCarsPage() {
     router.push({ pathname, query: newQuery });
   };
 
-  const fetchCars = async ({ pageParam }) => {
-    const params = {
-      brand,
-      numberSeat,
-      transmissions,
-      "cost[gte]": costGte,
-      "cost[lte]": costLte,
-      page: pageParam,
-      sort,
-    };
+  const fetchCars = async ({ pageParam = 1 }) => {
+    try {
+      // Use the getCars function here
+      const response = await getListCars({
+        brand,
+        numberSeat,
+        transmissions,
+        "cost[gte]": costGte,
+        "cost[lte]": costLte,
+        page: pageParam,
+        sort,
+      });
+
+      return response;
+    } catch (error) {
+      console.log(error);
+    }
 
     // Remove keys with "all" values
-    Object.keys(params).forEach(
-      (key) => params[key] === "all" && delete params[key]
+    Object.keys(newQuery).forEach(
+      (key) => newQuery[key] === "all" && delete newQuery[key]
     );
-
-    try {
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_REACT_APP_BACKEND_URL}/cars`,
-        {
-          params,
-          headers: { "Content-Type": "application/json" },
-          withCredentials: true,
-        }
-      );
-      return response.data.result;
-    } catch (error) {
-      console.log(error);
-    }
   };
 
-  const { isLoading, data, fetchNextPage, hasNextPage, isFetchingNextPage } =
-    useInfiniteQuery(["getListCars", query], fetchCars, {
-      getNextPageParam: (lastPage) => lastPage.nextCursor,
-    });
+  const { isLoading, data } = useQuery({
+    queryKey: ["getListCars", query],
+    queryFn: () => fetchCars(query),
+  });
 
-  const fetchBrands = async () => {
-    try {
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_REACT_APP_BACKEND_URL}/brands`,
-        {
-          headers: { "Content-Type": "application/json" },
-          withCredentials: true,
-        }
-      );
-      return response.data.result;
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  const { data: brandsData } = useQuery(["brands"], fetchBrands);
+  const { data: brandsData } = useQuery({
+    queryKey: [GET_BRANDS_KEY],
+    queryFn: getBrands,
+  });
 
   return (
-    <div>
+    <div className="max-w-6xl mx-auto">
       <h2 className="text-center text-3xl">Danh sách xe</h2>
-
       <div className="rounded-md bg-neutral-100 p-4">
         <div className="flex gap-4">
           <Input placeholder="Tìm kiếm xe ..." size="large" />
@@ -134,7 +116,7 @@ export default function ListCarsPage() {
                     value: "all",
                     label: "Hãng xe",
                   },
-                  ...(brandsData || []).map((brand) => ({
+                  ...(brandsData?.result || []).map((brand) => ({
                     value: brand._id,
                     label: brand.name,
                   })),
@@ -239,31 +221,13 @@ export default function ListCarsPage() {
             <Spin />
           </div>
         ) : (
-          data?.pages.map((page) => (
-            <React.Fragment key={page.nextCursor}>
-              {page.map((car, carIndex) => (
-                <Link key={carIndex} href={`/cars/${car?._id}`}>
-                  <CarCard dataCar={car} />
-                </Link>
-              ))}
-            </React.Fragment>
+          data?.result.map((car, carIndex) => (
+            <Link key={carIndex} href={`/cars/${car?._id}`}>
+              <CarCard dataCar={car} />
+            </Link>
           ))
         )}
       </div>
-      {hasNextPage && (
-        <div>
-          <Button
-            onClick={() => fetchNextPage()}
-            disabled={!hasNextPage || isFetchingNextPage}
-          >
-            {isFetchingNextPage
-              ? "Loading more..."
-              : hasNextPage
-              ? "Load More"
-              : "Nothing more to load"}
-          </Button>
-        </div>
-      )}
     </div>
   );
 }

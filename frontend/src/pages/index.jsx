@@ -7,6 +7,8 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
+import { GET_BRANDS_KEY } from "@/constants/react-query-key.constant";
+import { getBrands } from "@/apis/brands.api";
 
 export default function HomePage() {
   const router = useRouter();
@@ -56,26 +58,15 @@ export default function HomePage() {
     });
   };
 
-  const fetchBrands = async () => {
-    try {
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_REACT_APP_BACKEND_URL}/brands`,
-        {
-          headers: { "Content-Type": "application/json" },
-          withCredentials: true,
-        }
-      );
-      return response.data.result;
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  const { data: brandsData } = useQuery(["brands"], fetchBrands);
+  const { data: brandsData } = useQuery({
+    queryKey: [GET_BRANDS_KEY],
+    queryFn: getBrands,
+  });
 
   const fetchCars = async () => {
     try {
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_REACT_APP_BACKEND_URL}/cars?limit=8`,
+        `${process.env.NEXT_PUBLIC_REACT_APP_BACKEND_URL}/cars?limit=6`,
         {
           headers: { "Content-Type": "application/json" },
           withCredentials: true,
@@ -90,38 +81,34 @@ export default function HomePage() {
   const { isLoading, error, data } = useQuery(["cars"], fetchCars);
 
   return (
-    <div>
-      <div className="mb-12">
-        <div className="relative h-[50vh]">
+    <div className="max-w-6xl mx-auto">
+      <div className="mb-12 max-w-6xl mx-auto">
+        <div className="relative h-[80vh]">
           <Image
             src="/images/bg-landingpage.png"
             alt="banner"
             layout="fill"
-            className="object-cover rounded-md"
+            className="object-cover rounded-xl"
           />
         </div>
 
-        <div className="bg-white rounded-lg -mt-10 w-4/5 mx-auto z-50 relative pt-6 px-4 shadow-lg">
+        <div className="bg-white rounded-xl -mt-16 w-4/5 mx-auto z-50 relative pt-8 px-8 shadow-lg h-28">
           <Form
             layout="vertical"
             onFinish={handleSearch}
             className="grid grid-cols-5 gap-6 h-full"
           >
             <Form.Item name="brand">
-              <Select
-                size="large"
-                placeholder="Hãng xe"
-                options={[
-                  {
-                    value: "all",
-                    label: "Hãng xe",
-                  },
-                  ...(brandsData || []).map((brand) => ({
-                    value: brand._id,
-                    label: brand.name,
-                  })),
-                ]}
-              />
+              <Select size="large" placeholder="Hãng xe">
+                <Option value="all" label="Hãng xe">
+                  Hãng xe
+                </Option>
+                {(brandsData?.result || []).map((brand) => (
+                  <Option key={brand._id} value={brand._id} label={brand.name}>
+                    {brand.name}
+                  </Option>
+                ))}
+              </Select>
             </Form.Item>
             <Form.Item name="numberSeat">
               <Select
@@ -161,14 +148,14 @@ export default function HomePage() {
           </Form>
         </div>
       </div>
-      <div className="mb-40">
+      <div className="mb-20">
         <h2 className="text-center text-2xl">Xe dành cho bạn</h2>
         {isLoading ? (
           <div>Loading...</div>
         ) : error ? (
           <div>Error: {error.message}</div>
         ) : (
-          <div className="grid grid-cols-4 gap-3">
+          <div className="w-5/6 mx-auto grid grid-cols-4 gap-6">
             {data.map((car, CarIndex) => (
               <Link href={`/cars/${car?._id}`}>
                 <CarCard key={CarIndex} dataCar={car} />
@@ -178,12 +165,7 @@ export default function HomePage() {
         )}
       </div>
       <div className="mb-40">
-        <h2 className="text-center text-2xl">Ưu Điểm Của CRT</h2>
-        <p className="text-center font-semibold text-neutral-700 mb-8">
-          Những tính năng của CRT giúp bạn dễ dàng an tâm hơn khi thuê xe
-        </p>
-
-        <div className="w-5/6 mx-auto grid grid-cols-3 gap-6">
+        <div className="mx-auto grid grid-cols-2 gap-4">
           <div className="flex flex-col items-center">
             <div className="relative aspect-square w-60 h-60">
               <Image src="/images/ad-1.svg" alt="ad" layout="fill" />

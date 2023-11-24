@@ -24,50 +24,67 @@ export default function HeaderComponent() {
   const [user, setUser] = useUserState();
 
   return (
-    <Header className="bg-white flex gap-2 items-center px-0">
-      <div className="shrink-0 mt-7 cursor-pointer">
-        <Link href="/">
-          <Image src={logo} height={40} width={40} />
-        </Link>
-      </div>
-      <h2 className="text-green-500">CRT</h2>
-
-      <StyledMenu
-        className="grow border-none flex justify-end font-semibold"
-        mode="horizontal"
-        items={[
-          {
-            key: "about-us",
-            label: "Về CRT",
-          },
-          {
-            key: "cars",
-            label: "Danh sách xe",
-          },
-        ]}
-      />
-
-      <Divider type="vertical" className="bg-neutral-200" />
-
-      {!user ? (
-        <Space wrap>
-          <Link href="/register">
-            <Button type="text">Đăng ký</Button>
-          </Link>
-          <Link href="/login">
-            <Button type="primary">Đăng nhập</Button>
-          </Link>
-        </Space>
-      ) : (
-        <Link href="/profile">
-          <div className="flex items-center gap-2 shrink-0">
-            <div className="flex bg-neutral-200 rounded-full p-1 cursor-pointer">
-              <UserFilledIcon className="text-neutral-500" />
-            </div>
-            <span>{user?.result?.username}</span>
+    <Header
+      style={{
+        position: "sticky",
+        top: 0,
+        zIndex: 99,
+        width: "100%",
+        display: "flex",
+        alignItems: "center",
+      }}
+      className="bg-white"
+    >
+      <div className="flex h-full w-full max-w-6xl mx-auto justify-between gap-4">
+        <div className="flex items-center gap-4">
+          <div className="shrink-0 mt-7 cursor-pointer">
+            <Link href="/">
+              <Image src={logo} height={40} width={40} />
+            </Link>
           </div>
-        </Link>
-      )}
+          <h2 className="text-green-500">CRT</h2>
+        </div>
+        <StyledMenu
+          className="grow border-none font-semibold flex justify-end w-2/4 gap-4"
+          mode="horizontal"
+          items={[
+            {
+              key: "about-us",
+              label: "Về CRT",
+            },
+            {
+              key: "cars",
+              label: "Danh sách xe",
+            },
+            {
+              key: "contact",
+              label: "Liên hệ",
+            },
+          ]}
+        />
+        {!user ? (
+          <Space wrap>
+            <Link href="/register">
+              <Button className="font-semibold" type="text">
+                Đăng ký
+              </Button>
+            </Link>
+            <Link href="/login">
+              <Button className="font-semibold" type="primary">
+                Đăng nhập
+              </Button>
+            </Link>
+          </Space>
+        ) : (
+          <Link href="/profile">
+            <div className="flex items-center shrink-0">
+              <div className="flex bg-neutral-200 rounded-full p-1 cursor-pointer">
+                <UserFilledIcon className="text-neutral-500" />
+              </div>
+            </div>
+          </Link>
+        )}
+      </div>
     </Header>
   );
 }

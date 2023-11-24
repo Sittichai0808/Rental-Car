@@ -1,48 +1,56 @@
-import { LocationFilledIcon, StarFilledIcon } from "@/icons";
-import { Button, Divider, Tag } from "antd";
+import { LocationFilledIcon, SeatIcon } from "@/icons";
+import { Button, Divider, Tag, Rate } from "antd";
 import Image from "next/image";
 import Link from "next/link";
+import { formatCurrency } from "@/utils/number.utils";
 export const CarCard = ({ dataCar }) => {
   return (
-    <div className="border rounded-xl border-solid border-neutral-200 p-4">
-      <Link href={`/cars/${dataCar?._id}`}>
-        <div className="relative aspect-video mb-4 cursor-pointer">
+    <Link href={`/cars/${dataCar?._id}`}>
+      <div className="border rounded-lg border-solid border-neutral-300 p-4 cursor-pointer">
+        <div className="relative aspect-video">
           <Image
             src={dataCar?.thumb}
             alt="car"
-            height={250}
             width={300}
+            height={220}
             className="rounded-lg object-cover"
           />
         </div>
-      </Link>
 
-      <div>
-        <Tag className="rounded-full" color="green">
-          {dataCar?.transmissions}
-        </Tag>
-
-        <h5 className="text-xl line-clamp-1 mt-2 font-bold mb-2">
-          {dataCar?.model.name} {dataCar?.yearManufacture}
-        </h5>
-
-        <div className="flex items-center">
-          <div className="flex items-center gap-1">
-            <StarFilledIcon className="text-yellow-300" />
-            <span className="text-neutral-500 text-base">
-              {dataCar?.totalRatings}
+        <div className="mt-4">
+          <h5 className="text-xl line-clamp-1 mt-2 font-bold mb-2">
+            {dataCar?.model.name} {dataCar?.yearManufacture}
+          </h5>
+          <div className="flex items-baseline">
+            <Rate
+              allowHalf
+              disabled
+              defaultValue={dataCar?.totalRatings}
+              className="text-base"
+            />
+            <span className="text-gray-400 ml-2 text-sm">
+              ({dataCar?.totalRatings} sao)
             </span>
           </div>
-          <div className="grow text-right text-green-500 font-black">
-            {dataCar?.cost}
+          <div className="flex items-center justify-between mt-4">
+            <Tag className="rounded-full" color="green">
+              {dataCar?.transmissions}
+            </Tag>
+            <div className="text-green-500 font-black">
+              {formatCurrency(dataCar?.cost)}/ngày
+            </div>
+          </div>
+          <Divider className="mb-2" />
+          <div className="flex justify-center items-center">
+            <Button
+              className="p-4 flex items-center justify-center font-medium text-base"
+              type="primary"
+            >
+              Chọn thuê
+            </Button>
           </div>
         </div>
       </div>
-
-      <Divider className="mb-2" />
-      <div className="flex justify-center text-neutral-500 items-center font-medium">
-        <Button type="primary">Chọn thuê</Button>
-      </div>
-    </div>
+    </Link>
   );
 };

@@ -13,7 +13,7 @@ import FooterComponent from "@/components/FooterComponent";
 import { useRouter } from "next/router";
 import { LogoutOutlined } from "@ant-design/icons";
 
-import { UploadProfilePicture } from "@/components/UploadProfilePictureAdmin";
+import { UploadProfilePicture } from "@/components/UploadProfilePicture";
 
 const { TabPane } = Tabs;
 

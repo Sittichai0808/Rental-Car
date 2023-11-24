@@ -36,8 +36,13 @@ export const UploadProfilePicture = () => {
       if (response.status === 200) {
         console.log(response.data);
 
-        setUser({ ...response.data });
-
+        setUser((user) => ({
+          ...user,
+          result: {
+            ...user.result,
+            profilePicture: response.data.result.profilePicture,
+          },
+        }));
         notification.success({
           message: "Cập nhật thành công",
         });

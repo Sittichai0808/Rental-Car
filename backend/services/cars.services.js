@@ -35,7 +35,7 @@ class CarsService {
     try {
       // Filtering
       const queryObj = { ...payload }
-      const { sort, fields, page, limit } = payload
+      const { sort, fields, page = 1, limit = 4 } = payload
       const excludeFields = ['page', 'sort', 'limit', 'fields']
       excludeFields.forEach((el) => delete queryObj[el])
       let queryStr = JSON.stringify(queryObj)
@@ -70,8 +70,13 @@ class CarsService {
         const carCount = await Cars.countDocuments()
         if (skip >= carCount) throw new Error('This Page does not exist')
       }
-      const cars = await getListCars
-      return cars
+      const totalCars = await Cars.countDocuments()
+      const totalPages = Math.ceil(totalCars / limit)
+      const currentPage = page ? parseInt(page) : 1;
+      const result = {
+        cars: await getListCars, totalPages, currentPage
+      }
+      return result
     } catch (error) {
       console.log(error)
     }

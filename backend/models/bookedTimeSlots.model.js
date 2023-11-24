@@ -1,5 +1,5 @@
 import mongoose from 'mongoose'
-import moment from 'moment'
+import moment from 'moment-timezone'
 
 const bookedTimeSlotsSchema = new mongoose.Schema(
   {

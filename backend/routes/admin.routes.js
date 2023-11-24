@@ -5,7 +5,7 @@ import { getUsers, getStaffs, getDetailUser, createStaff, updateStatusUser } fro
 const adminRoutes = express.Router()
 
 adminRoutes.get('/list-users', adminAndStaffValidator, wrapRequestHandler(getUsers))
-// adminRoutes.get('/staffs', adminValidator, wrapRequestHandler(getStaffs))
+adminRoutes.get('/staffs', adminValidator, wrapRequestHandler(getStaffs))
 adminRoutes.get('/staffs', wrapRequestHandler(getStaffs))
 adminRoutes.post('/create-staffs', adminValidator, wrapRequestHandler(createStaff))
 adminRoutes.put('/update-status/:userId', adminAndStaffValidator, wrapRequestHandler(updateStatusUser))

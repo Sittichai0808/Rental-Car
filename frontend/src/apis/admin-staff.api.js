@@ -27,3 +27,16 @@ export const upsertStaff = async ({ accessToken, body, staffId }) => {
 
   return data;
 };
+
+export const getUser = async ({ accessToken, userId }) => {
+  const { data } = await apiClient.request({
+    method: "GET",
+    url: `/admin/get-user/${userId}`,
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      "Content-Type": "application/json",
+    },
+  });
+
+  return data;
+};

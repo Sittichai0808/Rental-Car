@@ -1,4 +1,4 @@
-import { upsertStaff, getStaffs } from "@/apis/admin-staff.api";
+import { upsertStaff, getStaffs, getUser } from "@/apis/admin-staff.api";
 import { UploadImage } from "@/components/UploadImage";
 import { GET_STAFFS } from "@/constants/react-query-key.constant";
 import useLocalStorage from "@/hooks/useLocalStorage";
@@ -7,15 +7,24 @@ import { SearchOutlined, UserAddOutlined } from "@ant-design/icons";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { message } from "antd";
 import { Avatar, Button, Form, Input, InputNumber, Modal, Popconfirm, Table, Upload } from "antd";
+import { omit } from "lodash-es";
 import { useState } from "react";
 
-function UpsertStaffForm({ staffId }) {
+function UpsertStaffForm({ staffId, onClose }) {
   const [accessToken] = useLocalStorage("access_token");
   const isInsert = !staffId;
 
+  const { data } = useQuery({
+    queryFn: () => getUser({ accessToken, userId: staffId }),
+    enabled: !!staffId,
+  });
+
+  const staff = data?.result;
+  console.log("yiy", staffId, staff);
+
   const [form] = Form.useForm();
 
-  const apiAddStaff = useMutation({
+  const apiUpsertStaff = useMutation({
     mutationFn: upsertStaff,
     onError: (error) => {
       message.error(error);
@@ -25,13 +34,27 @@ function UpsertStaffForm({ staffId }) {
   const handleAddStaff = async () => {
     const values = form.getFieldsValue();
 
-    await apiAddStaff.mutateAsync({ accessToken, body: values });
+    console.log(values);
+
+    // onClose?.();
+    // await apiUpsertStaff.mutateAsync({ accessToken, body: values, staffId });
   };
 
   return (
     <>
-      <Form layout="vertical" className="grid grid-cols-3 gap-4 mt-10" form={form}>
+      <Form
+        layout="vertical"
+        className="grid grid-cols-3 gap-4 mt-10"
+        form={form}
+        initialValues={omit(staff, "password")}
+      >
         <div className="col-span-2">
+          <Form.Item label="Username" required name="username">
+            <Input />
+          </Form.Item>
+          <Form.Item label="Password" required name="password">
+            <Input.Password />
+          </Form.Item>
           <Form.Item label="Name" required name="fullname">
             <Input />
           </Form.Item>
@@ -39,7 +62,7 @@ function UpsertStaffForm({ staffId }) {
             <Input />
           </Form.Item>
           <Form.Item label="Phone Number" required name="phoneNumber">
-            <InputNumber className="w-full" />
+            <Input className="w-full" />
           </Form.Item>
           <Form.Item label="Address" required name="address">
             <Input.TextArea rows={3} />
@@ -47,7 +70,7 @@ function UpsertStaffForm({ staffId }) {
         </div>
 
         <div>
-          <Form.Item label="Avatar" className="profilePicture">
+          <Form.Item label="Avatar" name="profilePicture">
             <UploadImage />
           </Form.Item>
         </div>
@@ -74,8 +97,6 @@ export default function AdminManageStaffs() {
   const handleInsertStaff = () => {
     setUpsertStaffModal({ actionType: "insert" });
   };
-
-  console.log(data?.result);
 
   return (
     <>
@@ -115,7 +136,7 @@ export default function AdminManageStaffs() {
                 <div className="flex gap-2">
                   <Button
                     className="bg-blue-500 text-white border-none hover:bg-blue-500/70"
-                    onClick={() => setUpsertStaffModal({ actionType: "update", staffId: staff.id })}
+                    onClick={() => setUpsertStaffModal({ actionType: "update", staffId: staff._id })}
                   >
                     Update
                   </Button>
@@ -139,7 +160,7 @@ export default function AdminManageStaffs() {
         footer={null}
         onCancel={() => setUpsertStaffModal(undefined)}
       >
-        <UpsertStaffForm staffId={upsertStaffModal?.staffId} />
+        <UpsertStaffForm staffId={upsertStaffModal?.staffId} onClose={() => setUpsertStaffModal(undefined)} />
       </Modal>
     </>
   );

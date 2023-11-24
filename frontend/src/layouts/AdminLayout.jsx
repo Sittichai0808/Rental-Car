@@ -51,6 +51,11 @@ export const AdminLayout = ({ children }) => {
               label: "GPLX management",
               icon: <IdcardOutlined />,
             },
+            {
+              key: "manage-coupon",
+              label: "Coupon management",
+              icon: <IdcardOutlined />,
+            }
           ]}
           onClick={(item) => push(`/admin/${item.key}`)}
         />

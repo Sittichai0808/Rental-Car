@@ -8,4 +8,5 @@ const couponsRoutes = express.Router()
 couponsRoutes.post('/create', [accessTokenValidator, adminValidator, staffValidator], wrapRequestHandler(createCoupons))
 couponsRoutes.get('/', wrapRequestHandler(getCoupons))
 couponsRoutes.put('/update/:cid', [accessTokenValidator, adminValidator, staffValidator], wrapRequestHandler(updateCoupons))
+couponsRoutes.delete()
 export default couponsRoutes

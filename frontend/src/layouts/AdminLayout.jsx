@@ -9,11 +9,15 @@ import {
 } from "@ant-design/icons";
 import { GPLXIcon } from "@/icons";
 import { useRouter } from "next/router";
+import { useUserState } from "@/recoils/user.state";
 
 const { Sider, Header, Content } = Layout;
 
 export const AdminLayout = ({ children }) => {
   const { pathname, push } = useRouter();
+  const [user] = useUserState();
+
+  const role = user?.result?.role;
 
   const selectedKeys = [pathname.replace("/admin/", "")];
 
@@ -29,11 +33,13 @@ export const AdminLayout = ({ children }) => {
               label: "Users management",
               icon: <UsergroupAddOutlined />,
             },
-            {
-              key: "manage-staffs",
-              label: "Staffs management",
-              icon: <UsergroupAddOutlined />,
-            },
+            role === "admin"
+              ? {
+                  key: "manage-staffs",
+                  label: "Staffs management",
+                  icon: <UsergroupAddOutlined />,
+                }
+              : undefined,
             {
               key: "manage-cars",
               label: "Cars management",

@@ -127,12 +127,18 @@ class CarsService {
     }
   }
 
-  async getRatingsOfCar(carId) {
+  async getRatingsOfCar(carId, page = 1, limit = 4) {
     try {
-      const getRatingsOfCar = await Ratings.find({ carId: carId }).populate('postBy', 'username profilePicture')
-      return getRatingsOfCar
+      const skip = (page - 1) * limit;
+      const getRatingsOfCar = await Ratings.find({ carId: carId }).populate('postBy', 'username profilePicture').skip(skip).limit(limit);
+
+      const totalReviews = await Ratings.countDocuments({ carId: carId });
+
+      const totalPages = Math.ceil(totalReviews / limit);
+
+      return { getRatingsOfCar, totalPages, page }
     } catch (error) {
-      throw Error(error)
+      throw Error(error);
     }
   }
 

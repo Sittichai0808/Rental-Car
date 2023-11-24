@@ -156,7 +156,7 @@ export default function HomePage() {
           <div>Error: {error.message}</div>
         ) : (
           <div className="mx-auto grid grid-cols-4 gap-4">
-            {data.map((car, CarIndex) => (
+            {data.cars.map((car, CarIndex) => (
               <Link href={`/cars/${car?._id}`}>
                 <CarCard key={CarIndex} dataCar={car} />
               </Link>

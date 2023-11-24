@@ -1,6 +1,7 @@
 import { CarCard } from "@/components/CarCard";
 import React from "react";
 import { FilterFilledIcon, SearchBrokenIcon } from "@/icons";
+import { LoadingOutlined } from "@ant-design/icons";
 import { Button, Input, Space, Select, Spin, Slider, Modal, Radio } from "antd";
 import { useQuery, useInfiniteQuery } from "@tanstack/react-query";
 import { useState } from "react";
@@ -9,6 +10,7 @@ import Link from "next/link";
 import { getListCars } from "@/apis/user-cars.api";
 import { getBrands } from "@/apis/brands.api";
 import { GET_BRANDS_KEY } from "@/constants/react-query-key.constant";
+import InfiniteScroll from "react-infinite-scroll-component";
 export default function ListCarsPage() {
   const { query, pathname } = useRouter();
   const router = useRouter();
@@ -82,28 +84,26 @@ export default function ListCarsPage() {
     );
   };
 
-  const { isLoading, data } = useQuery({
-    queryKey: ["getListCars", query],
-    queryFn: () => fetchCars(query),
+  const { isLoading, data, hasNextPage, fetchNextPage } = useInfiniteQuery({
+    queryKey: ["getListCars", newQuery],
+    queryFn: (pageParam) => fetchCars(pageParam),
+    getNextPageParam: (lastPage) =>
+      lastPage.result.currentPage < lastPage.result.totalPages
+        ? lastPage.result.currentPage + 1
+        : null,
   });
-
+  console.log(data);
   const { data: brandsData } = useQuery({
     queryKey: [GET_BRANDS_KEY],
     queryFn: getBrands,
   });
-
+  console.log(data?.pages?.flatMap((page) => page?.result?.cars).length);
   return (
     <div className="max-w-6xl mx-auto">
       <h2 className="text-center text-3xl">Danh sách xe</h2>
-      <div className="rounded-md bg-neutral-100 p-4">
-        <div className="flex gap-4">
-          <Input placeholder="Tìm kiếm xe ..." size="large" />
-          <Button type="primary" size="large" icon={<SearchBrokenIcon />}>
-            Tìm kiếm
-          </Button>
-        </div>
 
-        <div className="mt-6 flex justify-between">
+      <div className="rounded-md bg-neutral-100 p-4 mx-auto">
+        <div className="flex justify-between">
           <div className="flex gap-2 justify-start">
             <Space wrap>
               <Select
@@ -183,7 +183,7 @@ export default function ListCarsPage() {
 
           <Modal
             title="Sắp xếp theo"
-            visible={sortModalVisible}
+            open={sortModalVisible}
             onOk={handleSortOk}
             onCancel={handleSortCancel}
           >
@@ -215,18 +215,51 @@ export default function ListCarsPage() {
           </Modal>
         </div>
       </div>
-      <div className="grid grid-cols-4 gap-x-4 gap-y-6 mt-10">
-        {isLoading ? (
-          <div className="example">
-            <Spin />
-          </div>
-        ) : (
-          data?.result.map((car, carIndex) => (
-            <Link key={carIndex} href={`/cars/${car?._id}`}>
-              <CarCard dataCar={car} />
-            </Link>
-          ))
-        )}
+      <div>
+        <InfiniteScroll
+          dataLength={
+            data?.pages?.flatMap((page) => page?.result?.cars).length || 0
+          }
+          next={fetchNextPage}
+          hasMore={hasNextPage}
+          onScroll={false}
+          loader={
+            data?.pages?.flatMap((page) => page?.result?.cars).length > 4 && (
+              <div className="overflow-hidden flex justify-center mt-4">
+                <Spin
+                  indicator={
+                    <LoadingOutlined
+                      style={{
+                        fontSize: 40,
+                      }}
+                      spin
+                    />
+                  }
+                />
+              </div>
+            )
+          }
+        >
+          {isLoading ? (
+            <div className="example flex justify-center mt-40 overflow-hidden items-center max-w-6xl">
+              <Spin size="large" />
+            </div>
+          ) : data?.pages?.flatMap((page) => page?.result?.cars)?.length > 0 ? (
+            <div className="mx-auto grid grid-cols-4 gap-4 mt-10">
+              {data?.pages?.map((page, pageIndex) => (
+                <React.Fragment key={pageIndex}>
+                  {page?.result?.cars.map((car, carIndex) => (
+                    <Link key={carIndex} href={`/cars/${car?._id}`}>
+                      <CarCard dataCar={car} />
+                    </Link>
+                  ))}
+                </React.Fragment>
+              ))}
+            </div>
+          ) : (
+            <div className="max-w-6xl mx-auto">No cars found.</div>
+          )}
+        </InfiniteScroll>
       </div>
     </div>
   );

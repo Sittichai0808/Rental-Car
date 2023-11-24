@@ -27,7 +27,7 @@ import { useRouter } from "next/router";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import Link from "next/link";
 import axios from "axios";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useDatesState } from "@/recoils/dates.state";
 import { useUserState } from "@/recoils/user.state";
 import { HeartOutlined, HeartFilled } from "@ant-design/icons";
@@ -37,6 +37,7 @@ import {
 } from "@/constants/react-query-key.constant";
 import { getCarDetail, likeCars } from "@/apis/user-cars.api";
 import { getRatingsOfCar } from "@/apis/ratings.api";
+import { useRatingsOfCar } from "@/hooks/useGetRatings";
 
 const carServices = [
   { icon: MapIcon, name: "Bản đồ" },
@@ -122,10 +123,20 @@ export default function CarDetailPage() {
     return isPastDate || isBookedDate;
   };
 
-  const { data: ratings } = useQuery({
-    queryKey: [GET_RATINGS_OF_CAR, carId],
-    queryFn: () => getRatingsOfCar(carId),
-  });
+  // const { data: ratings } = useQuery({
+  //   queryKey: [GET_RATINGS_OF_CAR, carId],
+  //   queryFn: () => getRatingsOfCar(carId),
+  // });
+
+  const {
+    data: ratings,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useRatingsOfCar(carId);
+
+  console.log(ratings);
+
   const { data: car } = useQuery({
     queryKey: [GET_CAR_DETAILS, carId],
     queryFn: () => getCarDetail(carId),
@@ -190,7 +201,7 @@ export default function CarDetailPage() {
     },
   });
   return (
-    <div>
+    <div className="max-w-6xl mx-auto">
       <div className="grid h-[600px] gap-4 grid-cols-4 grid-rows-3 relative">
         <div className="relative col-span-3 row-span-3 rounded-md overflow-hidden">
           <Image alt="car" src={car?.result.thumb} layout="fill" />
@@ -354,9 +365,24 @@ export default function CarDetailPage() {
           <div className="mt-10 max-w">
             <h2 className="font-medium">Đánh giá</h2>
             <div className="flex flex-col gap-4">
-              {ratings?.result.map((rating, index) => (
-                <Feedback key={index} dataRatings={rating} />
+              {ratings?.pages?.map((page, pageIndex) => (
+                <React.Fragment key={pageIndex}>
+                  {page?.result.map((rating, index) => (
+                    <Feedback key={index} dataRatings={rating} />
+                  ))}
+                </React.Fragment>
               ))}
+              {hasNextPage && (
+                <div className="flex justify-center">
+                  <Button
+                    onClick={() => fetchNextPage()}
+                    disabled={isFetchingNextPage}
+                    className="w-1/5 p-5 flex items-center justify-center"
+                  >
+                    {isFetchingNextPage ? "Đang tải..." : "Đọc thêm"}
+                  </Button>
+                </div>
+              )}
             </div>
           </div>
         </div>

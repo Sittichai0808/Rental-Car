@@ -1,9 +1,53 @@
 import React from 'react'
 import { AdminLayout } from "@/layouts/AdminLayout";
-import { Table, Button, Popconfirm, message } from "antd";
+import {
+  GET_COUPONS
+} from "@/constants/react-query-key.constant";
+import { useUserState } from "@/recoils/user.state";
 
+import {getCoupons } from "@/apis/admin-coupons.api"
+import { getMOdels } from "@/apis/model.api";
+import { PlusOutlined, SearchOutlined } from "@ant-design/icons";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import {
+  Button,
+  Form,
+  Image,
+  Input,
+  InputNumber,
+  Modal,
+  Popconfirm,
+  Select,
+  Skeleton,
+  Table,
+} from "antd";
+import { useState } from "react";
 export default function AdminManageCoupon(){
+
+
+  const [upsertCouponModal, setUpsertCouponModal] = useState();
+
+  const { data, refetch } = useQuery({
+    queryFn: getCoupons,
+    queryKey: [GET_COUPONS],
+  });
+
+  const dataSource = data?.result.map((item, idx) => ({
+    id: idx + 1,
+    _id: item?._id,
+    name: item?.name,
+    discount: item?.discount,
+    description: item?.description,
+    expiry: item?.expiry
+  }));
+
+  // const handleInsertCoupon = () => {
+  //   setUpsertCouponModal({ actionType: "insert" });
+  // };
+
+  // console.log(upsertCouponModal);
   return (
+    <>
     <div className="pt-10 px-4">
 
 <div className="mb-4 flex justify-between items-center">
@@ -58,11 +102,30 @@ export default function AdminManageCoupon(){
             ),
           },
         ]}
-        
+        dataSource={dataSource}
         rowKey="id"
      
       />
     </div>
+    {/* <Modal
+    open={upsertCouponModal}
+    title={
+      upsertCouponModal?.actionType === "insert" ? "Add New Coupon" : "Update Coupon"
+    }
+    width={800}
+    destroyOnClose
+    footer={null}
+    onCancel={() => setUpsertCouponModal(undefined)}
+  >
+    <UpsertCouponForm
+      couponId={upsertCouponModal?.couponId}
+      onOk={() => {
+        setUpsertCouponModal(false);
+        refetch();
+      }}
+    />
+  </Modal> */}
+</>
   )
 }
 

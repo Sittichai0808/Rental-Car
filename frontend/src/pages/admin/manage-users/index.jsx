@@ -4,7 +4,17 @@ import useLocalStorage from "@/hooks/useLocalStorage";
 import { AdminLayout } from "@/layouts/AdminLayout";
 import { SearchOutlined, UserAddOutlined } from "@ant-design/icons";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { Avatar, Button, Form, Input, InputNumber, Modal, Popconfirm, Table, Upload } from "antd";
+import {
+  Avatar,
+  Button,
+  Form,
+  Input,
+  InputNumber,
+  Modal,
+  Popconfirm,
+  Table,
+  Upload,
+} from "antd";
 import { useState } from "react";
 
 export default function AdminManageUsers() {
@@ -39,7 +49,7 @@ export default function AdminManageUsers() {
               dataIndex: "profilePicture",
               render: (url) => <Avatar src={url} />,
             },
-            { key: "name", title: "Name", dataIndex: "name" },
+            { key: "name", title: "Name", dataIndex: "fullname" },
             { key: "email", title: "Email", dataIndex: "email" },
             { key: "phoneNumber", title: "Phone", dataIndex: "phoneNumber" },
             { key: "role", title: "Role", dataIndex: "role" },
@@ -54,10 +64,16 @@ export default function AdminManageUsers() {
                       title="Are you sure to block this user?"
                       okText="Block"
                       onConfirm={() => {
-                        apiUpdateStatus.mutateAsync({ accessToken, userId: user._id, status: "Không hoạt động" });
+                        apiUpdateStatus.mutateAsync({
+                          accessToken,
+                          userId: user._id,
+                          status: "Không hoạt động",
+                        });
                       }}
                     >
-                      <Button className="bg-red-500 text-white border-none hover:bg-red-500/70">Block</Button>
+                      <Button className="bg-red-500 text-white border-none hover:bg-red-500/70">
+                        Block
+                      </Button>
                     </Popconfirm>
                   )}
 
@@ -66,10 +82,16 @@ export default function AdminManageUsers() {
                       title="Are you sure active this user?"
                       okText="Active"
                       onConfirm={() => {
-                        apiUpdateStatus.mutateAsync({ accessToken, userId: user._id, status: "Hoạt động" });
+                        apiUpdateStatus.mutateAsync({
+                          accessToken,
+                          userId: user._id,
+                          status: "Hoạt động",
+                        });
                       }}
                     >
-                      <Button className="bg-green-500 text-white border-none hover:bg-green-500/70">Unblock</Button>
+                      <Button className="bg-green-500 text-white border-none hover:bg-green-500/70">
+                        Unblock
+                      </Button>
                     </Popconfirm>
                   )}
                 </div>

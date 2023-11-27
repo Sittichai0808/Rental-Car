@@ -9,7 +9,7 @@ export async function getCars() {
   return data;
 }
 
-export async function getCar(carId, accessToken) {
+export async function getCar(carId, accessToken) { 
   const { data } = await apiClient.request({
     method: "GET",
     url: `/cars/${carId}`,

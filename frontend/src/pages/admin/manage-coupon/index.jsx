@@ -2,12 +2,11 @@ import React from 'react'
 import { AdminLayout } from "@/layouts/AdminLayout";
 import {
   GET_COUPONS,
-  GET_COUPONS_KEY
+  GET_COUPON
 } from "@/constants/react-query-key.constant";
 import { useUserState } from "@/recoils/user.state";
 
-import { createCoupon, getCoupons } from "@/apis/admin-coupons.api"
-import { getMOdels } from "@/apis/model.api";
+import { createCoupon, getCoupons, getCouponById, updateCoupon } from "@/apis/admin-coupons.api"
 import { PlusOutlined, SearchOutlined } from "@ant-design/icons";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import {
@@ -20,6 +19,7 @@ import {
   Popconfirm,
   Select,
   Skeleton,
+  message,
   Table,
 } from "antd";
 import { useState } from "react";
@@ -32,10 +32,10 @@ function UpsertCouponForm({ couponId, onOk }) {
   const [form] = Form.useForm();
 
 
-  //console.log("8734643", couponId);
+  console.log("8734643", couponId);
   const couponDetail = useQuery({
     queryFn: () => getCoupons(couponId),
-    queryKey: [GET_COUPONS_KEY, couponId],
+    queryKey: [GET_COUPONS, couponId],
   });
 
   console.log(couponDetail.data?.result);
@@ -44,14 +44,11 @@ function UpsertCouponForm({ couponId, onOk }) {
     mutationFn: createCoupon,
   });
 
-  // const apiUpdateCoupon = useMutation({
-  //   mutationFn: updateCoupon,
-  // });
+  const apiUpdateCoupon = useMutation({
+    mutationFn: updateCoupon,
+  });
 
-  // const modelOptions = getModelsRes?.result.map((item) => ({
-  //   value: item._id,
-  //   label: item.name,
-  // }));
+
 
 
   console.log(couponDetail.data?.results);
@@ -60,20 +57,19 @@ function UpsertCouponForm({ couponId, onOk }) {
       form={form}
       layout="vertical"
       className="flex flex-col gap-4 mt-10"
-      // initialValues={{
-      //   ...carDetail.data?.result,
-      //   brand: carDetail.data?.result?.brand._id,
-      //   model: carDetail.data?.result?.model._id,
-      // }}
+      initialValues={{
+        ...couponDetail.data?.result
+      }}
       onFinish={async (values) => {
         console.log(values, couponId);
 
         if (isInsert) {
           await apiCreateCoupon.mutateAsync({ ...values, user: user?._id });
+          console.log({values})
         } else {
           console.log({ values });
           await apiUpdateCoupon.mutateAsync({
-            carId,
+            couponId,
             body: { ...values, user: user?._id },
           });
         }
@@ -87,7 +83,7 @@ function UpsertCouponForm({ couponId, onOk }) {
             <Input />
 
           </Form.Item>
-          <Form.Item label="Mức giảm giá" required name="discount" prefix="%"  className="w-full">
+          <Form.Item label="Mức giảm giá" required name="discount" className="w-full">
             <Input />
 
           </Form.Item>
@@ -100,18 +96,12 @@ function UpsertCouponForm({ couponId, onOk }) {
 
           </Form.Item>
           <div className="flex justify-end mt-10">
-        <Button type="primary" htmlType="submit">
-          {isInsert ? "Add" : "Update"}
-        </Button>
-      </div>
+            <Button type="primary" htmlType="submit">
+              {isInsert ? "Add" : "Update"}
+            </Button>
+          </div>
         </div>
       </div>
-
-      {/* <div className="flex justify-end mt-10">
-        <Button type="primary" htmlType="submit">
-          {isInsert ? "Add" : "Update"}
-        </Button>
-      </div> */}
     </Form>
   );
 }
@@ -126,8 +116,8 @@ export default function AdminManageCoupon() {
     queryKey: [GET_COUPONS],
   });
 
-  const dataSource = data?.result.map((item, idx) => ({
-    id: idx + 1,
+  const dataSource = data?.result.map((item, idcoupon) => ({
+    id: idcoupon + 1,
     _id: item?._id,
     name: item?.name,
     discount: item?.discount,
@@ -140,7 +130,9 @@ export default function AdminManageCoupon() {
   // const handleInsertCoupon = () => {
   //   setUpsertCouponModal({ actionType: "insert" });
   // };
-
+const handleDeleteConfirm = () => {
+  message.success('Đã xoá thành công');
+}
   console.log(upsertCouponModal);
   return (
     <>
@@ -183,14 +175,29 @@ export default function AdminManageCoupon() {
             {
               key: "action",
               title: "Action",
-              render: (record) => (
+              render: (_, coupon) => (
                 <div className="flex gap-2">
-                  <Button className=" text-white border-none" disabled>
-                    Chỉnh sửa
+                  <Button
+                    className="bg-blue-500 text-white border-none hover:bg-blue-500/70"
+                    onClick={() => {
+                      setUpsertCouponModal({
+                        actionType: "update",
+                        couponId: coupon._id,
+                      });
+                    }}
+                  >
+                    Edit
                   </Button>
-                  <Button className=" text-white border-none" disabled>
-                    Xoá
-                  </Button>
+                
+                  <Popconfirm
+                    title="Bạn có chắc chắn muốn xoá coupon này?"
+                    okText ="Delete"
+                    //onClick={handleDeleteConfirm}
+                  >
+                    <Button className="bg-red-500 text-white border-none hover:bg-red-500/70">
+                      Delete
+                    </Button>
+                  </Popconfirm>
 
 
                 </div>

@@ -19,10 +19,18 @@ class CouponsService {
         }
     }
 
-    async updateCoupons(cid, payload) {
+    async updateCoupon(cid, payload) {
         try {
             const updateCoupons = await Coupons.findByIdAndUpdate(cid, payload, { new: true })
             return updateCoupons
+        } catch (error) {
+            throw new Error(error)
+        }
+    }
+    async deleteCoupon(cid, payload){
+        try {
+            const deleteCoupon = await Coupons.findByIdAndDelete(cid, payload, { new: true })
+            return deleteCoupon
         } catch (error) {
             throw new Error(error)
         }

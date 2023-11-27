@@ -19,7 +19,7 @@ import {
   UsbIcon,
 } from "@/icons";
 
-import moment from "moment";
+import moment from "moment-timezone";
 import { Button, Divider, Table, Tag, Modal, message } from "antd";
 import Image from "next/image";
 import styled from "@emotion/styled";
@@ -86,8 +86,9 @@ export default function CarDetailPage() {
   const [validationMessage, setValidationMessage] = useState("");
   function isDateBooked(startDate, endDate) {
     for (const slot of bookedTimeSlots) {
-      const bookedStart = new Date(slot.from);
-      const bookedEnd = new Date(slot.to);
+      const bookedStart = moment(slot.from);
+      const bookedEnd = moment(slot.to);
+      console.log(bookedStart, bookedEnd);
 
       if (bookedStart >= startDate && bookedEnd <= endDate) return true;
     }
@@ -105,7 +106,7 @@ export default function CarDetailPage() {
         setValidationMessage("");
       }
     }
-
+    console.log(dates);
     setDates(dates);
   };
 
@@ -115,7 +116,7 @@ export default function CarDetailPage() {
 
     // Kiểm tra nếu ngày hiện tại nằm trong mảng bookedTimeSlots
     const isBookedDate = bookedTimeSlots.some((slot) => {
-      const slotStart = moment(slot.from);
+      const slotStart = moment(slot.from).subtract(1, "days");
       const slotEnd = moment(slot.to);
       return current && current >= slotStart && current <= slotEnd;
     });
@@ -192,7 +193,7 @@ export default function CarDetailPage() {
             withCredentials: true,
           }
         );
-        // console.log(response.data.result);
+        console.log(response.data.result);
         setBookedTimeSlots(response.data.result);
         return response.data.result;
       } catch (error) {
@@ -410,7 +411,7 @@ export default function CarDetailPage() {
             </h1>
             <DateRangePicker
               showTime={{ format: "HH mm" }}
-              format="DD MM YYYY HH mm"
+              format="DD-MM-YYYY HH mm"
               // defaultValue={[
               //   dayjs(from, "DD-MM-YYYY HH:mm"),
               //   dayjs(to, "DD-MM-YYYY HH:mm"),

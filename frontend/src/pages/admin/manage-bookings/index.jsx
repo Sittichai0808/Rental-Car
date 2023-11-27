@@ -51,6 +51,7 @@ import { useUserState } from "@/recoils/user.state.js";
 import ConvertApi from "convertapi-js";
 import { useAccessTokenValue } from "@/recoils/accessToken.state.js";
 import base64 from "base64topdf";
+import { UploadContract } from "@/components/UploadContract.jsx";
 let PizZipUtils = null;
 if (typeof window !== "undefined") {
   import("pizzip/utils/index.js").then(function (r) {
@@ -321,70 +322,70 @@ export default function AdminManageBookings() {
   });
 
   const onSubmit = async (values) => {
+    // try {
+    //   if (!file) {
+    //     message.error("Please upload a PDF file.");
+    //     return;
+    //   }
+
+    //   // Handle file upload to Firebase Cloud Storage
+    //   const filename = file.name;
+    //   const storageRef = ref(storage, "pdfs/" + filename); // 'pdfs/' is the folder in storage
+
+    //   const uploadTask = uploadBytesResumable(storageRef, file);
+
+    //   uploadTask.on("state_changed", (snapshot) => {
+    //     // Handle upload progress, if needed
+    //   });
+
+    //   uploadTask.on("state_changed", (snapshot) => {});
+
+    //   uploadTask.then(async (snapshot) => {
+    //     const downloadURL = await getDownloadURL(storageRef);
+
     try {
-      if (!file) {
-        message.error("Please upload a PDF file.");
-        return;
-      }
-
-      // Handle file upload to Firebase Cloud Storage
-      const filename = file.name;
-      const storageRef = ref(storage, "pdfs/" + filename); // 'pdfs/' is the folder in storage
-
-      const uploadTask = uploadBytesResumable(storageRef, file);
-
-      uploadTask.on("state_changed", (snapshot) => {
-        // Handle upload progress, if needed
-      });
-
-      uploadTask.on("state_changed", (snapshot) => {});
-
-      uploadTask.then(async (snapshot) => {
-        const downloadURL = await getDownloadURL(storageRef);
-
-        try {
-          // setTimeout(() => {
-          //   setOpen(false);
-          // }, 1000);
-          console.log(accessToken);
-          const response = await axios.post(
-            `${process.env.NEXT_PUBLIC_REACT_APP_BACKEND_URL}/contracts/create/${values._id}`,
-            { file: downloadURL },
-            {
-              headers: {
-                Authorization: `Bearer ${accessToken}`,
-                "Content-Type": "application/json",
-              },
-              withCredentials: true,
-            }
-          );
-
-          if (response.status === 201) {
-            message.success("Create Contract successfully");
-            router.reload();
-          } else {
-            // Handle API errors and display an error message
-            message.error("Error submitting the form. Please try again later.");
-          }
-        } catch (apiError) {
-          console.error("Error calling the API: ", apiError);
-          message.error("Error submitting the form. Please try again later.");
+      // setTimeout(() => {
+      //   setOpen(false);
+      // }, 1000);
+      console.log(accessToken);
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_REACT_APP_BACKEND_URL}/contracts/create/${values._id}`,
+        { images: values.images },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+          },
+          withCredentials: true,
         }
-      });
+      );
 
-      // });
-
-      // save to file
-      // return result.file.save("/path/to/save/file.pdf");
-
-      // if (!file) {
-      //   message.error("Please upload a file.");
-      //   return;
-      // }
-    } catch (error) {
-      console.error("Error uploading PDF: ", error);
+      if (response.status === 201) {
+        message.success("Create Contract successfully");
+        router.reload();
+      } else {
+        // Handle API errors and display an error message
+        message.error("Error submitting the form. Please try again later.");
+      }
+    } catch (apiError) {
+      console.error("Error calling the API: ", apiError);
       message.error("Error submitting the form. Please try again later.");
     }
+    // });
+
+    // });
+
+    // save to file
+    // return result.file.save("/path/to/save/file.pdf");
+
+    // if (!file) {
+    //   message.error("Please upload a file.");
+    //   return;
+    // }
+    // } catch (error) {
+    //   console.error("Error uploading PDF: ", error);
+    //   message.error("Error submitting the form. Please try again later.");
+    // }
   };
 
   const { mutate } = useMutation(onSubmit);
@@ -696,28 +697,28 @@ export default function AdminManageBookings() {
           >
             <div className="w-2/3">
               <Form.Item label="Tên khách hàng" name="username">
-                <Input />
+                <Input readOnly />
               </Form.Item>
               <Form.Item label="Số điện thoại" name="phone">
-                <Input />
+                <Input readOnly />
               </Form.Item>
               <Form.Item label="Địa chỉ" name="address">
-                <Input />
+                <Input readOnly />
               </Form.Item>
               <Form.Item label="Biển số xe" name="numberCar">
-                <Input />
+                <Input readOnly />
               </Form.Item>
               <Form.Item label="Thời gian bắt đầu thuê" name="timeBookingStart">
-                <Input />
+                <Input readOnly />
               </Form.Item>
               <Form.Item label="Thời gian kết thúc thuê" name="timeBookingEnd">
-                <Input />
+                <Input readOnly />
               </Form.Item>
               <Form.Item label="Tổng giá tiền thuê" name="totalCost">
-                <Input />
+                <Input readOnly />
               </Form.Item>
               <Form.Item label="Booking id" hidden name="_id">
-                <Input />
+                <Input readOnly />
               </Form.Item>
               <div className=" mt-10">
                 <Button type="primary" htmlType="submit">
@@ -726,8 +727,11 @@ export default function AdminManageBookings() {
               </div>
             </div>
 
-            <div className="grow">
-              <Form.Item label="" name="file">
+            <div className="grow w-1/3">
+              <Form.Item label="Images" name="images">
+                <UploadContract />
+              </Form.Item>
+              {/* <Form.Item label="" name="file">
                 <Upload
                   beforeUpload={beforeUpload}
                   maxCount={1}
@@ -738,7 +742,7 @@ export default function AdminManageBookings() {
                     Click to upload
                   </Button>
                 </Upload>
-              </Form.Item>
+              </Form.Item> */}
             </div>
           </Form>
         </>

@@ -10,7 +10,8 @@ export const registerController = async (req, res, next) => {
   return res.json({
     message: USER_MESSAGES.REGISTER_SUCCESS,
     access_token: result.access_token.toString(),
-    result: result.user
+    result: result.user,
+    id: result.user_id
   })
 }
 

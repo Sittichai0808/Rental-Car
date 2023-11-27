@@ -32,7 +32,8 @@ const userSchema = new mongoose.Schema(
       type: String
     },
     driverLicenses: {
-      type: ObjectId
+      type: mongoose.Types.ObjectId,
+      ref: 'DriverLicenses'
     },
     profilePicture: {
       type: String

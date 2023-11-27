@@ -405,6 +405,7 @@ export default function AdminManageContracts() {
               key: "status",
               title: "Trạng Thái",
               dataIndex: "status",
+              width: "8%",
               filters: [
                 {
                   text: "Đang thực hiện",

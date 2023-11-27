@@ -1,16 +1,17 @@
 import Bookings from '../models/booking.model.js'
 import BookedTimeSlots from '../models/bookedTimeSlots.model.js'
-import moment from 'moment'
+import moment from 'moment-timezone'
 
 class BookingServices {
   async createBooking(user_id, carId, payload) {
     try {
       const { timeBookingStart, timeBookingEnd } = payload
 
-      const format = 'DD-MM-YYYY HH:mm'
-      const bookingStart = moment(timeBookingStart, format)
-      const bookingEnd = moment(timeBookingEnd, format)
+      console.log(timeBookingStart, timeBookingEnd)
 
+      const bookingStart = moment.utc(timeBookingStart).toDate()
+      const bookingEnd = moment.utc(timeBookingEnd).toDate()
+      console.log(bookingStart, bookingEnd)
       // if (!bookingStart.isValid() || !bookingEnd.isValid()) {
       //     throw new Error('Invalid input')
       // }

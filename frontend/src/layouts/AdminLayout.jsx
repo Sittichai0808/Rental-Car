@@ -13,45 +13,19 @@ import {
 
 import { GPLXIcon } from "@/icons";
 import { useRouter } from "next/router";
-import { useUserState } from "@/recoils/user.state.js";
-import useLocalStorage from "@/hooks/useLocalStorage";
+import { useUserState } from "@/recoils/user.state";
 
 const { Sider, Header, Content } = Layout;
 
 export const AdminLayout = ({ children }) => {
   const [user, setUser] = useUserState();
   const { pathname, push } = useRouter();
-  const router = useRouter();
+  const [user] = useUserState();
+
+  const role = user?.result?.role;
+
   const selectedKeys = [pathname.replace("/admin/", "")];
-  const [accessToken, setAccessToken, clearAccessToken] =
-    useLocalStorage("access_token");
-  const items = [
-    {
-      label: (
-        <div onClick={() => push("/admin/profile-admin")}>
-          <UserOutlined className="mr-2" />
-          My Profile
-        </div>
-      ),
-      key: "0",
-    },
-    {
-      label: (
-        <div
-          onClick={() => {
-            clearAccessToken();
-            setUser(null);
-            router.push("/");
-          }}
-        >
-          {" "}
-          <LogoutOutlined className=" text-red-600 mr-2" />
-          Logout
-        </div>
-      ),
-      key: "1",
-    },
-  ];
+
   return (
     <Layout hasSider className="h-screen">
       <Sider theme="light" className="border-r shadow bg-white p-6" width={300}>
@@ -66,6 +40,13 @@ export const AdminLayout = ({ children }) => {
               label: "Users management",
               icon: <UsergroupAddOutlined />,
             },
+            role === "admin"
+              ? {
+                  key: "manage-staffs",
+                  label: "Staffs management",
+                  icon: <UsergroupAddOutlined />,
+                }
+              : undefined,
             {
               key: "manage-cars",
               label: "Cars management",

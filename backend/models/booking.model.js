@@ -1,5 +1,5 @@
 import mongoose from 'mongoose'
-import moment from 'moment'
+import moment from 'moment-timezone'
 
 const bookingsSchema = new mongoose.Schema(
   {
@@ -14,14 +14,14 @@ const bookingsSchema = new mongoose.Schema(
     timeBookingStart: {
       type: Date,
       require: true,
-      get: (v) => moment(v).format('DD-MM-YYYY HH:mm'),
-      set: (v) => moment(v, 'DD-MM-YYYY HH:mm').toDate()
+      get: (v) => moment(v).format('YYYY-MM-DD HH:mm'),
+      set: (v) => moment(v, 'YYYY-MM-DD HH:mm').toDate()
     },
     timeBookingEnd: {
       type: Date,
       require: true,
-      get: (v) => moment(v).format('DD-MM-YYYY HH:mm'),
-      set: (v) => moment(v, 'DD-MM-YYYY HH:mm').toDate()
+      get: (v) => moment(v).format('YYYY-MM-DD HH:mm'),
+      set: (v) => moment(v, 'YYYY-MM-DD HH:mm').toDate()
     },
     fullname: {
       type: String

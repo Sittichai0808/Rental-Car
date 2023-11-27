@@ -1,18 +1,24 @@
-import { upsertStaff, getStaffs, getUser } from "@/apis/admin-staff.api";
+import {
+  upsertStaff,
+  getStaffs,
+  getUser,
+  updateUserStatus,
+} from "@/apis/admin-staff.api";
 import { UploadImage } from "@/components/UploadImage";
 import { GET_STAFFS } from "@/constants/react-query-key.constant";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import { AdminLayout } from "@/layouts/AdminLayout";
-import { SearchOutlined, UserAddOutlined } from "@ant-design/icons";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { UserAddOutlined } from "@ant-design/icons";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { message } from "antd";
-import { Avatar, Button, Form, Input, InputNumber, Modal, Popconfirm, Table, Upload } from "antd";
+import { Avatar, Button, Form, Input, Modal, Popconfirm, Table } from "antd";
 import { omit } from "lodash-es";
 import { useState } from "react";
 
 function UpsertStaffForm({ staffId, onClose }) {
   const [accessToken] = useLocalStorage("access_token");
   const isInsert = !staffId;
+  const queryClient = useQueryClient();
 
   const { data } = useQuery({
     queryFn: () => getUser({ accessToken, userId: staffId }),
@@ -26,6 +32,10 @@ function UpsertStaffForm({ staffId, onClose }) {
 
   const apiUpsertStaff = useMutation({
     mutationFn: upsertStaff,
+    onSuccess: () => {
+      queryClient.invalidateQueries([GET_STAFFS]);
+      message.success("Tạo staff thành công");
+    },
     onError: (error) => {
       message.error(error);
     },
@@ -36,8 +46,8 @@ function UpsertStaffForm({ staffId, onClose }) {
 
     console.log(values);
 
-    // onClose?.();
-    // await apiUpsertStaff.mutateAsync({ accessToken, body: values, staffId });
+    onClose?.();
+    await apiUpsertStaff.mutateAsync({ accessToken, body: values, staffId });
   };
 
   return (
@@ -89,9 +99,13 @@ export default function AdminManageStaffs() {
   const [accessToken] = useLocalStorage("access_token");
   const [upsertStaffModal, setUpsertStaffModal] = useState();
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, refetch } = useQuery({
     queryFn: () => getStaffs({ accessToken }),
     queryKey: [GET_STAFFS],
+  });
+  const apiUpdateStatus = useMutation({
+    mutationFn: updateUserStatus,
+    onSuccess: refetch,
   });
 
   const handleInsertStaff = () => {
@@ -103,11 +117,6 @@ export default function AdminManageStaffs() {
       <div className="pt-10">
         <div className="mb-4 flex justify-between items-center">
           <div className="max-w-[30%] flex gap-2 items-center">
-            <Input prefix={<SearchOutlined />} />
-            <Button type="primary">Search</Button>
-          </div>
-
-          <div>
             <Button onClick={handleInsertStaff}>
               <UserAddOutlined /> <span>Add staff</span>
             </Button>
@@ -116,7 +125,12 @@ export default function AdminManageStaffs() {
         <Table
           loading={isLoading}
           columns={[
-            { key: "id", title: "ID", dataIndex: "id", render: (_value, _record, idx) => idx + 1 },
+            {
+              key: "id",
+              title: "ID",
+              dataIndex: "id",
+              render: (_value, _record, idx) => idx + 1,
+            },
             {
               key: "profilePicture",
               title: "Avatar",
@@ -124,7 +138,7 @@ export default function AdminManageStaffs() {
               render: (url) => <Avatar src={url} />,
             },
             { key: "username", title: "Username", dataIndex: "username" },
-            { key: "name", title: "Name", dataIndex: "name" },
+            { key: "name", title: "Name", dataIndex: "fullname" },
             { key: "email", title: "Email", dataIndex: "email" },
             { key: "phoneNumber", title: "Phone", dataIndex: "phoneNumber" },
             // { key: "role", title: "Role", dataIndex: "role" },
@@ -134,15 +148,41 @@ export default function AdminManageStaffs() {
               title: "Action",
               render: (_, staff) => (
                 <div className="flex gap-2">
-                  <Button
-                    className="bg-blue-500 text-white border-none hover:bg-blue-500/70"
-                    onClick={() => setUpsertStaffModal({ actionType: "update", staffId: staff._id })}
-                  >
-                    Update
-                  </Button>
-                  <Popconfirm title="Are you sure to block this staff?" okText="Block">
-                    <Button className="bg-red-500 text-white border-none hover:bg-red-500/70">Block</Button>
-                  </Popconfirm>
+                  {staff?.status === "Hoạt động" && (
+                    <Popconfirm
+                      title="Are you sure to block this user?"
+                      okText="Block"
+                      onConfirm={() => {
+                        apiUpdateStatus.mutateAsync({
+                          accessToken,
+                          userId: staff._id,
+                          status: "Không hoạt động",
+                        });
+                      }}
+                    >
+                      <Button className="bg-red-500 text-white border-none hover:bg-red-500/70">
+                        Block
+                      </Button>
+                    </Popconfirm>
+                  )}
+
+                  {staff?.status === "Không hoạt động" && (
+                    <Popconfirm
+                      title="Are you sure active this user?"
+                      okText="Active"
+                      onConfirm={() => {
+                        apiUpdateStatus.mutateAsync({
+                          accessToken,
+                          userId: staff._id,
+                          status: "Hoạt động",
+                        });
+                      }}
+                    >
+                      <Button className="bg-green-500 text-white border-none hover:bg-green-500/70">
+                        Unblock
+                      </Button>
+                    </Popconfirm>
+                  )}
                 </div>
               ),
             },
@@ -154,13 +194,20 @@ export default function AdminManageStaffs() {
 
       <Modal
         open={upsertStaffModal}
-        title={upsertStaffModal?.actionType === "insert" ? "Add new staff" : "Update staff"}
+        title={
+          upsertStaffModal?.actionType === "insert"
+            ? "Add new staff"
+            : "Update staff"
+        }
         width={800}
         destroyOnClose
         footer={null}
         onCancel={() => setUpsertStaffModal(undefined)}
       >
-        <UpsertStaffForm staffId={upsertStaffModal?.staffId} onClose={() => setUpsertStaffModal(undefined)} />
+        <UpsertStaffForm
+          staffId={upsertStaffModal?.staffId}
+          onClose={() => setUpsertStaffModal(undefined)}
+        />
       </Modal>
     </>
   );

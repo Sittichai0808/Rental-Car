@@ -17,7 +17,7 @@ export const getStaffs = async ({ accessToken }) => {
 export const upsertStaff = async ({ accessToken, body, staffId }) => {
   const { data } = await apiClient.request({
     method: staffId ? "PUT" : "POST",
-    url: staffId ? `/admin/update-staff/${staffId}` : `/admin/create-staffs`,
+    url: staffId ? `users/update-user/${staffId}` : `/admin/create-staffs`,
     headers: {
       Authorization: `Bearer ${accessToken}`,
       "Content-Type": "application/json",
@@ -67,3 +67,4 @@ export const updateUserStatus = async ({ accessToken, userId, status }) => {
     },
   });
 };
+

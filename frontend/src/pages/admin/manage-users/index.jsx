@@ -1,21 +1,9 @@
 import { getUsers, updateUserStatus } from "@/apis/admin-staff.api";
-import { UploadImage } from "@/components/UploadImage";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import { AdminLayout } from "@/layouts/AdminLayout";
-import { SearchOutlined, UserAddOutlined } from "@ant-design/icons";
+import { SearchOutlined } from "@ant-design/icons";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import {
-  Avatar,
-  Button,
-  Form,
-  Input,
-  InputNumber,
-  Modal,
-  Popconfirm,
-  Table,
-  Upload,
-} from "antd";
-import { useState } from "react";
+import { Avatar, Button, Input, Popconfirm, Table } from "antd";
 
 export default function AdminManageUsers() {
   const [accessToken] = useLocalStorage("access_token");

@@ -49,7 +49,7 @@ export default function AccountPage() {
             },
             withCredentials: true,
           });
-
+          console.log(data);
           // Update the Recoil state with the fetched user data
           setUser(data);
         }
@@ -59,7 +59,7 @@ export default function AccountPage() {
     };
 
     getProfile(); // Call the fetchData function
-  }, []);
+  }, [setUser]);
 
   const status =
     driver?.result?.status ||
@@ -224,7 +224,6 @@ export default function AccountPage() {
                   type="text"
                   className="flex items-center text-base font-semibold text-slate-950"
                   size="small"
-                  // value={user?.result?.driverLicenses?.drivingLicenseNo}
                   value={
                     driver?.result?.drivingLicenseNo ||
                     user?.result?.driverLicenses?.drivingLicenseNo
@@ -243,7 +242,6 @@ export default function AccountPage() {
                   type="text"
                   className="flex items-center text-base font-semibold text-slate-950"
                   size="small"
-                  // value={user?.result?.driverLicenses?.fullName}
                   value={
                     driver?.result?.fullName ||
                     user?.result?.driverLicenses?.fullName
@@ -262,21 +260,14 @@ export default function AccountPage() {
                   type="text"
                   className="flex items-center text-base font-semibold text-slate-950"
                   size="small"
-                  // value={
-                  //   user?.result?.driverLicenses?.dob
-                  //     ? moment(user?.result?.driverLicenses?.dob).format(
-                  //         "DD/MM/YYYY"
-                  //       )
-                  //     : user?.result?.driverLicenses?.dob
-                  // }
                   value={
                     driver?.result?.dob
-                      ? moment(driver?.result?.dob).format("DD/MM/YYYY")
-                      : driver?.result?.dob || user?.result?.driverLicenses?.dob
-                      ? moment(user?.result?.driverLicenses?.dob).format(
-                          "DD/MM/YYYY"
-                        )
+                      ? moment(driver?.result?.dob).format("DD-MM-YYYY")
                       : user?.result?.driverLicenses?.dob
+                      ? moment(user?.result?.driverLicenses?.dob).format(
+                          "DD-MM-YYYY"
+                        )
+                      : user?.result?.driverLicenses?.dob || ""
                   }
                 />
               </div>
@@ -305,31 +296,17 @@ export default function AccountPage() {
             </Title>
 
             <div className="flex flex-col justify-evenly h-full ">
-              {driver?.result?.image ? (
-                <Image
-                  className="w-full object-cover rounded-xl"
-                  src={driver?.result?.image}
-                  alt="Image"
-                  width={300}
-                  height={200}
-                />
-              ) : user?.result?.driverLicenses?.image ? (
-                <Image
-                  className="w-full object-cover rounded-xl"
-                  src={user?.result?.driverLicenses?.image}
-                  alt="Image"
-                  width={300}
-                  height={200}
-                />
-              ) : (
-                <Image
-                  className="w-full object-cover rounded-xl"
-                  src="https://res.cloudinary.com/djllhxlfc/image/upload/v1700240517/cars/default-thumbnail_ycj6n3.jpg"
-                  alt="Image"
-                  width={300}
-                  height={200}
-                />
-              )}
+              <Image
+                className="w-full object-cover rounded-xl"
+                src={
+                  driver?.result?.image ||
+                  user?.result?.driverLicenses?.image ||
+                  "https://res.cloudinary.com/djllhxlfc/image/upload/v1700240517/cars/default-thumbnail_ycj6n3.jpg"
+                }
+                alt="Image"
+                width={300}
+                height={200}
+              />
             </div>
           </div>
         </div>

@@ -72,7 +72,7 @@ export const UploadProfilePicture = () => {
         customRequest={({ file }) => updateProfile(file)}
       >
         <Spin spinning={loading}>
-          <div className="py-0 p-2 relative group flex  ">
+          <div className="py-0 p-2 relative group   ">
             {user?.result?.profilePicture ? (
               <Image
                 className="w-full h-full  object-cover aspect-square rounded overflow-hidden mt-0"

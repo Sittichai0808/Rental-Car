@@ -5,12 +5,18 @@ import { useUserState } from "@/recoils/user.state.js";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import axios from "axios";
-import { Button, Input, Form, Upload, notification, Modal } from "antd";
-import Image from "next/image";
+import {
+  Button,
+  Input,
+  Form,
+  Upload,
+  notification,
+  Modal,
+  InputNumber,
+} from "antd";
 import styled from "@emotion/styled";
-import { useRouter } from "next/router";
-import Link from "next/link";
 import { UploadOutlined, UserAddOutlined } from "@ant-design/icons";
+import moment from "moment";
 
 const StyleInput = styled(Input)`
   display: flex;
@@ -44,17 +50,31 @@ export default function RegisterDriverModal({
 
   const [accessToken, setAccessToken, clearAccessToken] =
     useLocalStorage("access_token");
+
   useEffect(() => {
     setDriver(profile);
   });
+
   const onSubmit = async (values) => {
     setLoading(true);
     const formData = new FormData();
-    formData.append("fullName", values.fullName);
-    formData.append("drivingLicenseNo", values.drivingLicenseNo);
-    formData.append("dob", values.dob);
-    formData.append("class", values.class);
-    formData.append("image", values.image.file.originFileObj);
+    formData.append(
+      "fullName",
+      values.fullName || user?.result?.driverLicenses?.fullName
+    );
+    formData.append(
+      "drivingLicenseNo",
+      values.drivingLicenseNo || user?.result?.driverLicenses?.drivingLicenseNo
+    );
+    formData.append("dob", values.dob || user?.result?.driverLicenses?.dob);
+    formData.append(
+      "class",
+      values.class || user?.result?.driverLicenses?.class
+    );
+    formData.append(
+      "image",
+      values.image?.file?.originFileObj || user?.result?.driverLicenses?.image
+    );
 
     try {
       const response = await axios.post(
@@ -75,8 +95,13 @@ export default function RegisterDriverModal({
         setDriver({ ...response.data });
         setProfile({ ...response.data });
         handleCancleRegisterDriver();
+        const successMessage =
+          driver || user?.result?.driverLicenses
+            ? "Cập nhật thành công"
+            : "Đăng kí thành công";
+
         notification.success({
-          message: "Đăng kí thành công",
+          message: successMessage,
         });
       } else {
         console.log(error.response.data.errors[0].msg);
@@ -89,7 +114,6 @@ export default function RegisterDriverModal({
       setLoading(false);
     }
   };
-
   const { mutate, isLoading } = useMutation(onSubmit, {
     onMutate: () => {
       setLoading(true);
@@ -110,14 +134,16 @@ export default function RegisterDriverModal({
           type="primary"
           onClick={() => mutate(form.getFieldsValue())}
         >
-          Đăng kí
+          {driver || user?.result?.driverLicenses ? "Cập nhật" : " Đăng kí"}
         </ButtonSummit>,
       ]}
     >
       <p className="flex justify-center items-center w-full text-2xl font-bold">
-        Đăng kí GPLX
+        {driver || user?.result?.driverLicenses
+          ? "Cập nhật GPLX"
+          : "Đăng kí GPLX"}
       </p>
-      <Form
+      {/* <Form
         form={form}
         layout="vertical"
         name="basic"
@@ -143,7 +169,13 @@ export default function RegisterDriverModal({
             },
           ]}
         >
-          <StyleInputModal type="text" size="large" />
+          <StyleInputModal
+            defaultValue={
+              driver?.result?.fullName || user?.result?.driverLicenses?.fullName
+            }
+            type="text"
+            size="large"
+          />
         </Form.Item>
         <Form.Item
           label="Số GPLX"
@@ -159,7 +191,13 @@ export default function RegisterDriverModal({
             },
           ]}
         >
-          <StyleInputModal size="large" />
+          <StyleInputModal
+            defaultValue={
+              driver?.result?.drivingLicenseNo ||
+              user?.result?.driverLicenses?.drivingLicenseNo
+            }
+            size="large"
+          />
         </Form.Item>
         <Form.Item
           label="Ngày sinh"
@@ -175,7 +213,16 @@ export default function RegisterDriverModal({
             },
           ]}
         >
-          <StyleInputModal size="large" />
+          <StyleInputModal
+            defaultValue={
+              driver?.result?.dob
+                ? moment(driver?.result?.dob).format("DD-MM-YYYY")
+                : user?.result?.driverLicenses?.dob
+                ? moment(user?.result?.driverLicenses?.dob).format("DD-MM-YYYY")
+                : user?.result?.driverLicenses?.dob || ""
+            }
+            size="large"
+          />
         </Form.Item>
         <Form.Item
           label="Hạng"
@@ -191,14 +238,96 @@ export default function RegisterDriverModal({
             },
           ]}
         >
-          <StyleInputModal size="large" />
+          <StyleInputModal
+            defaultValue={
+              driver?.result?.class || user?.result?.driverLicenses?.class
+            }
+            size="large"
+          />
         </Form.Item>
 
-        <Form.Item label="Hình ảnh" name="image">
+        <Form.Item
+          label="Hình ảnh"
+          name="image"
+          defaultValue={
+            driver?.result?.image || user?.result?.driverLicenses?.image
+          }
+        >
           <Upload.Dragger listType="picture-card" showUploadList={true}>
             <Button icon={<UploadOutlined />}>Click to upload</Button>
           </Upload.Dragger>
         </Form.Item>
+      </Form> */}
+      <Form
+        form={form}
+        layout="vertical"
+        name="basic"
+        onFinish={(values) => {
+          mutate(values);
+        }}
+        label
+        initialValues={{}}
+        autoComplete="off"
+        className="flex gap-4 mt-10"
+      >
+        <div className="w-2/3">
+          <Form.Item label="Họ và tên" name="fullName" required>
+            <Input
+              defaultValue={
+                driver?.result?.fullName ||
+                user?.result?.driverLicenses?.fullName
+              }
+            />
+          </Form.Item>
+          <Form.Item label="Số GPLX" name="drivingLicenseNo" required>
+            <InputNumber
+              defaultValue={
+                driver?.result?.drivingLicenseNo ||
+                user?.result?.driverLicenses?.drivingLicenseNo
+              }
+              className="w-full"
+            />
+          </Form.Item>
+
+          <Form.Item label="Ngày sinh" name="dob" required>
+            <Input
+              defaultValue={
+                driver?.result?.dob
+                  ? moment(driver?.result?.dob).format("DD-MM-YYYY")
+                  : user?.result?.driverLicenses?.dob
+                  ? moment(user?.result?.driverLicenses?.dob).format(
+                      "DD-MM-YYYY"
+                    )
+                  : user?.result?.driverLicenses?.dob || ""
+              }
+            />
+          </Form.Item>
+          <Form.Item label="Hạng" name="class" required>
+            <Input
+              defaultValue={
+                driver?.result?.class || user?.result?.driverLicenses?.class
+              }
+            />
+          </Form.Item>
+        </div>
+
+        <div className="grow">
+          <Form.Item
+            label="Hình ảnh"
+            name="image"
+            defaultValue={
+              driver?.result?.image || user?.result?.driverLicenses?.image
+            }
+          >
+            <Upload.Dragger
+              listType="picture-card"
+              className="aspect-square"
+              showUploadList={true}
+            >
+              <UserAddOutlined />
+            </Upload.Dragger>
+          </Form.Item>
+        </div>
       </Form>
     </Modal>
   );

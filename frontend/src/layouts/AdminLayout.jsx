@@ -1,16 +1,12 @@
-import React, { useState } from "react";
-import { Avatar, Layout, Menu, Dropdown, Space } from "antd";
+import { Avatar, Layout, Menu } from "antd";
 import {
   BellOutlined,
   UsergroupAddOutlined,
   CarOutlined,
   BookOutlined,
   ContactsOutlined,
-  UserOutlined,
   IdcardOutlined,
-  LogoutOutlined,
 } from "@ant-design/icons";
-
 import { GPLXIcon } from "@/icons";
 import { useRouter } from "next/router";
 import { useUserState } from "@/recoils/user.state";
@@ -18,7 +14,6 @@ import { useUserState } from "@/recoils/user.state";
 const { Sider, Header, Content } = Layout;
 
 export const AdminLayout = ({ children }) => {
-  const [user, setUser] = useUserState();
   const { pathname, push } = useRouter();
   const [user] = useUserState();
 
@@ -67,11 +62,6 @@ export const AdminLayout = ({ children }) => {
               label: "GPLX management",
               icon: <IdcardOutlined />,
             },
-            {
-              key: "profile-admin",
-              label: "Profile",
-              icon: <UserOutlined />,
-            },
           ]}
           onClick={(item) => push(`/admin/${item.key}`)}
         />
@@ -81,20 +71,7 @@ export const AdminLayout = ({ children }) => {
           <div className="text-2xl font-bold">Dashboard</div>
           <div className="flex gap-4 items-center">
             <BellOutlined className="text-xl" />
-            <Dropdown
-              className="cursor-pointer"
-              menu={{
-                items,
-              }}
-              placement="bottom"
-              trigger={["click"]}
-            >
-              <Space>
-                <Avatar src={user?.result?.profilePicture} />
-              </Space>
-            </Dropdown>
-
-            <span className="flex ">{user?.result?.username}</span>
+            <Avatar />
           </div>
         </Header>
         <Content className="p-4 bg-white">{children}</Content>

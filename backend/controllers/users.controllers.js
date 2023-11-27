@@ -21,7 +21,7 @@ export const loginController = async (req, res) => {
   return res.json({
     message: USER_MESSAGES.LOGIN_SUCCESS,
     access_token: result.access_token.toString(),
-    result: result.rest,
+    result: { ...result.rest, role: result.role },
     id: result._id.toString(),
     role: result.role
   })
@@ -34,7 +34,7 @@ export const googleController = async (req, res, next) => {
   return res.json({
     message: USER_MESSAGES.LOGIN_SUCCESS,
     access_token: result.access_token.toString(),
-    result: result.rest,
+    result: { ...result.rest, role: result.role },
     id: result._id.toString()
   })
 }

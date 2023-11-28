@@ -27,21 +27,20 @@ import {
   Table,
 } from "antd";
 import { useState } from "react";
+import useLocalStorage from "@/hooks/useLocalStorage";
 
 function UpsertCarForm({ carId, onOk }) {
   console.log({ carId });
   const [user] = useUserState();
+  const [accessToken] = useLocalStorage("access_token");
   const isInsert = !carId;
-
   const [form] = Form.useForm();
   const brandId = Form.useWatch(["brand"], form);
 
   const carDetail = useQuery({
-    queryFn: () => getCar(carId),
+    queryFn: () => getCar(carId, accessToken),
     queryKey: [GET_CAR_KEY, carId],
   });
-
-  console.log(carDetail.data?.result);
 
   const apiCreateCar = useMutation({
     mutationFn: createCar,
@@ -76,7 +75,6 @@ function UpsertCarForm({ carId, onOk }) {
     return <Skeleton active />;
   }
 
-  console.log(carDetail.data?.results);
   return (
     <Form
       form={form}
@@ -91,12 +89,16 @@ function UpsertCarForm({ carId, onOk }) {
         console.log(values, carId);
 
         if (isInsert) {
-          await apiCreateCar.mutateAsync({ ...values, user: user?._id });
+          await apiCreateCar.mutateAsync({
+            body: { ...values, user: user.id },
+            accessToken,
+          });
         } else {
           console.log({ values });
           await apiUpdateCar.mutateAsync({
             carId,
-            body: { ...values, user: user?._id },
+            body: { ...values, user: user.id },
+            accessToken,
           });
         }
 
@@ -164,7 +166,7 @@ export default function AdminManageCars() {
     queryKey: [GET_CARS_KEY],
   });
 
-  const dataSource = data?.result.map((item, idx) => ({
+  const dataSource = data?.result?.cars.map((item, idx) => ({
     id: idx + 1,
     _id: item?._id,
     thumb: item?.thumb,
@@ -186,11 +188,6 @@ export default function AdminManageCars() {
     <>
       <div className="pt-10 px-4">
         <div className="mb-4 flex justify-between items-center">
-          <div className="max-w-[30%] flex gap-2 items-center">
-            <Input prefix={<SearchOutlined />} />
-            <Button type="primary">Search</Button>
-          </div>
-
           <div>
             <Button onClick={handleInsertCar}>
               <PlusOutlined /> Add car

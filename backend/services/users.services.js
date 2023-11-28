@@ -29,7 +29,8 @@ class UsersService {
     try {
       const user = await newUser.save()
       const access_token = await this.signAccessToken(user_id.toString())
-      return { user, access_token }
+
+      return { user, access_token, user_id }
     } catch (error) {
       throw Error(error)
     }
@@ -86,7 +87,7 @@ class UsersService {
     const { user_id } = { ...payload }
 
     try {
-      const getUser = await User.findOne({ _id: user_id.toString() })
+      const getUser = await User.findOne({ _id: user_id.toString() }).populate('driverLicenses')
       return { getUser, user_id }
     } catch (error) {}
   }

@@ -8,6 +8,7 @@ import { Typography, Button, Input, Spin } from "antd";
 import { EditOutlined, QuestionCircleOutlined } from "@ant-design/icons";
 import Image from "next/image";
 import styled from "@emotion/styled";
+import { apiClient } from "@/apis/client";
 import { ProfileLayout } from "@/layouts/ProfileLayout";
 import EditProfileModal from "@/components/EditProfileModal";
 import RegisterDriverModal from "@/components/RegisterDriverModal";
@@ -20,26 +21,59 @@ const StyleInput = styled(Input)`
 `;
 
 export default function AccountPage() {
-  const [open, setOpen] = useState(false);
-  const showModal = () => setOpen(true);
-  const handleCancle = () => setOpen(false);
+  const [openEditModal, setOpenEditModal] = useState(false);
+  const showModalEdit = () => setOpenEditModal(true);
+  const handleCancleEditModal = () => setOpenEditModal(false);
 
-  const [open2, setOpen2] = useState(false);
-  const showModal2 = () => setOpen2(true);
-  const handleCancle2 = () => setOpen2(false);
+  const [openRegisterDriver, setOpenRegisterDriver] = useState(false);
+  const showModalRegister = () => setOpenRegisterDriver(true);
+  const handleCancleRegisterDriver = () => setOpenRegisterDriver(false);
 
   const [user, setUser] = useUserState();
   const [driver, setDriver] = useDriverState();
   const [profile, setProfile, clearProfile] = useLocalStorage("profile", "");
 
   const [loading, setLoading] = useState(false);
+  useEffect(() => {
+    const getProfile = async () => {
+      try {
+        const value = window.localStorage.getItem("access_token");
+
+        if (value !== null) {
+          const { data } = await apiClient.request({
+            method: "GET",
+            url: "/users/get-user",
+            headers: {
+              Authorization: `Bearer ${JSON.parse(value)}`,
+              "Content-Type": "application/json",
+            },
+            withCredentials: true,
+          });
+
+          // Update the Recoil state with the fetched user data
+          setUser(data);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    getProfile(); // Call the fetchData function
+  }, []);
+
+  const status =
+    driver?.result?.status ||
+    user?.result?.driverLicenses?.status ||
+    "Chưa xác thực";
+
+  const backgroundColor = status === "Chưa xác thực" ? "#ffd0cd" : "#cff1db";
 
   return (
-    <div className="flex flex-col  mt-5">
+    <div className="flex flex-col mt-5">
       <div className="flex flex-col  pl-10 pr-5  pb-6 ">
         <div className="flex flex-col mb-3  mt-3 ">
-          <div className="flex flex-row w-full    ">
-            <p className="m-0 text-lg font-semibold flex w-full "> Địa chỉ</p>
+          <div className="flex flex-row">
+            <p className="m-0 text-lg font-semibold flex w-full "> Địa chỉ </p>
             <p className="m-0 text-xl font-semibold text-gray-500 flex w-full">
               {user?.result?.address}
             </p>
@@ -47,15 +81,17 @@ export default function AccountPage() {
               className="items-center absolute right-5"
               style={{
                 border: "1px solid #e0e0e0",
-
                 borderRadius: "100%",
                 cursor: "pointer",
               }}
-              onClick={showModal}
+              onClick={showModalEdit}
             >
               <EditOutlined />
             </Button>
-            <EditProfileModal open={open} handleCancle={handleCancle} />
+            <EditProfileModal
+              openEditModal={openEditModal}
+              handleCancleEditModal={handleCancleEditModal}
+            />
           </div>
           <hr
             className="w-full"
@@ -136,26 +172,31 @@ export default function AccountPage() {
           <Title className="flex items-center font-semibold text-xl" level={3}>
             Giấy phép lái xe
             <p
-              className="rounded-lg   text-xs ml-1 "
+              className={`rounded-lg text-xs ml-1 ${
+                status === "Chưa xác thực" ? "text-red-500" : "text-green-500"
+              }`}
               style={{
-                background: "#ffd0cd",
-                color: "red",
+                background: backgroundColor,
+
                 borderRadius: "100px",
                 padding: "4px 6px",
               }}
             >
-              {driver?.result?.status || "Chưa xác thực"}
+              {status}
             </p>
           </Title>
           <div className="flex items-baseline ">
             <Button
               className="rounded-lg border-solid border-black font-bold text-xs"
-              onClick={showModal2}
+              onClick={showModalRegister}
             >
               Chỉnh sửa
               <EditOutlined />
             </Button>
-            <RegisterDriverModal open2={open2} handleCancle2={handleCancle2} />
+            <RegisterDriverModal
+              openRegisterDriver={openRegisterDriver}
+              handleCancleRegisterDriver={handleCancleRegisterDriver}
+            />
           </div>
         </div>
         <div className="flex items-center ">
@@ -182,7 +223,11 @@ export default function AccountPage() {
                   type="text"
                   className="flex items-center text-base font-semibold text-slate-950"
                   size="small"
-                  value={driver?.result?.drivingLicenseNo}
+                  // value={user?.result?.driverLicenses?.drivingLicenseNo}
+                  value={
+                    driver?.result?.drivingLicenseNo ||
+                    user?.result?.driverLicenses?.drivingLicenseNo
+                  }
                 />
               </div>
               <div className="flex flex-col  justify-between">
@@ -197,7 +242,11 @@ export default function AccountPage() {
                   type="text"
                   className="flex items-center text-base font-semibold text-slate-950"
                   size="small"
-                  value={driver?.result?.fullName}
+                  // value={user?.result?.driverLicenses?.fullName}
+                  value={
+                    driver?.result?.fullName ||
+                    user?.result?.driverLicenses?.fullName
+                  }
                 />
               </div>
               <div className="flex flex-col justify-between">
@@ -212,10 +261,21 @@ export default function AccountPage() {
                   type="text"
                   className="flex items-center text-base font-semibold text-slate-950"
                   size="small"
+                  // value={
+                  //   user?.result?.driverLicenses?.dob
+                  //     ? moment(user?.result?.driverLicenses?.dob).format(
+                  //         "DD/MM/YYYY"
+                  //       )
+                  //     : user?.result?.driverLicenses?.dob
+                  // }
                   value={
                     driver?.result?.dob
                       ? moment(driver?.result?.dob).format("DD/MM/YYYY")
-                      : driver?.result?.dob
+                      : driver?.result?.dob || user?.result?.driverLicenses?.dob
+                      ? moment(user?.result?.driverLicenses?.dob).format(
+                          "DD/MM/YYYY"
+                        )
+                      : user?.result?.driverLicenses?.dob
                   }
                 />
               </div>
@@ -231,7 +291,9 @@ export default function AccountPage() {
                   type="text"
                   className="flex items-center text-base font-semibold text-slate-950"
                   size="small"
-                  value={driver?.result?.class}
+                  value={
+                    driver?.result?.class || user?.result?.driverLicenses?.class
+                  }
                 />
               </div>
             </div>
@@ -250,10 +312,19 @@ export default function AccountPage() {
                   width={300}
                   height={200}
                 />
+              ) : user?.result?.driverLicenses?.image ? (
+                <Image
+                  className="w-full object-cover rounded-xl"
+                  src={user?.result?.driverLicenses?.image}
+                  alt="Image"
+                  width={300}
+                  height={200}
+                />
               ) : (
                 <Image
-                  className="w-full object-cover rounded-xl "
+                  className="w-full object-cover rounded-xl"
                   src="https://res.cloudinary.com/djllhxlfc/image/upload/v1700240517/cars/default-thumbnail_ycj6n3.jpg"
+                  alt="Image"
                   width={300}
                   height={200}
                 />
@@ -265,5 +336,4 @@ export default function AccountPage() {
     </div>
   );
 }
-
 AccountPage.Layout = ProfileLayout;

@@ -35,7 +35,7 @@ class CarsService {
     try {
       // Filtering
       const queryObj = { ...payload }
-      const { sort, fields, page, limit } = payload
+      const { sort, fields, page = 1, limit = 4 } = payload
       const excludeFields = ['page', 'sort', 'limit', 'fields']
       excludeFields.forEach((el) => delete queryObj[el])
       let queryStr = JSON.stringify(queryObj)
@@ -70,8 +70,13 @@ class CarsService {
         const carCount = await Cars.countDocuments()
         if (skip >= carCount) throw new Error('This Page does not exist')
       }
-      const cars = await getListCars
-      return cars
+      const totalCars = await Cars.countDocuments()
+      const totalPages = Math.ceil(totalCars / limit)
+      const currentPage = page ? parseInt(page) : 1;
+      const result = {
+        cars: await getListCars, totalPages, currentPage
+      }
+      return result
     } catch (error) {
       console.log(error)
     }
@@ -91,7 +96,7 @@ class CarsService {
 
       const ratings = await Ratings.find({ carId: carId })
       const totalStars = ratings.reduce((total, rating) => total + rating.star, 0)
-      const newTotalRatings = ratings.length > 0 ? totalStars / ratings.length : 0
+      const newTotalRatings = (ratings.length > 0 ? totalStars / ratings.length : 0).toFixed(1)
 
       // Cập nhật totalRatings của Car
       await Cars.updateOne({ _id: carId }, { totalRatings: newTotalRatings })
@@ -127,12 +132,18 @@ class CarsService {
     }
   }
 
-  async getRatingsOfCar(carId) {
+  async getRatingsOfCar(carId, page = 1, limit = 4) {
     try {
-      const getRatingsOfCar = await Ratings.find({ carId: carId }).populate('postBy', 'username profilePicture')
-      return getRatingsOfCar
+      const skip = (page - 1) * limit;
+      const getRatingsOfCar = await Ratings.find({ carId: carId }).populate('postBy', 'username profilePicture').skip(skip).limit(limit);
+
+      const totalReviews = await Ratings.countDocuments({ carId: carId });
+
+      const totalPages = Math.ceil(totalReviews / limit);
+
+      return { getRatingsOfCar, totalPages, page }
     } catch (error) {
-      throw Error(error)
+      throw Error(error);
     }
   }
 

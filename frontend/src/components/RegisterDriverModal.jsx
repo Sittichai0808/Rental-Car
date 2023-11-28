@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import { useDriverState } from "@/recoils/driver.state.js";
+import { useUserState } from "@/recoils/user.state.js";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import axios from "axios";
@@ -31,17 +32,21 @@ const ButtonSummit = styled(Button)`
   padding: 30px auto;
 `;
 
-export default function RegisterDriverModal({ open2, handleCancle2 }) {
+export default function RegisterDriverModal({
+  openRegisterDriver,
+  handleCancleRegisterDriver,
+}) {
   const [form] = Form.useForm();
+  const [user, setUser] = useUserState();
   const [loading, setLoading] = useState(false);
   const [profile, setProfile, clearProfile] = useLocalStorage("profile", "");
   const [driver, setDriver] = useDriverState();
+
+  const [accessToken, setAccessToken, clearAccessToken] =
+    useLocalStorage("access_token");
   useEffect(() => {
     setDriver(profile);
   });
-  const [accessToken, setAccessToken, clearAccessToken] =
-    useLocalStorage("access_token");
-
   const onSubmit = async (values) => {
     setLoading(true);
     const formData = new FormData();
@@ -67,10 +72,9 @@ export default function RegisterDriverModal({ open2, handleCancle2 }) {
 
       if (response.status === 200) {
         console.log(response.data);
-
         setDriver({ ...response.data });
         setProfile({ ...response.data });
-        handleCancle2();
+        handleCancleRegisterDriver();
         notification.success({
           message: "Đăng kí thành công",
         });
@@ -97,8 +101,8 @@ export default function RegisterDriverModal({ open2, handleCancle2 }) {
 
   return (
     <Modal
-      open={open2}
-      onCancel={handleCancle2}
+      open={openRegisterDriver}
+      onCancel={handleCancleRegisterDriver}
       footer={[
         <ButtonSummit
           loading={isLoading}

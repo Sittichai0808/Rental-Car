@@ -63,6 +63,23 @@ export const getHistoryBooking = async (req, res) => {
   }
 }
 
+export const getDetailBooking = async (req, res) => {
+  try {
+    const { bookingId } = req.params
+    const result = await bookingService.getDetailBooking(bookingId)
+    if (!result) {
+      return res.status(HTTP_STATUS.NOT_FOUND).json({ error: "Booking not found" })
+    } else {
+      return res.status(HTTP_STATUS.OK).json({
+        message: "Get detail history successfully",
+        result
+      })
+    }
+  } catch (error) {
+    return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ error: error.message })
+  }
+}
+
 export const getBookedTimeSlots = async (req, res) => {
   try {
     const { carId } = req.params

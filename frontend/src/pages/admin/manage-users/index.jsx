@@ -1,67 +1,26 @@
+import { getUsers, updateUserStatus } from "@/apis/admin-staff.api";
+import useLocalStorage from "@/hooks/useLocalStorage";
 import { AdminLayout } from "@/layouts/AdminLayout";
-import { SearchOutlined, UserAddOutlined } from "@ant-design/icons";
-import { Avatar, Button, Form, Input, InputNumber, Modal, Popconfirm, Table, Upload } from "antd";
-import { useState } from "react";
-
-function UpsertUserForm({ userId }) {
-  const isInsert = !userId;
-
-  return (
-    <>
-      <Form layout="vertical" className="flex gap-4 mt-10">
-        <div className="w-2/3">
-          <Form.Item label="Name" required>
-            <Input />
-          </Form.Item>
-          <Form.Item label="Email" required>
-            <Input />
-          </Form.Item>
-          <Form.Item label="Phone Number" required>
-            <InputNumber className="w-full" />
-          </Form.Item>
-          <Form.Item label="Address" required>
-            <Input.TextArea rows={3} />
-          </Form.Item>
-        </div>
-
-        <div className="grow">
-          <Form.Item label="Avatar">
-            <Upload.Dragger listType="picture-card" className="aspect-square">
-              <UserAddOutlined />
-            </Upload.Dragger>
-          </Form.Item>
-        </div>
-      </Form>
-
-      <div className="flex justify-end mt-10">
-        <Button type="primary">{isInsert ? "Add" : "Update"}</Button>
-      </div>
-    </>
-  );
-}
+import { SearchOutlined } from "@ant-design/icons";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { Avatar, Button, Input, Popconfirm, Table } from "antd";
 
 export default function AdminManageUsers() {
-  const [upsertUserModal, setUpsertUserModal] = useState();
+  const [accessToken] = useLocalStorage("access_token");
 
-  const handleInsertUser = () => {
-    setUpsertUserModal({ actionType: "insert" });
-  };
+  const { data: users, refetch } = useQuery({
+    queryFn: () => getUsers({ accessToken }),
+  });
+
+  const apiUpdateStatus = useMutation({
+    mutationFn: updateUserStatus,
+    onSuccess: refetch,
+  });
 
   return (
     <>
       <div className="pt-10">
-        <div className="mb-4 flex justify-between items-center">
-          <div className="max-w-[30%] flex gap-2 items-center">
-            <Input prefix={<SearchOutlined />} />
-            <Button type="primary">Search</Button>
-          </div>
-
-          <div>
-            <Button onClick={handleInsertUser}>
-              <UserAddOutlined /> Add user
-            </Button>
-          </div>
-        </div>
+        <div className="mb-4 flex justify-between items-center"></div>
         <Table
           columns={[
             { key: "id", title: "ID", dataIndex: "id" },
@@ -71,7 +30,7 @@ export default function AdminManageUsers() {
               dataIndex: "profilePicture",
               render: (url) => <Avatar src={url} />,
             },
-            { key: "name", title: "Name", dataIndex: "name" },
+            { key: "name", title: "Name", dataIndex: "fullname" },
             { key: "email", title: "Email", dataIndex: "email" },
             { key: "phoneNumber", title: "Phone", dataIndex: "phoneNumber" },
             { key: "role", title: "Role", dataIndex: "role" },
@@ -81,45 +40,49 @@ export default function AdminManageUsers() {
               title: "Action",
               render: (_, user) => (
                 <div className="flex gap-2">
-                  <Button
-                    className="bg-blue-500 text-white border-none hover:bg-blue-500/70"
-                    onClick={() => setUpsertUserModal({ actionType: "update", userId: user.id })}
-                  >
-                    Update
-                  </Button>
-                  <Popconfirm title="Are you sure to block this user?" okText="Block">
-                    <Button className="bg-red-500 text-white border-none hover:bg-red-500/70">Block</Button>
-                  </Popconfirm>
+                  {user?.status === "Hoạt động" && (
+                    <Popconfirm
+                      title="Are you sure to block this user?"
+                      okText="Block"
+                      onConfirm={() => {
+                        apiUpdateStatus.mutateAsync({
+                          accessToken,
+                          userId: user._id,
+                          status: "Không hoạt động",
+                        });
+                      }}
+                    >
+                      <Button className="bg-red-500 text-white border-none hover:bg-red-500/70">
+                        Block
+                      </Button>
+                    </Popconfirm>
+                  )}
+
+                  {user?.status === "Không hoạt động" && (
+                    <Popconfirm
+                      title="Are you sure active this user?"
+                      okText="Active"
+                      onConfirm={() => {
+                        apiUpdateStatus.mutateAsync({
+                          accessToken,
+                          userId: user._id,
+                          status: "Hoạt động",
+                        });
+                      }}
+                    >
+                      <Button className="bg-green-500 text-white border-none hover:bg-green-500/70">
+                        Unblock
+                      </Button>
+                    </Popconfirm>
+                  )}
                 </div>
               ),
             },
           ]}
-          dataSource={[
-            {
-              id: 1,
-              profilePicture:
-                "https://img.freepik.com/premium-vector/man-avatar-profile-picture-vector-illustration_268834-538.jpg",
-              name: "Luong Cong Truong",
-              email: "test@gmail.com",
-              phoneNumber: "0982738236",
-              role: "user",
-              address: "Ngu Hanh Son, Da Nang",
-            },
-          ]}
+          dataSource={users}
           rowKey="id"
         />
       </div>
-
-      <Modal
-        open={upsertUserModal}
-        title={upsertUserModal?.actionType === "insert" ? "Add new user" : "Update user"}
-        width={800}
-        destroyOnClose
-        footer={null}
-        onCancel={() => setUpsertUserModal(undefined)}
-      >
-        <UpsertUserForm userId={upsertUserModal?.userId} />
-      </Modal>
     </>
   );
 }

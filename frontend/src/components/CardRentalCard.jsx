@@ -1,5 +1,5 @@
 import React from "react";
-import { Button } from "antd";
+import { Button, Tag } from "antd";
 import Image from "next/image";
 import Link from "next/link";
 import { formatCurrency } from "@/utils/number.utils";
@@ -35,14 +35,34 @@ export const CarRentalCard = ({ info, accessToken }) => {
         </div>
 
         <div className="flex flex-col w-3/4 ml-5 justify-around">
-          <div>
+          <div className="flex justify-between">
             <h5 className="text-xl line-clamp-1 font-bold ml-2 mt-0 m-0">
               {info?.carId.model.name} {info?.carId.yearManufacture}
             </h5>
-            <h2 className="line-clamp-1 text-red-500 font-bold ml-2 m-0">
-              {formatCurrency(info?.totalCost)}
-            </h2>
+            <div>
+              {info?.contract?.status === "Đã tất toán" ? (
+                <Tag className="rounded-full text-base" color="green">
+                  Đã hoàn thành
+                </Tag>
+              ) : info?.contract?.status === "Đang thực hiện" ? (
+                <Tag className="rounded-full text-base" color="green">
+                  Đang thuê
+                </Tag>
+              ) : info?.contract?.status === "Đã hủy" ||
+                info?.status === "Đã hủy" ? (
+                <Tag className="rounded-full text-base" color="red">
+                  Đã hủy
+                </Tag>
+              ) : (
+                <Tag className="rounded-full text-base" color="yellow">
+                  Đang chờ
+                </Tag>
+              )}
+            </div>
           </div>
+          <h2 className="line-clamp-1 text-red-500 font-bold ml-2 m-0">
+            {formatCurrency(info?.totalCost)}
+          </h2>
           <div className="flex justify-between items-center">
             <div className="">
               <span className="line-clamp-1 font-normal ml-2">
@@ -53,19 +73,21 @@ export const CarRentalCard = ({ info, accessToken }) => {
               </span>
             </div>
             <div className="flex gap-4">
-              <Link href={`/profile/car-rental-detail`}>
+              <Link href={`/profile/detail-booking/${info?._id}`}>
                 <Button className="" type="primary ">
                   Chi tiết
                 </Button>
               </Link>
               <div>
-                <Button
-                  className=" bg-red-600 text-gray-50"
-                  danger
-                  onClick={() => showModal(info._id, info.carId._id)}
-                >
-                  Đánh giá
-                </Button>
+                {info?.contract?.status === "Đã tất toán" && (
+                  <Button
+                    className=" bg-red-600 text-gray-50"
+                    danger
+                    onClick={() => showModal(info._id, info.carId._id)}
+                  >
+                    Đánh giá
+                  </Button>
+                )}
                 <RatingModal
                   open={open}
                   handleCancel={handleCancel}

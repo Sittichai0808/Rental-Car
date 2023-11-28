@@ -1,9 +1,7 @@
-import useLocalStorage from "@/hooks/useLocalStorage";
-import { UserFilledIcon } from "@/icons";
 import styled from "@emotion/styled";
-import { Divider, Layout, Menu } from "antd";
+import { UserFilledIcon } from "@/icons";
+import { Divider, Layout, Menu, Avatar } from "antd";
 import { useUserState } from "@/recoils/user.state.js";
-import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import logo from "../../public/logo.png";
@@ -62,7 +60,11 @@ export default function HeaderComponent() {
         <Link href={`/profile`}>
           <div className="flex items-center gap-2 shrink-0">
             <div className="flex bg-neutral-200 rounded-full p-1 cursor-pointer">
-              <UserFilledIcon className="text-neutral-500" />
+              {user?.result?.profilePicture ? (
+                <Avatar src={user?.result?.profilePicture} />
+              ) : (
+                <UserFilledIcon className="text-neutral-500" />
+              )}
             </div>
             <span>{user?.result?.username}</span>
           </div>

@@ -1,20 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import { useUserState } from "@/recoils/user.state.js";
 import { useDriverState } from "@/recoils/driver.state.js";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import axios from "axios";
-import { Button, Input, Form, Upload, notification, Modal } from "antd";
+import { Button, Input, Form, notification, Modal } from "antd";
 import styled from "@emotion/styled";
-import { useRouter } from "next/router";
-
-const StyleInput = styled(Input)`
-  display: flex;
-  align-items: center;
-  padding: 12px;
-  width: 100%;
-`;
 
 const StyleInputModal = styled(Input)`
   border-color: #949494;

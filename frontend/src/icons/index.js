@@ -21,3 +21,5 @@ export { default as UsbIcon } from "./usb.svg";
 export { default as UserFilledIcon } from "./user-filled.svg";
 export { default as CouponIcon } from "./coupon.svg";
 export { default as SaleIcon } from "./sale.svg";
+export { default as ContractIcon } from "./contract.svg";
+export { default as FinalContractIcon } from "./final-contract.svg";

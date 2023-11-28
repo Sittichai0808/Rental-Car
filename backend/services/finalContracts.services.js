@@ -8,7 +8,8 @@ class FinalContractsService {
     try {
       const { file, cost_settlement, timeFinish, note } = payload
       // Parse the input date using the 'DD-MM-YYYY' format and set the timezone to Asia/Ho_Chi_Minh (ICT)
-      const formattedTimeFinish = moment.tz(timeFinish, 'YYYY-MM-DD', 'Asia/Ho_Chi_Minh').toDate()
+      const formattedTimeFinish = moment.tz(timeFinish.concat(' 5:30'), 'YYYY-MM-DD HH:mm').toDate()
+      console.log(formattedTimeFinish)
       const newFinalContract = new FinalContracts({
         contractId: contractId,
         timeFinish: formattedTimeFinish,
@@ -16,13 +17,25 @@ class FinalContractsService {
       })
 
       const finalContractResult = await newFinalContract.save()
-      const getFinalContract = await FinalContracts.find({ _id: finalContractResult._id }).populate({
-        path: 'contractId',
-        populate: {
-          path: 'bookingId',
-          model: 'Bookings'
-        }
-      })
+      const getFinalContract = await FinalContracts.find({ _id: finalContractResult._id })
+        .populate({
+          path: 'contractId',
+          populate: {
+            path: 'createBy',
+            model: 'User'
+          }
+        })
+        .populate({
+          path: 'contractId',
+          populate: {
+            path: 'bookingId',
+            model: 'Bookings',
+            populate: {
+              path: 'bookBy',
+              model: 'User'
+            }
+          }
+        })
 
       await BookedTimeSlots.findOneAndUpdate(
         { bookingId: getFinalContract[0].contractId.bookingId._id },
@@ -40,55 +53,62 @@ class FinalContractsService {
     }
   }
 
-  async createBooking(user_id, carId, payload) {
+  async getFinalContractById(createBy) {
     try {
-      const { timeBookingStart, timeBookingEnd } = payload
+      const getListBooking = await FinalContracts.find({})
+        .populate({
+          path: 'contractId',
+          populate: {
+            path: 'createBy',
+            match: { _id: createBy },
+            model: 'User'
+          }
+        })
+        .populate({
+          path: 'contractId',
+          populate: {
+            path: 'bookingId',
+            model: 'Bookings',
+            populate: {
+              path: 'bookBy',
+              model: 'User'
+            }
+          }
+        })
 
-      const format = 'DD-MM-YYYY HH:mm'
-      const bookingStart = moment(timeBookingStart, format)
-      const bookingEnd = moment(timeBookingEnd, format)
-
-      const newBooking = new Bookings({
-        bookBy: user_id,
-        carId: carId,
-        timeBookingStart: bookingStart,
-        timeBookingEnd: bookingEnd,
-        ...payload
-      })
-
-      const bookingResult = await newBooking.save()
-
-      const newBookedTimeSlot = new BookedTimeSlots({
-        bookingId: bookingResult._id, // Lấy ID của đặt chỗ vừa tạo
-        from: bookingStart,
-        to: bookingEnd,
-        carId: carId
-      })
-
-      await newBookedTimeSlot.save()
-      return { bookingResult, newBookedTimeSlot }
+      return getListBooking
     } catch (error) {
       throw error
     }
   }
 
-  // async getContractById(createBy) {
-  //   try {
-  //     const getContract = await Contracts.find({ createBy: createBy })
-  //       .populate('createBy')
-  //       .populate({
-  //         path: 'bookingId',
-  //         populate: {
-  //           path: 'bookBy',
-  //           model: 'User'
-  //         }
-  //       })
-  //       .sort({ createdAt: -1 })
-  //     return getContract
-  //   } catch (error) {
-  //     throw error
-  //   }
-  // }
+  async getListFinalContracts() {
+    try {
+      const getListBooking = await FinalContracts.find({})
+        .populate({
+          path: 'contractId',
+          populate: {
+            path: 'createBy',
+            model: 'User'
+          }
+        })
+        .populate({
+          path: 'contractId',
+          populate: {
+            path: 'bookingId',
+            model: 'Bookings',
+            populate: {
+              path: 'bookBy',
+              model: 'User'
+            }
+          }
+        })
+
+      return getListBooking
+    } catch (error) {
+      throw error
+    }
+  }
 }
 
 const finalContractsService = new FinalContractsService()

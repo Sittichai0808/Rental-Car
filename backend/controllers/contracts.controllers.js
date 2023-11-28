@@ -34,3 +34,19 @@ export const getContractById = async (req, res, next) => {
     })
   }
 }
+
+export const getListContracts = async (req, res) => {
+  try {
+    const result = await contractsService.getListContract()
+    if (!result) {
+      return res.status(HTTP_STATUS.NOT_FOUND).json({ error: 'Contract not found' })
+    } else {
+      return res.status(HTTP_STATUS.OK).json({
+        message: 'Get list contract successfully',
+        result
+      })
+    }
+  } catch (error) {
+    return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ error: 'Something went wrong' })
+  }
+}

@@ -38,8 +38,8 @@ class BookingServices {
 
       const newBookedTimeSlot = new BookedTimeSlots({
         bookingId: bookingResult._id, // Lấy ID của đặt chỗ vừa tạo
-        from: bookingStart,
-        to: bookingEnd,
+        from: bookingResult.timeBookingStart,
+        to: bookingResult.timeBookingEnd,
         carId: carId
       })
 
@@ -98,7 +98,7 @@ class BookingServices {
           }
         })
         .populate('contract')
-        .sort({ createdAt: -1 })
+        .sort({ status: 1 })
       return getHistoryBooking
     } catch (error) {
       throw error
@@ -122,7 +122,7 @@ class BookingServices {
           // model: 'numberCar numberSeat yearManufacture'
         })
         .populate('contract')
-        .sort({ createdAt: -1 })
+        .sort({ status: 1, timeBookingStart: 1 })
       return getListBooking
     } catch (error) {
       throw error

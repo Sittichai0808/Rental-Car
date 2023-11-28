@@ -11,10 +11,8 @@ function OAuthGoogle() {
   const router = useRouter();
   const [user, setUser] = useUserState();
 
-  const [accessToken, setAccessToken, clearAccessToken] = useLocalStorage(
-    "access_token",
-    ""
-  );
+  const [accessToken, setAccessToken, clearAccessToken] =
+    useLocalStorage("access_token");
   const handleGoogleAuthClick = async () => {
     try {
       const provider = new GoogleAuthProvider();
@@ -34,6 +32,7 @@ function OAuthGoogle() {
           headers: { "Content-Type": "application/json" },
         }
       );
+      console.log(res);
       if (res.status === 200) {
         setUser({ ...res.data });
 

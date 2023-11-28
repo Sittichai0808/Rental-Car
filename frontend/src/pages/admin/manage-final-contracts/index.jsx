@@ -45,9 +45,13 @@ import {
   Space,
   Tooltip,
   DatePicker,
+  Card,
 } from "antd";
 import { useEffect, useState, useRef } from "react";
-import { getContracts, getListContracts } from "@/apis/admin-contracts.api.js";
+import {
+  getContracts,
+  getListFinalContracts,
+} from "@/apis/admin-final-contracts.api.js";
 import { Worker } from "@react-pdf-viewer/core";
 // Import the main component
 import { Viewer } from "@react-pdf-viewer/core";
@@ -62,6 +66,7 @@ import {
   GET_FINAL_CONTRACTS_KEY,
   GET_LIST_CONTRACTS_KEY,
 } from "@/constants/react-query-key.constant";
+import { getFinalContracts } from "@/apis/admin-final-contracts.api.js";
 // Import styles
 import "@react-pdf-viewer/default-layout/lib/styles/index.css";
 import Docxtemplater from "docxtemplater";
@@ -376,9 +381,9 @@ export default function AdminManageContracts() {
   };
 
   const { data } = useQuery({
-    queryKey: [GET_LIST_CONTRACTS_KEY, accessToken, user?.result?.role],
+    queryKey: [GET_FINAL_CONTRACTS_KEY, accessToken, user?.result?.role],
     queryFn: async () =>
-      await getListContracts(accessToken, user?.result?.role),
+      await getFinalContracts(accessToken, user?.result?.role),
   });
 
   console.log(data?.result);
@@ -386,28 +391,26 @@ export default function AdminManageContracts() {
   const dataSource = data?.result.map((item, idx) => ({
     id: idx + 1,
     _id: item?._id,
-    bookingId: item?.bookingId?._id,
+    bookingId: item?.contractId.bookingId?._id,
     image: item?.images,
-    createBy: item?.createBy?.username,
-    bookBy: item?.bookingId?.bookBy?.username,
-    email: item?.bookingId?.bookBy?.email,
-    phone: item?.bookingId?.phone,
-    address: item?.bookingId?.address,
+    createBy: item?.contractId.createBy?.username,
+    bookBy: item?.contractId.bookingId?.bookBy?.username,
+    email: item?.contractId.bookingId?.bookBy?.email,
+    phone: item?.contractId.bookingId?.phone,
+    address: item?.contractId.bookingId?.address,
 
-    numberCar: item?.bookingId?.carId?.numberCar,
-    model: item?.bookingId?.carId?.model?.name,
+    numberCar: item?.contractId.bookingId?.carId?.numberCar,
+    model: item?.contractId.bookingId?.carId?.model?.name,
 
-    numberSeat: item?.bookingId?.carId?.numberSeat,
-    yearManufacture: item?.bookingId?.carId?.yearManufacture,
+    numberSeat: item?.contractId.bookingId?.carId?.numberSeat,
+    yearManufacture: item?.contractId.bookingId?.carId?.yearManufacture,
 
-    timeBookingStart: moment(item?.bookingId?.timeBookingStart).format(
-      "DD-MM-YYYY HH:mm"
-    ),
-    timeBookingEnd: moment(item?.bookingId?.timeBookingEnd).format(
-      "DD-MM-YYYY HH:mm"
-    ),
-    totalCost: formatCurrency(item?.bookingId?.totalCost),
-    file: item?.file,
+    timeBookingStart: moment(
+      item?.contractId.bookingId?.timeBookingStart
+    ).format("DD-MM-YYYY"),
+    timeBookingEnd: moment(item?.timeFinish).format("DD-MM-YYYY"),
+    totalCost: item?.cost_settlement,
+
     status: item?.status,
   }));
 
@@ -482,7 +485,7 @@ export default function AdminManageContracts() {
             },
             {
               key: "totalCost",
-              title: "Tổng Số Tiền",
+              title: "Số tiền kết toán",
               dataIndex: "totalCost",
             },
             {
@@ -511,159 +514,6 @@ export default function AdminManageContracts() {
             //     </div>
             //   ),
             //  },
-
-            {
-              key: "status",
-              title: "Trạng Thái",
-              dataIndex: "status",
-              width: "8%",
-              filters: [
-                {
-                  text: "Đang thực hiện",
-                  value: "Đang thực hiện",
-                },
-                {
-                  text: "Đã tất toán",
-                  value: "Đã tất toán",
-                },
-              ],
-
-              onFilter: (value, record) => record.status.includes(value),
-
-              fixed: "right",
-              render: (status) => (
-                <>
-                  {status === "Đang thực hiện" ? (
-                    <>
-                      <p className="text-blue-500 flex justify-center">
-                        <MinusCircleOutlined
-                          style={{
-                            color: "blue",
-                            fontSize: "12px",
-                            marginRight: "5px",
-                          }}
-                        />
-                        Đang Thực Hiện
-                      </p>
-                    </>
-                  ) : status === "Đã tất toán" ? (
-                    <>
-                      <p className="text-green-600 flex justify-center">
-                        <CheckCircleOutlined
-                          style={{
-                            color: "green",
-                            fontSize: "12px",
-                            marginRight: "5px",
-                          }}
-                        />
-                        Đã Tất Toán
-                      </p>
-                    </>
-                  ) : (
-                    <>
-                      <p className="text-red-500 flex justify-center">
-                        <ExclamationCircleOutlined
-                          style={{
-                            color: "red",
-                            fontSize: "12px",
-                            marginRight: "5px",
-                          }}
-                        />
-                        Đã Hủy
-                      </p>
-                    </>
-                  )}
-                </>
-              ),
-            },
-
-            {
-              key: "action",
-              title: "Action",
-              fixed: "right",
-              width: "8%",
-              render: (_, contract) => (
-                <div className="flex gap-2">
-                  {contract.status === "Đã tất toán" ? (
-                    <Button
-                      type="primary"
-                      className=" border border-solid  "
-                      onClick={() => showModal(contract)}
-                      disabled
-                    >
-                      <PlusCircleOutlined style={{ fontSize: "14px" }} />
-                    </Button>
-                  ) : (
-                    <Tooltip
-                      placement="topLeft"
-                      title={"Tạo hợp đồng"}
-                      color={"rgb(74 222 128)"}
-                    >
-                      <Button
-                        type="primary"
-                        className=" border border-solid border-green-400 "
-                        onClick={() => showModal(contract)}
-                      >
-                        <PlusCircleOutlined style={{ fontSize: "14px" }} />
-                      </Button>
-                    </Tooltip>
-                  )}
-
-                  <Tooltip
-                    placement="top"
-                    title={"Tải file để tạo hợp đồng"}
-                    color="cyan"
-                  >
-                    <Button
-                      className=" border border-solid border-green-400 bg-cyan-400"
-                      onClick={() => generateDocument(contract)}
-                    >
-                      <DownloadOutlined style={{ fontSize: "14px" }} />
-                    </Button>
-                  </Tooltip>
-
-                  <Tooltip
-                    placement="topRight"
-                    title={"Vô hiệu hóa thuê xê"}
-                    color={"red"}
-                  >
-                    <Popconfirm
-                      title="Are you sure to deactivate this booking?"
-                      okText="Deactivate"
-                    >
-                      <Button className="bg-red-500 text-white border-none hover:bg-red-500/70">
-                        <DeleteOutlined style={{ fontSize: "14px" }} />
-                      </Button>
-                    </Popconfirm>
-                  </Tooltip>
-                </div>
-
-                // <div className="flex gap-2">
-                //   <Button
-                //     type="primary"
-                //     className=" border border-solid border-green-400 "
-                //     onClick={() => showModalView(contract)}
-                //   >
-                //     <EyeOutlined style={{ fontSize: "14px" }} />
-                //   </Button>
-                //   <Button
-                //     type="primary"
-                //     className=" border border-solid border-green-400 "
-                //     onClick={() => showModal(contract)}
-                //   >
-                //     <PlusCircleOutlined style={{ fontSize: "14px" }} />
-                //   </Button>
-                //   <Popconfirm
-                //     title="Are you sure to deactivate this car?"
-                //     okText="Deactivate"
-                //   >
-                //     <Button className="bg-red-500 text-white border-none hover:bg-red-500/70">
-                //       <DeleteOutlined style={{ fontSize: "14px" }} />
-                //     </Button>
-                //   </Popconfirm>
-                // </div>
-              ),
-            },
           ]}
           dataSource={dataSource}
           rowKey="id"

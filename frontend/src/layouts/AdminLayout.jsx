@@ -7,6 +7,7 @@ import {
   ContactsOutlined,
   IdcardOutlined,
 } from "@ant-design/icons";
+import { ContractIcon, FinalContractIcon } from "@/icons";
 import { GPLXIcon } from "@/icons";
 import { useRouter } from "next/router";
 
@@ -19,7 +20,7 @@ export const AdminLayout = ({ children }) => {
 
   return (
     <Layout hasSider className="h-screen">
-      <Sider theme="light" className="border-r shadow bg-white p-6" width={300}>
+      <Sider theme="light" className="border-r shadow bg-white p-6" width={310}>
         <div className="w-full bg-green-100 h-32 flex justify-center items-center mb-10">
           LOGO
         </div>
@@ -44,7 +45,16 @@ export const AdminLayout = ({ children }) => {
             {
               key: "manage-contracts",
               label: "Contracts management",
-              icon: <ContactsOutlined />,
+              icon: (
+                <ContractIcon className="shrink-0 text-2xl text-green-500 w-0.5" />
+              ),
+            },
+            {
+              key: "manage-final-contracts",
+              label: "Final contracts management",
+              icon: (
+                <FinalContractIcon className="shrink-0 text-2xl text-green-500 w-0.5" />
+              ),
             },
             {
               key: "manage-gplx",

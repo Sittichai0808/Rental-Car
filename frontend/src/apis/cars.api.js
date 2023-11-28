@@ -9,20 +9,16 @@ export async function getCars() {
   return data;
 }
 
-export async function getCar(carId, accessToken) {
+export async function getCar(carId) {
   const { data } = await apiClient.request({
     method: "GET",
     url: `/cars/${carId}`,
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-      "Content-Type": "application/json",
-    },
   });
 
   return data;
 }
 
-export async function createCar(body, accessToken) {
+export async function createCar({ body, accessToken }) {
   const { data } = await apiClient.request({
     method: "POST",
     url: `/cars/createCar`,

@@ -2,9 +2,16 @@ import { Image, Spin, Upload, message } from "antd";
 import { CloudUploadOutlined } from "@ant-design/icons";
 import axios from "axios";
 import { useState } from "react";
+import styled from "@emotion/styled";
+
+const StyledUpload = styled(Upload.Dragger)`
+  .ant-upload-btn {
+    padding: 0 !important;
+  }
+`;
 
 export const UploadImage = ({ value, onChange }) => {
-  const endpoint = `https://api.cloudinary.com/v1_1/dctfgio0e/image/upload`;
+  const endpoint = `https://api.cloudinary.com/v1_1/djllhxlfc/image/upload`;
   const [messageApi, contextHolder] = message.useMessage();
 
   const [loading, setLoading] = useState(false);
@@ -14,7 +21,7 @@ export const UploadImage = ({ value, onChange }) => {
   return (
     <>
       {contextHolder}
-      <Upload.Dragger
+      <StyledUpload
         listType="picture-card"
         showUploadList={false}
         className="aspect-square p-0"
@@ -32,6 +39,7 @@ export const UploadImage = ({ value, onChange }) => {
             });
 
             setImage(data?.url);
+            console.log(data?.url);
             onChange?.(data?.url);
           } catch (error) {
             messageApi.error(String(error));
@@ -57,7 +65,7 @@ export const UploadImage = ({ value, onChange }) => {
             </div>
           </div>
         </Spin>
-      </Upload.Dragger>
+      </StyledUpload>
     </>
   );
 };

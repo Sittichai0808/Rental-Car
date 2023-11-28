@@ -69,10 +69,10 @@ export default function AccountPage() {
   const backgroundColor = status === "Chưa xác thực" ? "#ffd0cd" : "#cff1db";
 
   return (
-    <div className="flex flex-col  mt-5">
+    <div className="flex flex-col mt-5">
       <div className="flex flex-col  pl-10 pr-5  pb-6 ">
         <div className="flex flex-col mb-3  mt-3 ">
-          <div className="flex flex-row w-full    ">
+          <div className="flex flex-row">
             <p className="m-0 text-lg font-semibold flex w-full "> Địa chỉ </p>
             <p className="m-0 text-xl font-semibold text-gray-500 flex w-full">
               {user?.result?.address}
@@ -81,7 +81,6 @@ export default function AccountPage() {
               className="items-center absolute right-5"
               style={{
                 border: "1px solid #e0e0e0",
-
                 borderRadius: "100%",
                 cursor: "pointer",
               }}

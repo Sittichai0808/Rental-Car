@@ -42,6 +42,39 @@ class ContractsService {
       throw error
     }
   }
+
+  async getListContract() {
+    try {
+      const getListBooking = await Contracts.find({})
+        .populate({ path: 'createBy', model: 'User' })
+        .populate({
+          path: 'bookingId',
+          populate: {
+            path: 'bookBy',
+            model: 'User'
+          }
+        })
+        .populate({
+          path: 'bookingId',
+          populate: {
+            path: 'carId',
+            model: 'Cars',
+            populate: [
+              {
+                path: 'model',
+                model: 'Models'
+              },
+              { path: 'brand', model: 'Brands' }
+            ]
+          }
+        })
+        .sort({ status: 1 })
+
+      return getListBooking
+    } catch (error) {
+      throw error
+    }
+  }
 }
 
 const contractsService = new ContractsService()

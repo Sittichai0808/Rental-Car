@@ -1,4 +1,4 @@
-import { getBookings } from "@/apis/admin-bookings.api";
+import { getBookings, cancelBooking } from "@/apis/admin-bookings.api";
 import { GET_BOOKINGS_KEY } from "@/constants/react-query-key.constant";
 import { AdminLayout } from "@/layouts/AdminLayout";
 import { formatCurrency } from "@/utils/number.utils";
@@ -51,6 +51,7 @@ import { useUserState } from "@/recoils/user.state.js";
 import ConvertApi from "convertapi-js";
 import { useAccessTokenValue } from "@/recoils/accessToken.state.js";
 import base64 from "base64topdf";
+import { UploadContract } from "@/components/UploadContract.jsx";
 let PizZipUtils = null;
 if (typeof window !== "undefined") {
   import("pizzip/utils/index.js").then(function (r) {
@@ -137,7 +138,7 @@ export default function AdminManageBookings() {
 
   const generateDocument = (booking) => {
     loadFile(
-      "https://firebasestorage.googleapis.com/v0/b/rental-945b7.appspot.com/o/pdfs%2Fhop_dong.docx?alt=media&token=fa09173a-80e1-4972-aad4-747f2784ddab",
+      "https://firebasestorage.googleapis.com/v0/b/rental-945b7.appspot.com/o/pdfs%2Fhop_dong_thue_xe.docx?alt=media&token=53c0180b-1e6e-42b4-a8ad-88e9d181eae3",
       function (error, content) {
         if (error) {
           throw error;
@@ -146,9 +147,9 @@ export default function AdminManageBookings() {
         var doc = new Docxtemplater().loadZip(zip);
         doc.setData({
           address: booking.address,
-          fullName: booking.username,
+          fullName: booking?.username,
           phone: booking.phone,
-
+          id: booking._id,
           phoneNumber: user?.result.phoneNumber,
           nameStaff: user?.result.username,
           role: user?.result.role === "staff" ? "Nhân viên" : "Quản lý",
@@ -160,6 +161,9 @@ export default function AdminManageBookings() {
           totalCost: booking.totalCost,
           timeBookingStart: booking.timeBookingStart,
           timeBookingEnd: booking.timeBookingEnd,
+          day: moment().date(),
+          month: moment().month() + 1,
+          year: moment().year(),
         });
         try {
           // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
@@ -205,9 +209,6 @@ export default function AdminManageBookings() {
     );
   };
 
-  const handleChange = (pagination, filters) => {
-    setFilteredInfo(filters);
-  };
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
     confirm();
     setSearchText(selectedKeys[0]);
@@ -321,70 +322,70 @@ export default function AdminManageBookings() {
   });
 
   const onSubmit = async (values) => {
+    // try {
+    //   if (!file) {
+    //     message.error("Please upload a PDF file.");
+    //     return;
+    //   }
+
+    //   // Handle file upload to Firebase Cloud Storage
+    //   const filename = file.name;
+    //   const storageRef = ref(storage, "pdfs/" + filename); // 'pdfs/' is the folder in storage
+
+    //   const uploadTask = uploadBytesResumable(storageRef, file);
+
+    //   uploadTask.on("state_changed", (snapshot) => {
+    //     // Handle upload progress, if needed
+    //   });
+
+    //   uploadTask.on("state_changed", (snapshot) => {});
+
+    //   uploadTask.then(async (snapshot) => {
+    //     const downloadURL = await getDownloadURL(storageRef);
+
     try {
-      if (!file) {
-        message.error("Please upload a PDF file.");
-        return;
-      }
-
-      // Handle file upload to Firebase Cloud Storage
-      const filename = file.name;
-      const storageRef = ref(storage, "pdfs/" + filename); // 'pdfs/' is the folder in storage
-
-      const uploadTask = uploadBytesResumable(storageRef, file);
-
-      uploadTask.on("state_changed", (snapshot) => {
-        // Handle upload progress, if needed
-      });
-
-      uploadTask.on("state_changed", (snapshot) => {});
-
-      uploadTask.then(async (snapshot) => {
-        const downloadURL = await getDownloadURL(storageRef);
-
-        try {
-          // setTimeout(() => {
-          //   setOpen(false);
-          // }, 1000);
-          console.log(accessToken);
-          const response = await axios.post(
-            `${process.env.NEXT_PUBLIC_REACT_APP_BACKEND_URL}/contracts/create/${values._id}`,
-            { file: downloadURL },
-            {
-              headers: {
-                Authorization: `Bearer ${accessToken}`,
-                "Content-Type": "application/json",
-              },
-              withCredentials: true,
-            }
-          );
-
-          if (response.status === 201) {
-            message.success("Create Contract successfully");
-            router.reload();
-          } else {
-            // Handle API errors and display an error message
-            message.error("Error submitting the form. Please try again later.");
-          }
-        } catch (apiError) {
-          console.error("Error calling the API: ", apiError);
-          message.error("Error submitting the form. Please try again later.");
+      setTimeout(() => {
+        setOpen(false);
+      }, 500);
+      console.log(accessToken);
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_REACT_APP_BACKEND_URL}/contracts/create/${values._id}`,
+        { images: values.images },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+          },
+          withCredentials: true,
         }
-      });
+      );
 
-      // });
-
-      // save to file
-      // return result.file.save("/path/to/save/file.pdf");
-
-      // if (!file) {
-      //   message.error("Please upload a file.");
-      //   return;
-      // }
-    } catch (error) {
-      console.error("Error uploading PDF: ", error);
+      if (response.status === 201) {
+        message.success("Create Contract successfully");
+        router.reload();
+      } else {
+        // Handle API errors and display an error message
+        message.error("Error submitting the form. Please try again later.");
+      }
+    } catch (apiError) {
+      console.error("Error calling the API: ", apiError);
       message.error("Error submitting the form. Please try again later.");
     }
+    // });
+
+    // });
+
+    // save to file
+    // return result.file.save("/path/to/save/file.pdf");
+
+    // if (!file) {
+    //   message.error("Please upload a file.");
+    //   return;
+    // }
+    // } catch (error) {
+    //   console.error("Error uploading PDF: ", error);
+    //   message.error("Error submitting the form. Please try again later.");
+    // }
   };
 
   const { mutate } = useMutation(onSubmit);
@@ -422,7 +423,7 @@ export default function AdminManageBookings() {
     setOpen(false);
   };
 
-  const { data } = useQuery({
+  const { data, refetch } = useQuery({
     queryFn: getBookings,
     queryKey: [GET_BOOKINGS_KEY],
   });
@@ -453,6 +454,20 @@ export default function AdminManageBookings() {
     timeTransaction: item?.timeTransaction,
     status: item?.status,
   }));
+
+  const cancelBook = useMutation(
+    (bookingId) => cancelBooking(accessToken, bookingId),
+    {
+      onSuccess: () => {
+        message.success("Hủy thành công");
+        refetch();
+      },
+
+      onError: (error) => {
+        message.error(`Hủy thất bại: ${error.message}`);
+      },
+    }
+  );
 
   return (
     <>
@@ -657,12 +672,13 @@ export default function AdminManageBookings() {
                   </Tooltip>
                   <Tooltip
                     placement="topRight"
-                    title={"Vô hiệu hóa thuê xê"}
+                    title={"Hủy thuê xê"}
                     color={"red"}
                   >
                     <Popconfirm
                       title="Are you sure to deactivate this booking?"
                       okText="Deactivate"
+                      onConfirm={() => cancelBook.mutate(booking._id)}
                     >
                       <Button className="bg-red-500 text-white border-none hover:bg-red-500/70">
                         <DeleteOutlined style={{ fontSize: "14px" }} />
@@ -696,28 +712,31 @@ export default function AdminManageBookings() {
           >
             <div className="w-2/3">
               <Form.Item label="Tên khách hàng" name="username">
-                <Input />
+                <Input readOnly />
               </Form.Item>
               <Form.Item label="Số điện thoại" name="phone">
-                <Input />
+                <Input readOnly />
               </Form.Item>
               <Form.Item label="Địa chỉ" name="address">
-                <Input />
+                <Input readOnly />
               </Form.Item>
               <Form.Item label="Biển số xe" name="numberCar">
-                <Input />
+                <Input readOnly />
               </Form.Item>
               <Form.Item label="Thời gian bắt đầu thuê" name="timeBookingStart">
-                <Input />
+                <Input readOnly />
               </Form.Item>
               <Form.Item label="Thời gian kết thúc thuê" name="timeBookingEnd">
-                <Input />
+                <Input readOnly />
               </Form.Item>
               <Form.Item label="Tổng giá tiền thuê" name="totalCost">
-                <Input />
+                <Input readOnly />
               </Form.Item>
               <Form.Item label="Booking id" hidden name="_id">
-                <Input />
+                <Input readOnly />
+                <Form.Item label="Username" hidden name="username">
+                  <Input readOnly />
+                </Form.Item>
               </Form.Item>
               <div className=" mt-10">
                 <Button type="primary" htmlType="submit">
@@ -726,8 +745,11 @@ export default function AdminManageBookings() {
               </div>
             </div>
 
-            <div className="grow">
-              <Form.Item label="" name="file">
+            <div className="grow w-1/3">
+              <Form.Item label="Images" name="images">
+                <UploadContract />
+              </Form.Item>
+              {/* <Form.Item label="" name="file">
                 <Upload
                   beforeUpload={beforeUpload}
                   maxCount={1}
@@ -738,7 +760,7 @@ export default function AdminManageBookings() {
                     Click to upload
                   </Button>
                 </Upload>
-              </Form.Item>
+              </Form.Item> */}
             </div>
           </Form>
         </>

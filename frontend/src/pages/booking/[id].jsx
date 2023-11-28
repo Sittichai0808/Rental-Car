@@ -1,5 +1,5 @@
 "use client";
-import moment from "moment";
+import moment from "moment-timezone";
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import styled from "@emotion/styled";
@@ -34,6 +34,10 @@ import Coupon from "@/components/Coupon";
 
 const { Title } = Typography;
 const { RangePicker } = DatePicker;
+
+// moment.tz.setDefault("Asia/Ho_Chi_Minh");
+console.log(moment());
+
 const BookingPage = () => {
   const [user, setUser] = useUserState();
   const router = useRouter();
@@ -45,8 +49,17 @@ const BookingPage = () => {
   const [costGetCar, setCostGetCar] = useState(0);
   const [amoutDiscount, setAmountDiscount] = useState(0);
   const [dates, setDates] = useDatesState();
-  const [from, setFrom] = useState(dates?.[0]);
-  const [to, setTo] = useState(dates?.[1]);
+  // [
+  //   moment(dates[0]?.format("YYYY-MM-DD HH:mm") || "")._i,
+  //   moment(dates[1]?.format("YYYY-MM-DD HH:mm") || "")._i,
+  // ];
+  const [from, setFrom] = useState(
+    moment(dates?.[0]?.format("YYYY-MM-DD HH:mm") || "")._i
+  );
+  const [to, setTo] = useState(
+    moment(dates?.[1]?.format("YYYY-MM-DD HH:mm") || "")._i
+  );
+  console.log(from, to);
   const onChange = (e) => {
     setCostGetCar(e.target.value);
   };
@@ -85,6 +98,7 @@ const BookingPage = () => {
                 phone: orderInfo[1],
                 address: orderInfo[2],
                 timeBookingStart: orderInfo[3],
+
                 timeBookingEnd: orderInfo[4],
               },
               {
@@ -139,11 +153,12 @@ const BookingPage = () => {
 
   const onSubmit = async (values) => {
     try {
-      if (from === undefined || to === undefined) {
-        moment(value[0]?.format("DD-MM-YYYY HH:mm"))._i;
-        from = moment(startDate?.format("DD-MM-YYYY HH:mm"))._i;
-        to = moment(endDate?.format("DD-MM-YYYY HH:mm"))._i;
-      }
+      // if (from === undefined || to === undefined) {
+      //   moment(value[0]?.format("YYYY-MM-DD HH:mm"))._i;
+      //   from = moment(startDate?.format("YYYY-MM-DD HH:mm"))._i;
+      //   to = moment(endDate?.format("YYYY-MM-DD HH:mm"))._i;
+      // }
+      console.log(from, to);
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_REACT_APP_BACKEND_URL}/payments/create_payment_url`,
 
@@ -184,7 +199,7 @@ const BookingPage = () => {
 
     // Kiểm tra nếu ngày hiện tại nằm trong mảng bookedTimeSlots
     const isBookedDate = bookedTimeSlots.some((slot) => {
-      const slotStart = moment(slot.from);
+      const slotStart = moment(slot.from).subtract(1, "days");
       const slotEnd = moment(slot.to);
       return current && current >= slotStart && current <= slotEnd;
     });
@@ -245,8 +260,10 @@ const BookingPage = () => {
       } else {
         setValidationMessage("");
       }
-      setFrom(moment(value[0]?.format("DD-MM-YYYY HH:mm") || "")._i);
-      setTo(moment(value[1]?.format("DD-MM-YYYY HH:mm") || "")._i);
+
+      setFrom(moment(value[0]?.format("YYYY-MM-DD HH:mm") || "")._i);
+      setTo(moment(value[1]?.format("YYYY-MM-DD HH:mm") || "")._i);
+
       setTotalDays(Math.ceil(value[1]?.diff(value[0], "hours") / 24));
     }
   };
@@ -455,11 +472,11 @@ const BookingPage = () => {
                 <Form.Item name="date" label="Thời gian thuê xe">
                   <RangePicker
                     showTime={{ format: "HH mm" }}
-                    format="DD-MM-YYYY HH:mm"
+                    format="YYYY-MM-DD HH:mm"
                     onChange={selectTimeSlots}
                     defaultValue={[
-                      dayjs(from || startDate, "DD-MM-YYYY HH:mm"),
-                      dayjs(to || endDate, "DD-MM-YYYY HH mm"),
+                      dayjs(from || startDate, "YYYY-MM-DD HH:mm"),
+                      dayjs(to || endDate, "YYYY-MM-DD HH:mm"),
                     ]}
                     disabled
                     style={{ color: "white" }}

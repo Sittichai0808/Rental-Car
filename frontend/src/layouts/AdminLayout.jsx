@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import { Avatar, Layout, Menu, Dropdown, Space } from "antd";
 import {
   BellOutlined,
@@ -6,11 +5,11 @@ import {
   CarOutlined,
   BookOutlined,
   ContactsOutlined,
-  UserOutlined,
   IdcardOutlined,
+  UserOutlined,
   LogoutOutlined,
 } from "@ant-design/icons";
-
+import { ContractIcon, FinalContractIcon } from "@/icons";
 import { GPLXIcon } from "@/icons";
 import { useRouter } from "next/router";
 import { useUserState } from "@/recoils/user.state.js";
@@ -19,9 +18,10 @@ import useLocalStorage from "@/hooks/useLocalStorage";
 const { Sider, Header, Content } = Layout;
 
 export const AdminLayout = ({ children }) => {
-  const [user, setUser] = useUserState();
   const { pathname, push } = useRouter();
+  const [user, setUser] = useUserState();
   const router = useRouter();
+  const role = user?.result.role;
   const selectedKeys = [pathname.replace("/admin/", "")];
   const [accessToken, setAccessToken, clearAccessToken] =
     useLocalStorage("access_token");
@@ -54,7 +54,7 @@ export const AdminLayout = ({ children }) => {
   ];
   return (
     <Layout hasSider className="h-screen">
-      <Sider theme="light" className="border-r shadow bg-white p-6" width={300}>
+      <Sider theme="light" className="border-r shadow bg-white p-6" width={310}>
         <div className="w-full bg-green-100 h-32 flex justify-center items-center mb-10">
           LOGO
         </div>
@@ -66,6 +66,13 @@ export const AdminLayout = ({ children }) => {
               label: "Users management",
               icon: <UsergroupAddOutlined />,
             },
+            role === "admin"
+              ? {
+                  key: "manage-staffs",
+                  label: "Staffs management",
+                  icon: <UsergroupAddOutlined />,
+                }
+              : undefined,
             {
               key: "manage-cars",
               label: "Cars management",
@@ -79,7 +86,16 @@ export const AdminLayout = ({ children }) => {
             {
               key: "manage-contracts",
               label: "Contracts management",
-              icon: <ContactsOutlined />,
+              icon: (
+                <ContractIcon className="shrink-0 text-2xl text-green-500 w-0.5" />
+              ),
+            },
+            {
+              key: "manage-final-contracts",
+              label: "Final contracts management",
+              icon: (
+                <FinalContractIcon className="shrink-0 text-2xl text-green-500 w-0.5" />
+              ),
             },
             {
               key: "manage-gplx",
@@ -112,7 +128,6 @@ export const AdminLayout = ({ children }) => {
                 <Avatar src={user?.result?.profilePicture} />
               </Space>
             </Dropdown>
-
             <span className="flex ">{user?.result?.username}</span>
           </div>
         </Header>

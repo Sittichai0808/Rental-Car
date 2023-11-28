@@ -5,6 +5,7 @@ import { useState } from "react";
 import { GET_COUPONS } from "@/constants/react-query-key.constant";
 import { getCoupons } from "@/apis/user-cars.api";
 import { useQuery } from "@tanstack/react-query";
+import moment from "moment";
 
 const Coupon = ({ applyCoupon }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -33,7 +34,14 @@ const Coupon = ({ applyCoupon }) => {
     queryKey: [GET_COUPONS],
     queryFn: getCoupons,
   });
-  console.log(coupons?.result);
+  const expiryDay = coupons?.result.map((value, idx) => ({
+    expiry: moment(value?.expiry).format("DD-MM-YYYY HH:mm:ss"),
+  }));
+  const isCouponExpired = (expiry) => {
+    const currentDateTime = moment();
+    const couponExpiryDateTime = moment(expiry, "DD-MM-YYYY HH:mm:ss");
+    return currentDateTime.isAfter(couponExpiryDateTime);
+  };
 
   return (
     <div className="">
@@ -82,12 +90,22 @@ const Coupon = ({ applyCoupon }) => {
                       </div>
                       <p className="m-0 max-w-lg">{value.description}</p>
                     </div>
-                    <Button
-                      className="bg-green-400 text-white hover:bg-green-500"
-                      onClick={() => handleCouponClick(value)}
-                    >
-                      Áp dụng
-                    </Button>
+                    {isCouponExpired(expiryDay[index].expiry) ? (
+                      <Button
+                        className=""
+                        onClick={() => handleCouponClick(value)}
+                        disabled
+                      >
+                        Hết hạn
+                      </Button>
+                    ) : (
+                      <Button
+                        className="bg-green-400 text-white hover:bg-green-500"
+                        onClick={() => handleCouponClick(value)}
+                      >
+                        Áp dụng
+                      </Button>
+                    )}
                   </div>
                 </div>
               </div>

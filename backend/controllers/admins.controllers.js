@@ -1,7 +1,6 @@
 import { HTTP_STATUS } from '../constants/httpStatus.js'
 import adminServices from '../services/admin.services.js'
 
-
 export const getUsers = async (req, res, next) => {
     try {
         const result = await adminServices.getUsers()
@@ -52,7 +51,7 @@ export const createStaff = async (req, res, next) => {
         })
     } catch (error) {
         return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
-            error: "Something went wrong",
+            error: error.message
         })
     }
 }

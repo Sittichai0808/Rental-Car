@@ -3,7 +3,7 @@ import Coupons from "../models/coupons.model.js";
 class CouponsService {
     async createCoupons(payload, expiry) {
         try {
-            const createCoupons = await Coupons.create({ ...payload, expiry: expiry });
+            const createCoupons = await Coupons.create({ ...payload, expiry: new Date(expiry) });
             return createCoupons;
         } catch (error) {
             throw Error(error);
@@ -12,7 +12,7 @@ class CouponsService {
 
     async getCoupons() {
         try {
-            const getCoupons = Coupons.find()
+            const getCoupons = Coupons.find().sort({ createdAt: -1 })
             return getCoupons
         } catch (error) {
             throw Error(error);

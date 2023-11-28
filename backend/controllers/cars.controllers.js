@@ -120,13 +120,16 @@ export const updateRatingsByBooking = async (req, res, next) => {
 export const getRatingsOfCar = async (req, res, next) => {
   try {
     const { carId } = req.params
-    const result = await carsService.getRatingsOfCar(carId)
+    const { page, limit } = req.query
+    const result = await carsService.getRatingsOfCar(carId, parseInt(page) || 1, parseInt(limit) || 4)
     if (!result) {
       return res.status(HTTP_STATUS.NOT_FOUND).json({ error: 'Car not found' })
     } else {
       return res.status(HTTP_STATUS.OK).json({
         message: CARS_MESSAGE.GET_CAR_SUCCESS,
-        result
+        result: result.getRatingsOfCar,
+        totalPages: result.totalPages,
+        currentPage: result.page
       })
     }
   } catch (error) {

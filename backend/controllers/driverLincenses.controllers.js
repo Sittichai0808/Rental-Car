@@ -29,7 +29,7 @@ export const acceptLicensesDriver = async (req, res, next) => {
     })
   } catch (error) {
     res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
-      error: "Something went wrong"
+      error: 'Something went wrong'
     })
   }
 }
@@ -38,7 +38,7 @@ export const getLicensesDrivers = async (req, res) => {
   try {
     const result = await driverLicensesService.getLicensesDrivers()
     return res.status(HTTP_STATUS.OK).json({
-      message: "Get LicensesDrivers successfully",
+      message: 'Get LicensesDrivers successfully',
       result
     })
   } catch (error) {

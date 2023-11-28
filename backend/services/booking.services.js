@@ -118,8 +118,6 @@ class BookingServices {
             },
             { path: 'brand', model: 'Brands' }
           ]
-
-          // model: 'numberCar numberSeat yearManufacture'
         })
         .populate('contract')
         .sort({ status: 1, timeBookingStart: 1 })
@@ -129,6 +127,25 @@ class BookingServices {
     }
   }
 
+  async getDetailBooking(bookingId) {
+    try {
+      const getDetailBooking = await Bookings.findById(bookingId).populate('bookBy')
+        .populate({
+          path: 'carId',
+          populate: [
+            {
+              path: 'model',
+              model: 'Models'
+            },
+            { path: 'brand', model: 'Brands' }
+          ]
+        })
+        .populate('contract')
+      return getDetailBooking
+    } catch (error) {
+      throw error
+    }
+  }
   async getBookedTimeSlots(carId) {
     try {
       const getBookedTimeSlots = await BookedTimeSlots.find({ carId: carId })

@@ -55,72 +55,76 @@ export const ProfileLayout = ({ children }) => {
     useLocalStorage("access_token");
 
   return (
-    <Layout className="flex max-w-6xl  mx-auto border-b bg-slate-100  ">
+    <Layout className="flex mx-auto border-b bg-white">
       <HeaderComponent />
-
-      <Layout
-        className=" flex max-w-6xl min-h-screen relative  mt-10 mb-10 border-b bg-slate-100 "
-        style={{
-          minHeight: "100vh",
-        }}
-        hasSider
-      >
-        <div
-          className="flex mt-5 relative flex-col   m-auto ml-5 mr-5  bg-gray-50   p-4 "
+      <div className="max-w-6xl mx-auto bg-white">
+        <Layout
+          className=" flex min-h-screen relative  mt-10 mb-10 border-b bg-white"
           style={{
-            width: "30%",
+            minHeight: "100vh",
           }}
+          hasSider
         >
           <div
-            className="flex w-full flex-col justify-center items-center bg-gray-50 p-4 "
+            className="flex mt-5 relative flex-col m-auto ml-5 mr-5 p-4 shadow-lg"
             style={{
-              minHeight: "0vh",
-
-              backgroundColor: "#fff",
+              width: "30%",
             }}
           >
-            <Button
-              className="absolute top-0 right-0 text-red-600 "
-              onClick={() => {
-                clearAccessToken();
-                setUser(null);
-                setProfile(null);
-                router.push("/");
+            <div
+              className="flex w-full flex-col justify-center items-center p-4"
+              style={{
+                minHeight: "0vh",
+                backgroundColor: "#fff",
               }}
             >
-              <LogoutOutlined />
-            </Button>
-            <UploadProfilePicture />
+              <Button
+                className="absolute top-0 right-0 text-red-600 "
+                onClick={() => {
+                  clearAccessToken();
 
-            <div className="flex flex-col  ">
-              <h5 className="text-lg font-semibold text-center mt-1 mb-2 ">
-                {user?.result?.username}
-              </h5>
+                  setUser(null);
 
-              <p className="mt-0">
-                Tham gia: {moment(user?.result?.createdAt).format("DD/MM/YYYY")}
-              </p>
+                  setDriver(null);
+                  clearProfile();
+                  router.push("/");
+                }}
+              >
+                <LogoutOutlined />
+              </Button>
+              <UploadProfilePicture />
+
+              <div className="flex flex-col  ">
+                <h5 className="text-lg font-semibold text-center mt-1 mb-2 ">
+                  {user?.result?.username}
+                </h5>
+
+                <p className="mt-0">
+                  Tham gia:{" "}
+                  {moment(user?.result?.createdAt).format("DD/MM/YYYY")}
+                </p>
+              </div>
             </div>
           </div>
-        </div>
 
-        <Content
-          className=" w-[calc(100%-23%)]  mt-5 mb-5  overflow-y-scroll  h-0 bg-gray-50 p-4  "
-          style={{
-            display: "flex",
-            minHeight: "100vh",
-            flexDirection: "column",
-          }}
-        >
-          <Tabs
-            className=" w-full mb-3 flex mt-0     "
-            defaultActiveKey="1"
-            centered
-            items={items}
-            onChange={onChange}
-          />
-        </Content>
-      </Layout>
+          <Content
+            className=" w-[calc(100%-23%)]  mt-5 mb-5  overflow-y-scroll h-0 p-4 shadow-lg rounded-lg"
+            style={{
+              display: "flex",
+              minHeight: "100vh",
+              flexDirection: "column",
+            }}
+          >
+            <Tabs
+              className=" w-full mb-3 flex mt-0     "
+              defaultActiveKey="1"
+              centered
+              items={items}
+              onChange={onChange}
+            />
+          </Content>
+        </Layout>
+      </div>
       <FooterComponent />
     </Layout>
   );

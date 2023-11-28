@@ -8,7 +8,7 @@ const { Content } = Layout;
 
 export function UserWebLayout({ children }) {
   return (
-    <Layout className="max-w-6xl mx-auto min-h-screen">
+    <Layout className="bg-white min-h-screen">
       <HeaderComponent />
       <Content className="bg-white py-2">{children}</Content>
       <FooterComponent />

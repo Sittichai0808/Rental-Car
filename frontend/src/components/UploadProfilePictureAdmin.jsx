@@ -1,11 +1,11 @@
-import { Image, Spin, Upload, message, notification } from "antd";
+import { Image, Spin, Upload, message, notification, Avatar } from "antd";
 import { CloudUploadOutlined } from "@ant-design/icons";
 import { useUserState } from "@/recoils/user.state.js";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import axios from "axios";
 import { useState } from "react";
 
-export const UploadProfilePicture = () => {
+export const UploadProfilePictureAdmin = () => {
   const [messageApi, contextHolder] = message.useMessage();
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useUserState();
@@ -36,13 +36,8 @@ export const UploadProfilePicture = () => {
       if (response.status === 200) {
         console.log(response.data);
 
-        setUser((user) => ({
-          ...user,
-          result: {
-            ...user.result,
-            profilePicture: response.data.result.profilePicture,
-          },
-        }));
+        setUser({ ...response.data });
+
         notification.success({
           message: "Cập nhật thành công",
         });
@@ -65,17 +60,17 @@ export const UploadProfilePicture = () => {
   return (
     <>
       {contextHolder}
-      <Upload.Dragger
-        listType="picture-card"
+      <Upload
+        listType="picture-circle"
+        className="aspect-square rounded-full w-1/2"
         showUploadList={false}
-        className="aspect-square w-1/2 "
         customRequest={({ file }) => updateProfile(file)}
       >
         <Spin spinning={loading}>
-          <div className="py-0 p-2 relative group flex  ">
+          <div className="py-0 p-2 relative group   ">
             {user?.result?.profilePicture ? (
-              <Image
-                className="w-full h-full  object-cover aspect-square rounded overflow-hidden mt-0"
+              <Avatar
+                className="w-full h-full  object-cover aspect-square   rounded-full overflow-hidden mt-0"
                 preview={false}
                 src={user?.result?.profilePicture}
               />
@@ -83,12 +78,12 @@ export const UploadProfilePicture = () => {
               <CloudUploadOutlined />
             )}
 
-            <div className="absolute w-full h-full top-0 left-0 bg-white/80 opacity-0 hover:opacity-100 flex justify-center items-center transition-all">
+            <div className="absolute w-full h-full top-0 left-0 bg-white/80 opacity-0  hover:opacity-100 flex justify-center items-center transition-all">
               <CloudUploadOutlined />
             </div>
           </div>
         </Spin>
-      </Upload.Dragger>
+      </Upload>
     </>
   );
 };

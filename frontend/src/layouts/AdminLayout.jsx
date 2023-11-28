@@ -1,4 +1,4 @@
-import { Avatar, Layout, Menu } from "antd";
+import { Avatar, Layout, Menu, Dropdown, Space } from "antd";
 import {
   BellOutlined,
   UsergroupAddOutlined,
@@ -6,18 +6,52 @@ import {
   BookOutlined,
   ContactsOutlined,
   IdcardOutlined,
+  UserOutlined,
+  LogoutOutlined,
 } from "@ant-design/icons";
 import { ContractIcon, FinalContractIcon } from "@/icons";
 import { GPLXIcon } from "@/icons";
 import { useRouter } from "next/router";
+import { useUserState } from "@/recoils/user.state.js";
+import useLocalStorage from "@/hooks/useLocalStorage";
 
 const { Sider, Header, Content } = Layout;
 
 export const AdminLayout = ({ children }) => {
   const { pathname, push } = useRouter();
-
+  const [user, setUser] = useUserState();
+  const router = useRouter();
+  const role = user?.result.role;
   const selectedKeys = [pathname.replace("/admin/", "")];
-
+  const [accessToken, setAccessToken, clearAccessToken] =
+    useLocalStorage("access_token");
+  const items = [
+    {
+      label: (
+        <div onClick={() => push("/admin/profile-admin")}>
+          <UserOutlined className="mr-2" />
+          My Profile
+        </div>
+      ),
+      key: "0",
+    },
+    {
+      label: (
+        <div
+          onClick={() => {
+            clearAccessToken();
+            setUser(null);
+            router.push("/");
+          }}
+        >
+          {" "}
+          <LogoutOutlined className=" text-red-600 mr-2" />
+          Logout
+        </div>
+      ),
+      key: "1",
+    },
+  ];
   return (
     <Layout hasSider className="h-screen">
       <Sider theme="light" className="border-r shadow bg-white p-6" width={310}>
@@ -32,6 +66,13 @@ export const AdminLayout = ({ children }) => {
               label: "Users management",
               icon: <UsergroupAddOutlined />,
             },
+            role === "admin"
+              ? {
+                  key: "manage-staffs",
+                  label: "Staffs management",
+                  icon: <UsergroupAddOutlined />,
+                }
+              : undefined,
             {
               key: "manage-cars",
               label: "Cars management",
@@ -61,6 +102,11 @@ export const AdminLayout = ({ children }) => {
               label: "GPLX management",
               icon: <IdcardOutlined />,
             },
+            {
+              key: "profile-admin",
+              label: "Profile",
+              icon: <UserOutlined />,
+            },
           ]}
           onClick={(item) => push(`/admin/${item.key}`)}
         />
@@ -70,7 +116,19 @@ export const AdminLayout = ({ children }) => {
           <div className="text-2xl font-bold">Dashboard</div>
           <div className="flex gap-4 items-center">
             <BellOutlined className="text-xl" />
-            <Avatar />
+            <Dropdown
+              className="cursor-pointer"
+              menu={{
+                items,
+              }}
+              placement="bottom"
+              trigger={["click"]}
+            >
+              <Space>
+                <Avatar src={user?.result?.profilePicture} />
+              </Space>
+            </Dropdown>
+            <span className="flex ">{user?.result?.username}</span>
           </div>
         </Header>
         <Content className="p-4 bg-white">{children}</Content>

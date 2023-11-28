@@ -148,6 +148,17 @@ export default function AdminManageStaffs() {
               title: "Action",
               render: (_, staff) => (
                 <div className="flex gap-2">
+                  <Button
+                    className="bg-blue-500 text-white border-none hover:bg-blue-500/70"
+                    onClick={() =>
+                      setUpsertStaffModal({
+                        actionType: "update",
+                        staffId: staff._id,
+                      })
+                    }
+                  >
+                    Update
+                  </Button>
                   {staff?.status === "Hoạt động" && (
                     <Popconfirm
                       title="Are you sure to block this user?"

@@ -1,16 +1,17 @@
 import Bookings from '../models/booking.model.js'
 import BookedTimeSlots from '../models/bookedTimeSlots.model.js'
-import moment from 'moment'
+import moment from 'moment-timezone'
 
 class BookingServices {
   async createBooking(user_id, carId, payload) {
     try {
       const { timeBookingStart, timeBookingEnd } = payload
 
-      const format = 'DD-MM-YYYY HH:mm'
-      const bookingStart = moment(timeBookingStart, format)
-      const bookingEnd = moment(timeBookingEnd, format)
+      console.log(timeBookingStart, timeBookingEnd)
 
+      const bookingStart = moment.utc(timeBookingStart).toDate()
+      const bookingEnd = moment.utc(timeBookingEnd).toDate()
+      console.log(bookingStart, bookingEnd)
       // if (!bookingStart.isValid() || !bookingEnd.isValid()) {
       //     throw new Error('Invalid input')
       // }
@@ -37,8 +38,8 @@ class BookingServices {
 
       const newBookedTimeSlot = new BookedTimeSlots({
         bookingId: bookingResult._id, // Lấy ID của đặt chỗ vừa tạo
-        from: bookingStart,
-        to: bookingEnd,
+        from: bookingResult.timeBookingStart,
+        to: bookingResult.timeBookingEnd,
         carId: carId
       })
 
@@ -97,7 +98,7 @@ class BookingServices {
           }
         })
         .populate('contract')
-        .sort({ createdAt: -1 })
+        .sort({ status: 1 })
       return getHistoryBooking
     } catch (error) {
       throw error
@@ -117,17 +118,34 @@ class BookingServices {
             },
             { path: 'brand', model: 'Brands' }
           ]
-
-          // model: 'numberCar numberSeat yearManufacture'
         })
         .populate('contract')
-        .sort({ createdAt: -1 })
+        .sort({ status: 1, timeBookingStart: 1 })
       return getListBooking
     } catch (error) {
       throw error
     }
   }
 
+  async getDetailBooking(bookingId) {
+    try {
+      const getDetailBooking = await Bookings.findById(bookingId).populate('bookBy')
+        .populate({
+          path: 'carId',
+          populate: [
+            {
+              path: 'model',
+              model: 'Models'
+            },
+            { path: 'brand', model: 'Brands' }
+          ]
+        })
+        .populate('contract')
+      return getDetailBooking
+    } catch (error) {
+      throw error
+    }
+  }
   async getBookedTimeSlots(carId) {
     try {
       const getBookedTimeSlots = await BookedTimeSlots.find({ carId: carId })

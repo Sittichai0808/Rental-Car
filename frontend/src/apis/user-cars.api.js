@@ -1,6 +1,16 @@
 import { apiClient } from "./client";
 
 
+export async function getListCars(params) {
+    const { data } = await apiClient.request({
+        method: "GET",
+        url: `/cars`,
+        params
+    });
+
+    return data;
+}
+
 export async function getCarDetail(carId) {
     const { data } = await apiClient.request({
         method: "GET",

@@ -1,13 +1,13 @@
 import { apiClient } from "./client";
 
-export async function getRatingsOfCar(carId) {
-  const { data } = await apiClient.request({
-    method: "GET",
-    url: `cars/ratings/${carId}`,
-  });
+// export async function getRatingsOfCar(carId, page = 1, limit = 4) {
+//   const { data } = await apiClient.request({
+//     method: "GET",
+//     url: `cars/ratings/${carId}?page=${page}&limit=${limit}`,
+//   });
 
-  return data;
-}
+//   return data;
+// }
 
 export async function createRating(ratingData) {
   const { accessToken, bookingId, carId, star, comment } = { ...ratingData };

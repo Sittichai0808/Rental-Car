@@ -10,7 +10,7 @@ import {
 import axios from "axios";
 import { useState } from "react";
 
-export const UploadMultipleImage = ({ value, onChange }) => {
+export const UploadContract = ({ value, onChange }) => {
   const endpoint = `https://api.cloudinary.com/v1_1/djllhxlfc/image/upload`;
   const [messageApi, contextHolder] = message.useMessage();
 
@@ -52,7 +52,7 @@ export const UploadMultipleImage = ({ value, onChange }) => {
             setLoading(true);
             const formData = new FormData();
             formData.append("file", file);
-            formData.append("upload_preset", "rental-car");
+            formData.append("upload_preset", "contracts");
 
             try {
               const { data } = await axios.post(endpoint, formData, {

@@ -13,17 +13,14 @@ import {
   getCarLikedByUser
 } from '../controllers/cars.controllers.js'
 import { wrapRequestHandler } from '../utils/handlers.js'
-import { accessTokenValidator, adminValidator, staffValidator } from '../middlewares/users.middlewares.js'
+import { accessTokenValidator, adminAndStaffValidator, adminValidator, staffValidator } from '../middlewares/users.middlewares.js'
 import uploadCloud from '../utils/cloudinary.config.js'
 const carsRoutes = express.Router()
 
-// carsRoutes.post('/createCar', [accessTokenValidator, adminValidator, staffValidator], wrapRequestHandler(createCar))
-// carsRoutes.put('/updateCar/:carId', accessTokenValidator, adminValidator, wrapRequestHandler(updateCar))
+
 carsRoutes.get('/get/liked', accessTokenValidator, wrapRequestHandler(getCarLikedByUser))
-// carsRoutes.post('/createCar', [accessTokenValidator, adminValidator, staffValidator], wrapRequestHandler(createCar))
-carsRoutes.post('/createCar', wrapRequestHandler(createCar))
-// carsRoutes.put('/updateCar/:carId', accessTokenValidator, adminValidator, wrapRequestHandler(updateCar))
-carsRoutes.put('/updateCar/:carId', wrapRequestHandler(updateCar))
+carsRoutes.post('/createCar', adminAndStaffValidator, wrapRequestHandler(createCar))
+carsRoutes.put('/updateCar/:carId', adminAndStaffValidator, wrapRequestHandler(updateCar))
 carsRoutes.get('/:carId', wrapRequestHandler(getCarById))
 carsRoutes.get('/', wrapRequestHandler(getListCars))
 carsRoutes.post(

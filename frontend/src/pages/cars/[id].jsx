@@ -19,7 +19,7 @@ import {
   UsbIcon,
 } from "@/icons";
 
-import moment from "moment";
+import moment from "moment-timezone";
 import { Button, Divider, Table, Tag, Modal, message } from "antd";
 import Image from "next/image";
 import styled from "@emotion/styled";
@@ -27,16 +27,13 @@ import { useRouter } from "next/router";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import Link from "next/link";
 import axios from "axios";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useDatesState } from "@/recoils/dates.state";
 import { useUserState } from "@/recoils/user.state";
 import { HeartOutlined, HeartFilled } from "@ant-design/icons";
-import {
-  GET_CAR_DETAILS,
-  GET_RATINGS_OF_CAR,
-} from "@/constants/react-query-key.constant";
+import { GET_CAR_DETAILS } from "@/constants/react-query-key.constant";
 import { getCarDetail, likeCars } from "@/apis/user-cars.api";
-import { getRatingsOfCar } from "@/apis/ratings.api";
+import { useRatingsOfCar } from "@/hooks/useGetRatings";
 
 const carServices = [
   { icon: MapIcon, name: "Bản đồ" },
@@ -85,8 +82,9 @@ export default function CarDetailPage() {
   const [validationMessage, setValidationMessage] = useState("");
   function isDateBooked(startDate, endDate) {
     for (const slot of bookedTimeSlots) {
-      const bookedStart = new Date(slot.from);
-      const bookedEnd = new Date(slot.to);
+      const bookedStart = moment(slot.from);
+      const bookedEnd = moment(slot.to);
+      console.log(bookedStart, bookedEnd);
 
       if (bookedStart >= startDate && bookedEnd <= endDate) return true;
     }
@@ -104,8 +102,26 @@ export default function CarDetailPage() {
         setValidationMessage("");
       }
     }
-
+    console.log(dates);
     setDates(dates);
+  };
+  // const range = (start, end) => {
+  //   const result = [];
+  //   for (let i = start; i < end; i++) {
+  //     result.push(i);
+  //   }
+  //   return result;
+  // };
+
+  const disabledRangeTime = (_, type) => {
+    if (type === "start") {
+      return {
+        disabledHours: () => [0, 1, 2, 3, 4, 5, 6, 18, 19, 20, 21, 22, 23],
+      };
+    }
+    return {
+      disabledHours: () => [0, 1, 2, 3, 4, 5, 6, 21, 22, 23],
+    };
   };
 
   const disabledDate = (current) => {
@@ -115,17 +131,27 @@ export default function CarDetailPage() {
     // Kiểm tra nếu ngày hiện tại nằm trong mảng bookedTimeSlots
     const isBookedDate = bookedTimeSlots.some((slot) => {
       const slotStart = moment(slot.from);
-      const slotEnd = moment(slot.to);
-      return current && current >= slotStart && current <= slotEnd;
+      const slotEnd = moment(slot.to).add(1, "days");
+      return current >= slotStart && current <= slotEnd;
     });
 
     return isPastDate || isBookedDate;
   };
 
-  const { data: ratings } = useQuery({
-    queryKey: [GET_RATINGS_OF_CAR, carId],
-    queryFn: () => getRatingsOfCar(carId),
-  });
+  // const { data: ratings } = useQuery({
+  //   queryKey: [GET_RATINGS_OF_CAR, carId],
+  //   queryFn: () => getRatingsOfCar(carId),
+  // });
+
+  const {
+    data: ratings,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useRatingsOfCar(carId);
+
+  console.log(ratings);
+
   const { data: car } = useQuery({
     queryKey: [GET_CAR_DETAILS, carId],
     queryFn: () => getCarDetail(carId),
@@ -181,7 +207,7 @@ export default function CarDetailPage() {
             withCredentials: true,
           }
         );
-        // console.log(response.data.result);
+        console.log(response.data.result);
         setBookedTimeSlots(response.data.result);
         return response.data.result;
       } catch (error) {
@@ -190,7 +216,7 @@ export default function CarDetailPage() {
     },
   });
   return (
-    <div>
+    <div className="max-w-6xl mx-auto">
       <div className="grid h-[600px] gap-4 grid-cols-4 grid-rows-3 relative">
         <div className="relative col-span-3 row-span-3 rounded-md overflow-hidden">
           <Image alt="car" src={car?.result.thumb} layout="fill" />
@@ -354,9 +380,24 @@ export default function CarDetailPage() {
           <div className="mt-10 max-w">
             <h2 className="font-medium">Đánh giá</h2>
             <div className="flex flex-col gap-4">
-              {ratings?.result.map((rating, index) => (
-                <Feedback key={index} dataRatings={rating} />
+              {ratings?.pages?.map((page, pageIndex) => (
+                <React.Fragment key={pageIndex}>
+                  {page?.result.map((rating, index) => (
+                    <Feedback key={index} dataRatings={rating} />
+                  ))}
+                </React.Fragment>
               ))}
+              {hasNextPage && (
+                <div className="flex justify-center">
+                  <Button
+                    onClick={() => fetchNextPage()}
+                    disabled={isFetchingNextPage}
+                    className="w-1/5 p-5 flex items-center justify-center"
+                  >
+                    {isFetchingNextPage ? "Đang tải..." : "Đọc thêm"}
+                  </Button>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -383,12 +424,13 @@ export default function CarDetailPage() {
               /ngày
             </h1>
             <DateRangePicker
-              showTime={{ format: "HH mm" }}
-              format="DD MM YYYY HH mm"
+              showTime={{ format: "HH:mm" }}
+              format="DD-MM-YYYY HH:mm"
               // defaultValue={[
               //   dayjs(from, "DD-MM-YYYY HH:mm"),
               //   dayjs(to, "DD-MM-YYYY HH:mm"),
               // ]}
+              disabledTime={disabledRangeTime}
               disabledDate={disabledDate}
               className="rounded-full"
               onChange={handleDateChange}

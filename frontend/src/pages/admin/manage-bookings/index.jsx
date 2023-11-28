@@ -1,4 +1,4 @@
-import { getBookings } from "@/apis/admin-bookings.api";
+import { getBookings, cancelBooking } from "@/apis/admin-bookings.api";
 import { GET_BOOKINGS_KEY } from "@/constants/react-query-key.constant";
 import { AdminLayout } from "@/layouts/AdminLayout";
 import { formatCurrency } from "@/utils/number.utils";
@@ -138,7 +138,7 @@ export default function AdminManageBookings() {
 
   const generateDocument = (booking) => {
     loadFile(
-      "https://firebasestorage.googleapis.com/v0/b/rental-945b7.appspot.com/o/pdfs%2Fhop_dong.docx?alt=media&token=fa09173a-80e1-4972-aad4-747f2784ddab",
+      "https://firebasestorage.googleapis.com/v0/b/rental-945b7.appspot.com/o/pdfs%2Fhop_dong_thue_xe.docx?alt=media&token=53c0180b-1e6e-42b4-a8ad-88e9d181eae3",
       function (error, content) {
         if (error) {
           throw error;
@@ -147,9 +147,9 @@ export default function AdminManageBookings() {
         var doc = new Docxtemplater().loadZip(zip);
         doc.setData({
           address: booking.address,
-          fullName: booking.username,
+          fullName: booking?.username,
           phone: booking.phone,
-
+          id: booking._id,
           phoneNumber: user?.result.phoneNumber,
           nameStaff: user?.result.username,
           role: user?.result.role === "staff" ? "Nhân viên" : "Quản lý",
@@ -161,6 +161,9 @@ export default function AdminManageBookings() {
           totalCost: booking.totalCost,
           timeBookingStart: booking.timeBookingStart,
           timeBookingEnd: booking.timeBookingEnd,
+          day: moment().date(),
+          month: moment().month() + 1,
+          year: moment().year(),
         });
         try {
           // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
@@ -206,9 +209,6 @@ export default function AdminManageBookings() {
     );
   };
 
-  const handleChange = (pagination, filters) => {
-    setFilteredInfo(filters);
-  };
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
     confirm();
     setSearchText(selectedKeys[0]);
@@ -344,9 +344,9 @@ export default function AdminManageBookings() {
     //     const downloadURL = await getDownloadURL(storageRef);
 
     try {
-      // setTimeout(() => {
-      //   setOpen(false);
-      // }, 1000);
+      setTimeout(() => {
+        setOpen(false);
+      }, 500);
       console.log(accessToken);
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_REACT_APP_BACKEND_URL}/contracts/create/${values._id}`,
@@ -423,7 +423,7 @@ export default function AdminManageBookings() {
     setOpen(false);
   };
 
-  const { data } = useQuery({
+  const { data, refetch } = useQuery({
     queryFn: getBookings,
     queryKey: [GET_BOOKINGS_KEY],
   });
@@ -454,6 +454,20 @@ export default function AdminManageBookings() {
     timeTransaction: item?.timeTransaction,
     status: item?.status,
   }));
+
+  const cancelBook = useMutation(
+    (bookingId) => cancelBooking(accessToken, bookingId),
+    {
+      onSuccess: () => {
+        message.success("Hủy thành công");
+        refetch();
+      },
+
+      onError: (error) => {
+        message.error(`Hủy thất bại: ${error.message}`);
+      },
+    }
+  );
 
   return (
     <>
@@ -658,12 +672,13 @@ export default function AdminManageBookings() {
                   </Tooltip>
                   <Tooltip
                     placement="topRight"
-                    title={"Vô hiệu hóa thuê xê"}
+                    title={"Hủy thuê xê"}
                     color={"red"}
                   >
                     <Popconfirm
                       title="Are you sure to deactivate this booking?"
                       okText="Deactivate"
+                      onConfirm={() => cancelBook.mutate(booking._id)}
                     >
                       <Button className="bg-red-500 text-white border-none hover:bg-red-500/70">
                         <DeleteOutlined style={{ fontSize: "14px" }} />
@@ -719,6 +734,9 @@ export default function AdminManageBookings() {
               </Form.Item>
               <Form.Item label="Booking id" hidden name="_id">
                 <Input readOnly />
+                <Form.Item label="Username" hidden name="username">
+                  <Input readOnly />
+                </Form.Item>
               </Form.Item>
               <div className=" mt-10">
                 <Button type="primary" htmlType="submit">

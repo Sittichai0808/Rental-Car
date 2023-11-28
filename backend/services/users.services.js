@@ -57,8 +57,8 @@ class UsersService {
         const access_token = await this.signAccessToken(user1._id.toString(), user1.role)
 
         const { password: hashedPassword, ...rest } = user1._doc
-
-        return { rest, access_token }
+        console.log(access_token)
+        return { rest, access_token, _id: user._id }
       } else {
         const generatedPassword = Math.random().toString(36).slice(-8) + Math.random().toString(36).slice(-8)
         const hashedPassword1 = hashPassword(generatedPassword).toString()
@@ -73,7 +73,7 @@ class UsersService {
         const user2 = await User.findOne({ email: user.email })
         const { _id: id } = user2._doc
         const access_token = await this.signAccessToken(id.toString(), 'user')
-
+        console.log(access_token)
         const { password: hashedPassword2, _id, ...rest } = newUser._doc
         return { rest, access_token, _id }
       }

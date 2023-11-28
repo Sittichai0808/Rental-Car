@@ -36,7 +36,6 @@ function UpsertCarForm({ carId, onOk }) {
   const [form] = Form.useForm();
   const brandId = Form.useWatch(["brand"], form);
 
-  console.log("8734643", carId);
   const carDetail = useQuery({
     queryFn: () => getCar(carId),
     queryKey: [GET_CAR_KEY, carId],

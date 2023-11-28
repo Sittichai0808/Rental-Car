@@ -19,8 +19,8 @@ export const loginController = async (req, res) => {
 
   return res.json({
     message: USER_MESSAGES.LOGIN_SUCCESS,
-    access_token: result.access_token.toString(),
-    result: result.rest,
+    access_token: result?.access_token?.toString(),
+    result: { ...result.rest, role: result.role },
     id: result._id.toString(),
     role: result.role
   })
@@ -30,11 +30,12 @@ export const googleController = async (req, res, next) => {
   console.log(req.body)
   const result = await usersService.google(req.body)
 
+  console.log('result:', result.access_token)
   return res.json({
     message: USER_MESSAGES.LOGIN_SUCCESS,
-    access_token: result.access_token.toString(),
+    access_token: result?.access_token?.toString(),
     result: result.rest,
-    id: result._id.toString()
+    id: result?._id?.toString()
   })
 }
 

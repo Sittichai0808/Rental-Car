@@ -3,11 +3,13 @@ import moment from 'moment-timezone'
 const finalContractsSchema = new mongoose.Schema(
   {
     contractId: { type: mongoose.Types.ObjectId, ref: 'Contracts' },
-    file: { type: String, required: true },
+    images: {
+      type: Array
+    },
     cost_settlement: { type: Number },
     timeFinish: {
       type: Date,
-      require: true,
+
       get: (v) => moment(v).format('YYYY-MM-DD HH:mm'),
       set: (v) => moment(v, 'YYYY-MM-DD HH:mm').toDate()
     },

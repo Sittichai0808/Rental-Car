@@ -108,6 +108,24 @@ export default function CarDetailPage() {
     console.log(dates);
     setDates(dates);
   };
+  // const range = (start, end) => {
+  //   const result = [];
+  //   for (let i = start; i < end; i++) {
+  //     result.push(i);
+  //   }
+  //   return result;
+  // };
+
+  const disabledRangeTime = (_, type) => {
+    if (type === "start") {
+      return {
+        disabledHours: () => [0, 1, 2, 3, 4, 5, 6, 18, 19, 20, 21, 22, 23],
+      };
+    }
+    return {
+      disabledHours: () => [0, 1, 2, 3, 4, 5, 6, 21, 22, 23],
+    };
+  };
 
   const disabledDate = (current) => {
     // Kiểm tra nếu ngày là ngày quá khứ
@@ -115,9 +133,9 @@ export default function CarDetailPage() {
 
     // Kiểm tra nếu ngày hiện tại nằm trong mảng bookedTimeSlots
     const isBookedDate = bookedTimeSlots.some((slot) => {
-      const slotStart = moment(slot.from).subtract(1, "days");
-      const slotEnd = moment(slot.to);
-      return current && current >= slotStart && current <= slotEnd;
+      const slotStart = moment(slot.from);
+      const slotEnd = moment(slot.to).add(1, "days");
+      return current >= slotStart && current <= slotEnd;
     });
 
     return isPastDate || isBookedDate;
@@ -390,6 +408,7 @@ export default function CarDetailPage() {
               //   dayjs(from, "DD-MM-YYYY HH:mm"),
               //   dayjs(to, "DD-MM-YYYY HH:mm"),
               // ]}
+              disabledTime={disabledRangeTime}
               disabledDate={disabledDate}
               className="rounded-full"
               onChange={handleDateChange}

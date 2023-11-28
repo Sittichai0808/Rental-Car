@@ -31,12 +31,8 @@ import React, { useState, useEffect } from "react";
 import { useDatesState } from "@/recoils/dates.state";
 import { useUserState } from "@/recoils/user.state";
 import { HeartOutlined, HeartFilled } from "@ant-design/icons";
-import {
-  GET_CAR_DETAILS,
-  GET_RATINGS_OF_CAR,
-} from "@/constants/react-query-key.constant";
+import { GET_CAR_DETAILS } from "@/constants/react-query-key.constant";
 import { getCarDetail, likeCars } from "@/apis/user-cars.api";
-import { getRatingsOfCar } from "@/apis/ratings.api";
 import { useRatingsOfCar } from "@/hooks/useGetRatings";
 
 const carServices = [
@@ -116,8 +112,8 @@ export default function CarDetailPage() {
 
     // Kiểm tra nếu ngày hiện tại nằm trong mảng bookedTimeSlots
     const isBookedDate = bookedTimeSlots.some((slot) => {
-      const slotStart = moment(slot.from).subtract(1, "days");
-      const slotEnd = moment(slot.to);
+      const slotStart = moment(slot.from);
+      const slotEnd = moment(slot.to).add(1, "days");
       return current && current >= slotStart && current <= slotEnd;
     });
 
@@ -410,8 +406,8 @@ export default function CarDetailPage() {
               /ngày
             </h1>
             <DateRangePicker
-              showTime={{ format: "HH mm" }}
-              format="DD-MM-YYYY HH mm"
+              showTime={{ format: "HH:mm" }}
+              format="DD-MM-YYYY HH:mm"
               // defaultValue={[
               //   dayjs(from, "DD-MM-YYYY HH:mm"),
               //   dayjs(to, "DD-MM-YYYY HH:mm"),

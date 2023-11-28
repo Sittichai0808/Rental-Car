@@ -5,6 +5,7 @@ import {
   cancelBooking,
   createBooking,
   getBookedTimeSlots,
+  getDetailBooking,
   getHistoryBooking,
   getListBooking
 } from '../controllers/bookings.controllers.js'
@@ -15,5 +16,6 @@ bookingRoutes.post('/:carId', accessTokenValidator, wrapRequestHandler(createBoo
 bookingRoutes.get('/historyBooking', accessTokenValidator, wrapRequestHandler(getHistoryBooking))
 bookingRoutes.get('/', wrapRequestHandler(getListBooking))
 bookingRoutes.get('/:carId', wrapRequestHandler(getBookedTimeSlots))
+bookingRoutes.get('/detail-booking/:bookingId', accessTokenValidator, wrapRequestHandler(getDetailBooking))
 bookingRoutes.delete('/:bookingId', accessTokenValidator, wrapRequestHandler(cancelBooking))
 export default bookingRoutes

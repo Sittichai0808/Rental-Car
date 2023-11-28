@@ -20,14 +20,7 @@ export default function AdminManageUsers() {
   return (
     <>
       <div className="pt-10">
-        <div className="mb-4 flex justify-between items-center">
-          <div className="max-w-[30%] flex gap-2 items-center">
-            <Input prefix={<SearchOutlined />} />
-            <Button type="primary">Search</Button>
-          </div>
-
-          <div></div>
-        </div>
+        <div className="mb-4 flex justify-between items-center"></div>
         <Table
           columns={[
             { key: "id", title: "ID", dataIndex: "id" },

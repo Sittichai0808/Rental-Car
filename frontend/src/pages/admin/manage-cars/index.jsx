@@ -188,11 +188,6 @@ export default function AdminManageCars() {
     <>
       <div className="pt-10 px-4">
         <div className="mb-4 flex justify-between items-center">
-          <div className="max-w-[30%] flex gap-2 items-center">
-            <Input prefix={<SearchOutlined />} />
-            <Button type="primary">Search</Button>
-          </div>
-
           <div>
             <Button onClick={handleInsertCar}>
               <PlusOutlined /> Add car

@@ -18,18 +18,6 @@ import styled from "@emotion/styled";
 import { UploadOutlined, UserAddOutlined } from "@ant-design/icons";
 import moment from "moment";
 
-const StyleInput = styled(Input)`
-  display: flex;
-  align-items: center;
-  padding: 12px;
-  width: 100%;
-`;
-
-const StyleInputModal = styled(Input)`
-  border-color: #949494;
-  height: 50px;
-  width: 100%;
-`;
 const ButtonSummit = styled(Button)`
   width: 100%;
   height: 50px;
@@ -143,121 +131,7 @@ export default function RegisterDriverModal({
           ? "Cập nhật GPLX"
           : "Đăng kí GPLX"}
       </p>
-      {/* <Form
-        form={form}
-        layout="vertical"
-        name="basic"
-        onFinish={(values) => {
-          mutate(values);
-        }}
-        label
-        initialValues={{}}
-        autoComplete="off"
-        className="mt-5 "
-      >
-        <Form.Item
-          label="Họ và tên"
-          name="fullName"
-          rules={[
-            {
-              type: "text",
-              message: "Please input your name",
-            },
-            {
-              required: true,
-              message: "Please input your name!",
-            },
-          ]}
-        >
-          <StyleInputModal
-            defaultValue={
-              driver?.result?.fullName || user?.result?.driverLicenses?.fullName
-            }
-            type="text"
-            size="large"
-          />
-        </Form.Item>
-        <Form.Item
-          label="Số GPLX"
-          name="drivingLicenseNo"
-          rules={[
-            {
-              type: "text",
-              message: "The input is not valid drivingLicenseNo",
-            },
-            {
-              required: true,
-              message: "Please input your drivingLicenseNo!",
-            },
-          ]}
-        >
-          <StyleInputModal
-            defaultValue={
-              driver?.result?.drivingLicenseNo ||
-              user?.result?.driverLicenses?.drivingLicenseNo
-            }
-            size="large"
-          />
-        </Form.Item>
-        <Form.Item
-          label="Ngày sinh"
-          name="dob"
-          rules={[
-            {
-              type: "text",
-              message: "The input is not valid dob!",
-            },
-            {
-              required: true,
-              message: "Please input your drivingLicenseNo!",
-            },
-          ]}
-        >
-          <StyleInputModal
-            defaultValue={
-              driver?.result?.dob
-                ? moment(driver?.result?.dob).format("DD-MM-YYYY")
-                : user?.result?.driverLicenses?.dob
-                ? moment(user?.result?.driverLicenses?.dob).format("DD-MM-YYYY")
-                : user?.result?.driverLicenses?.dob || ""
-            }
-            size="large"
-          />
-        </Form.Item>
-        <Form.Item
-          label="Hạng"
-          name="class"
-          rules={[
-            {
-              type: "text",
-              message: "The input is not valid class!",
-            },
-            {
-              required: true,
-              message: "Please input your class!",
-            },
-          ]}
-        >
-          <StyleInputModal
-            defaultValue={
-              driver?.result?.class || user?.result?.driverLicenses?.class
-            }
-            size="large"
-          />
-        </Form.Item>
 
-        <Form.Item
-          label="Hình ảnh"
-          name="image"
-          defaultValue={
-            driver?.result?.image || user?.result?.driverLicenses?.image
-          }
-        >
-          <Upload.Dragger listType="picture-card" showUploadList={true}>
-            <Button icon={<UploadOutlined />}>Click to upload</Button>
-          </Upload.Dragger>
-        </Form.Item>
-      </Form> */}
       <Form
         form={form}
         layout="vertical"

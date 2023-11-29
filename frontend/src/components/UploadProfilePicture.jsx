@@ -68,7 +68,7 @@ export const UploadProfilePicture = () => {
       <Upload.Dragger
         listType="picture-card"
         showUploadList={false}
-        className="aspect-square w-1/2 "
+        className="aspect-square w-2/3 "
         customRequest={({ file }) => updateProfile(file)}
       >
         <Spin spinning={loading}>

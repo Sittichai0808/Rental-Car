@@ -16,7 +16,27 @@ export const regisLicensesDriver = async (req, res, next) => {
     })
   }
 }
+export const updateDriverLicense = async (req, res, next) => {
+  const { did } = req.params
 
+  try {
+    const result = await driverLicensesService.updateDriverLicense(did, req.body, req?.file)
+
+    if (!result) {
+      return res.status(HTTP_STATUS.NOT_FOUND).json({ error: 'Driver License not found' })
+    }
+
+    return res.status(HTTP_STATUS.OK).json({
+      message: 'Driver License updated successfully',
+      result
+    })
+  } catch (error) {
+    console.error(error)
+    return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
+      error: 'Internal Server Error'
+    })
+  }
+}
 export const acceptLicensesDriver = async (req, res, next) => {
   const { did } = req.params
   const newStatus = req.body

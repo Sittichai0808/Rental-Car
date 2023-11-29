@@ -35,7 +35,7 @@ export const ProfileLayout = ({ children }) => {
     {
       key: "1",
       label: (
-        <span className=" text-center">
+        <span className="text-base font-semibold text-center">
           {" "}
           <UserOutlined />
           Profile
@@ -48,7 +48,7 @@ export const ProfileLayout = ({ children }) => {
     {
       key: "2",
       label: (
-        <span className=" text-center ">
+        <span className="text-base font-semibold text-center ">
           <CarFilled />
           Lịch sử thuê xe{" "}
         </span>
@@ -58,7 +58,7 @@ export const ProfileLayout = ({ children }) => {
     {
       key: "3",
       label: (
-        <span className=" text-center">
+        <span className="text-base font-semibold text-center">
           <HeartFilled />
           Xe yêu thích
         </span>
@@ -78,8 +78,8 @@ export const ProfileLayout = ({ children }) => {
           }}
         >
           {" "}
-          <span className=" text-center ">
-            <LogoutOutlined className=" text-red-600 text-center " />
+          <span className="text-base font-semibold text-center ">
+            <LogoutOutlined className=" text-red-600  " />
             Logout
           </span>
         </div>
@@ -99,7 +99,7 @@ export const ProfileLayout = ({ children }) => {
         hasSider
       >
         <Content
-          className=" w-[calc(100%-23%)] flex flex-col my-5 overflow-y-scroll h-0 border-r shadow bg-white p-6 "
+          className=" w-[calc(100%-23%)] flex flex-col my-5 overflow-y-scroll h-0 border-r bg-white p-6 "
           style={{
             minHeight: "100vh",
             boxShadow: "0 .25rem 1.125rem rgba(75,70,92,.1)",

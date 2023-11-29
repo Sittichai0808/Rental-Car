@@ -75,7 +75,7 @@ export default function AccountPage() {
   const backgroundColor = status === "Chưa xác thực" ? "#ffd0cd" : "#cff1db";
 
   return (
-    <div className="flex flex-col  mb-7 gap-5">
+    <div className="flex flex-col mb-7 gap-5">
       <div
         className="flex flex-grow  relative border rounded-xl border-solid border-neutral-200 p-4  "
         style={{

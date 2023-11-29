@@ -7,13 +7,6 @@ class DriverLicensesService {
       if (payloadFile && payloadFile.path) {
         payloadBody.image = payloadFile.path
       }
-      const { dob } = payloadBody
-      const dobParts = dob.split('-')
-      const dobDate = new Date(dobParts[2], dobParts[1] - 1, dobParts[0])
-
-      if (!isNaN(dobDate.getTime())) {
-        payloadBody.dob = `${dobParts[2]}-${dobParts[1]}-${dobParts[0]}`
-      }
       const result = await DriverLicenses.create({ ...payloadBody })
       await User.findByIdAndUpdate(userId, {
         driverLicenses: result._id

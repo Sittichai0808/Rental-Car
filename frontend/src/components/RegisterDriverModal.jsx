@@ -14,8 +14,14 @@ import {
   Modal,
   InputNumber,
   Select,
+  Spin,
+  Image,
 } from "antd";
-import { UploadOutlined, UserAddOutlined } from "@ant-design/icons";
+import {
+  UploadOutlined,
+  UserAddOutlined,
+  CloudUploadOutlined,
+} from "@ant-design/icons";
 
 export default function RegisterDriverModal({
   openRegisterDriver,
@@ -41,6 +47,7 @@ export default function RegisterDriverModal({
       "drivingLicenseNo",
       values.drivingLicenseNo || user?.result?.driverLicenses?.drivingLicenseNo
     );
+
     formData.append(
       "class",
       values.class || user?.result?.driverLicenses?.class
@@ -157,55 +164,47 @@ export default function RegisterDriverModal({
                   .localeCompare((optionB?.value ?? "").toLowerCase())
               }
               options={[
-                {
-                  value: "B1",
-                },
-                {
-                  value: "B2",
-                },
-                {
-                  value: "C",
-                },
-                {
-                  value: "D",
-                },
-                {
-                  value: "E",
-                },
-                {
-                  value: "F",
-                },
-                {
-                  value: "FB2",
-                },
-                {
-                  value: "FC",
-                },
-                {
-                  value: "FD",
-                },
-                {
-                  value: "FE",
-                },
+                { value: "B1" },
+                { value: "B2" },
+                { value: "C" },
+                { value: "D" },
+                { value: "E" },
+                { value: "F" },
+                { value: "FB2" },
+                { value: "FC" },
+                { value: "FD" },
+                { value: "FE" },
               ]}
             />
           </Form.Item>
         </div>
 
-        <div className="grow">
-          <Form.Item
-            label="Hình ảnh"
-            name="image"
-            defaultValue={
-              driver?.result?.image || user?.result?.driverLicenses?.image
-            }
-          >
+        <div className="grow w-1/3">
+          <Form.Item label="Hình ảnh" name="image">
             <Upload.Dragger
               listType="picture-card"
-              className="aspect-square"
+              className="aspect-square  "
               showUploadList={true}
             >
-              <UserAddOutlined />
+              <div className="p-2 py-0 relative group   ">
+                {driver?.result?.image ||
+                user?.result?.driverLicenses?.image ? (
+                  <Image
+                    className="w-full h-full  object-cover aspect-square rounded overflow-hidden  mt-0 pb-4"
+                    preview={false}
+                    src={
+                      driver?.result?.image ||
+                      user?.result?.driverLicenses?.image
+                    }
+                  />
+                ) : (
+                  <CloudUploadOutlined />
+                )}
+
+                <div className="absolute w-full h-full top-0 left-0 bg-white/80 opacity-0 hover:opacity-100 flex justify-center items-center transition-all">
+                  <CloudUploadOutlined />
+                </div>
+              </div>
             </Upload.Dragger>
           </Form.Item>
         </div>

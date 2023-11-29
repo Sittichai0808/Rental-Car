@@ -8,12 +8,6 @@ const driverLicensesSchema = new mongoose.Schema(
     drivingLicenseNo: {
       type: String
     },
-    fullName: {
-      type: String
-    },
-    dob: {
-      type: Date
-    },
     class: {
       type: String
     },

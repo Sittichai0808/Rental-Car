@@ -13,18 +13,9 @@ import {
   notification,
   Modal,
   InputNumber,
+  Select,
 } from "antd";
-import styled from "@emotion/styled";
 import { UploadOutlined, UserAddOutlined } from "@ant-design/icons";
-import moment from "moment";
-
-const ButtonSummit = styled(Button)`
-  width: 100%;
-  height: 50px;
-  font-size: 18px;
-  font-weight: 700;
-  padding: 30px auto;
-`;
 
 export default function RegisterDriverModal({
   openRegisterDriver,
@@ -47,14 +38,9 @@ export default function RegisterDriverModal({
     setLoading(true);
     const formData = new FormData();
     formData.append(
-      "fullName",
-      values.fullName || user?.result?.driverLicenses?.fullName
-    );
-    formData.append(
       "drivingLicenseNo",
       values.drivingLicenseNo || user?.result?.driverLicenses?.drivingLicenseNo
     );
-    formData.append("dob", values.dob || user?.result?.driverLicenses?.dob);
     formData.append(
       "class",
       values.class || user?.result?.driverLicenses?.class
@@ -65,18 +51,20 @@ export default function RegisterDriverModal({
     );
 
     try {
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_REACT_APP_BACKEND_URL}/drivers/registerDriver`,
-        formData,
+      const did = driver?._id || user?.result?.driverLicenses?._id;
 
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-            "Content-Type": "multipart/form-data",
-            withCredentials: true,
-          },
-        }
-      );
+      const response = await axios({
+        method: did ? "put" : "post", // Use PUT if there's an existing driver ID, otherwise use POST
+        url: did
+          ? `${process.env.NEXT_PUBLIC_REACT_APP_BACKEND_URL}/drivers/updateDriver/${did}`
+          : `${process.env.NEXT_PUBLIC_REACT_APP_BACKEND_URL}/drivers/registerDriver`,
+        data: formData,
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "multipart/form-data",
+          withCredentials: true,
+        },
+      });
 
       if (response.status === 200) {
         console.log(response.data);
@@ -116,14 +104,14 @@ export default function RegisterDriverModal({
       open={openRegisterDriver}
       onCancel={handleCancleRegisterDriver}
       footer={[
-        <ButtonSummit
+        <Button
           loading={isLoading}
           htmlType="submit"
           type="primary"
           onClick={() => mutate(form.getFieldsValue())}
         >
           {driver || user?.result?.driverLicenses ? "Cập nhật" : " Đăng kí"}
-        </ButtonSummit>,
+        </Button>,
       ]}
     >
       <p className="flex justify-center items-center w-full text-2xl font-bold">
@@ -140,47 +128,66 @@ export default function RegisterDriverModal({
           mutate(values);
         }}
         label
-        initialValues={{}}
+        initialValues={{
+          ...(driver?.result || {}),
+          ...(user?.result?.driverLicenses || {}),
+        }}
         autoComplete="off"
         className="flex gap-4 mt-10"
       >
         <div className="w-2/3">
-          <Form.Item label="Họ và tên" name="fullName" required>
-            <Input
-              defaultValue={
-                driver?.result?.fullName ||
-                user?.result?.driverLicenses?.fullName
-              }
-            />
-          </Form.Item>
           <Form.Item label="Số GPLX" name="drivingLicenseNo" required>
-            <InputNumber
-              defaultValue={
-                driver?.result?.drivingLicenseNo ||
-                user?.result?.driverLicenses?.drivingLicenseNo
-              }
-              className="w-full"
-            />
+            <InputNumber className="w-full" />
           </Form.Item>
 
-          <Form.Item label="Ngày sinh" name="dob" required>
-            <Input
-              defaultValue={
-                driver?.result?.dob
-                  ? moment(driver?.result?.dob).format("DD-MM-YYYY")
-                  : user?.result?.driverLicenses?.dob
-                  ? moment(user?.result?.driverLicenses?.dob).format(
-                      "DD-MM-YYYY"
-                    )
-                  : user?.result?.driverLicenses?.dob || ""
-              }
-            />
-          </Form.Item>
           <Form.Item label="Hạng" name="class" required>
-            <Input
-              defaultValue={
-                driver?.result?.class || user?.result?.driverLicenses?.class
+            <Select
+              className="py-0"
+              showSearch
+              placeholder="Search to Select"
+              optionFilterProp="children"
+              filterOption={(input, option) =>
+                (option?.value.toLowerCase() ?? "").includes(
+                  input.toLowerCase()
+                )
               }
+              filterSort={(optionA, optionB) =>
+                (optionA?.value ?? "")
+                  .toLowerCase()
+                  .localeCompare((optionB?.value ?? "").toLowerCase())
+              }
+              options={[
+                {
+                  value: "B1",
+                },
+                {
+                  value: "B2",
+                },
+                {
+                  value: "C",
+                },
+                {
+                  value: "D",
+                },
+                {
+                  value: "E",
+                },
+                {
+                  value: "F",
+                },
+                {
+                  value: "FB2",
+                },
+                {
+                  value: "FC",
+                },
+                {
+                  value: "FD",
+                },
+                {
+                  value: "FE",
+                },
+              ]}
             />
           </Form.Item>
         </div>

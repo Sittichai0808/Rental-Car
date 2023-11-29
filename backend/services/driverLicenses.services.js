@@ -24,7 +24,17 @@ class DriverLicensesService {
       throw error
     }
   }
-
+  async updateDriverLicense(did, payload, payloadFile) {
+    try {
+      if (payloadFile && payloadFile.path) {
+        payload.image = payloadFile.path
+      }
+      const updateDriverLicense = await DriverLicenses.findByIdAndUpdate(did, { ...payload }, { new: true })
+      return updateDriverLicense
+    } catch (error) {
+      throw new Error(error)
+    }
+  }
   async acceptLicensesDriver(did, newStatus) {
     try {
       const acceptLicensesDriver = await DriverLicenses.findByIdAndUpdate(did, newStatus)

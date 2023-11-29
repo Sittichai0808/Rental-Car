@@ -2,7 +2,8 @@ import express from 'express'
 import {
   acceptLicensesDriver,
   getLicensesDrivers,
-  regisLicensesDriver
+  regisLicensesDriver,
+  updateDriverLicense
 } from '../controllers/driverLincenses.controllers.js'
 import { wrapRequestHandler } from '../utils/handlers.js'
 import { accessTokenValidator, adminAndStaffValidator } from '../middlewares/users.middlewares.js'
@@ -15,7 +16,13 @@ driverLicensesRoutes.post(
   uploadCloud.single('image'),
   wrapRequestHandler(regisLicensesDriver)
 ),
-  driverLicensesRoutes.put('/acceptDriver/:did', adminAndStaffValidator, wrapRequestHandler(acceptLicensesDriver))
+  driverLicensesRoutes.put(
+    '/updateDriver/:did',
+    accessTokenValidator,
+    uploadCloud.single('image'),
+    wrapRequestHandler(updateDriverLicense)
+  )
+driverLicensesRoutes.put('/acceptDriver/:did', adminAndStaffValidator, wrapRequestHandler(acceptLicensesDriver))
 
 driverLicensesRoutes.get('/', adminAndStaffValidator, wrapRequestHandler(getLicensesDrivers))
 export default driverLicensesRoutes

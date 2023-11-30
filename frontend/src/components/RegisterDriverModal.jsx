@@ -58,7 +58,7 @@ export default function RegisterDriverModal({
     );
 
     try {
-      const did = driver?._id || user?.result?.driverLicenses?._id;
+      const did = driver?.result?._id || user?.result?.driverLicenses?._id;
 
       const response = await axios({
         method: did ? "put" : "post", // Use PUT if there's an existing driver ID, otherwise use POST

@@ -10,6 +10,7 @@ import {
 } from "@ant-design/icons";
 import { Divider, Tabs, Layout, Button } from "antd";
 import Account from "@/pages/profile/index";
+import Driver from "@/pages/profile/driver-licenses/index";
 import CarRental from "@/pages/profile/car-rental/index";
 import CarLiked from "@/pages/profile/car-liked";
 import HeaderComponent from "@/components/HeaderComponent";
@@ -44,9 +45,21 @@ export const ProfileLayout = ({ children }) => {
 
       children: <Account />,
     },
-
     {
       key: "2",
+      label: (
+        <span className="text-base font-semibold text-center">
+          {" "}
+          <UserOutlined />
+          Giấy phép lái xe
+        </span>
+      ),
+
+      children: <Driver />,
+    },
+
+    {
+      key: "3",
       label: (
         <span className="text-base font-semibold text-center ">
           <CarFilled />
@@ -56,7 +69,7 @@ export const ProfileLayout = ({ children }) => {
       children: <CarRental />,
     },
     {
-      key: "3",
+      key: "4",
       label: (
         <span className="text-base font-semibold text-center">
           <HeartFilled />
@@ -66,7 +79,7 @@ export const ProfileLayout = ({ children }) => {
       children: <CarLiked />,
     },
     {
-      key: "4",
+      key: "5",
       label: (
         <div
           onClick={() => {
@@ -86,7 +99,7 @@ export const ProfileLayout = ({ children }) => {
       ),
     },
   ];
-
+  //overflow-y-scroll h-0
   return (
     <Layout className="flex max-w-6xl mx-auto bg-white ">
       <HeaderComponent />
@@ -99,14 +112,13 @@ export const ProfileLayout = ({ children }) => {
         hasSider
       >
         <Content
-          className=" w-[calc(100%-23%)] flex flex-col my-5 overflow-y-scroll h-0 border-r bg-white p-6 "
+          className=" w-[calc(100%-23%)] flex flex-col my-5  border rounded-xl border-solid border-neutral-200 p-4  bg-white  "
           style={{
             minHeight: "100vh",
-            boxShadow: "0 .25rem 1.125rem rgba(75,70,92,.1)",
           }}
         >
           <Tabs
-            className=" w-full mb-3 flex mt-3"
+            className=" w-full mb-3 flex mt-3 "
             defaultActiveKey="1"
             tabPosition={tabPosition}
             items={items}

@@ -62,6 +62,7 @@ export default function EditProfileModal({
             username: response.data.result.username,
           },
         }));
+
         handleCancleEditModal();
         notification.success({
           message: "Cập nhật thành công",

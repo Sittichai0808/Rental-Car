@@ -54,10 +54,10 @@ const BookingPage = () => {
   //   moment(dates[1]?.format("YYYY-MM-DD HH:mm") || "")._i,
   // ];
   const [from, setFrom] = useState(
-    moment(dates?.[0]?.format("YYYY-MM-DD HH:mm") || "")._i
+    moment(dates?.[0]?.format("YYYY-MM-DD HH:mm") || undefined)._i
   );
   const [to, setTo] = useState(
-    moment(dates?.[1]?.format("YYYY-MM-DD HH:mm") || "")._i
+    moment(dates?.[1]?.format("YYYY-MM-DD HH:mm") || undefined)._i
   );
   console.log(from, to);
   const onChange = (e) => {
@@ -283,7 +283,7 @@ const BookingPage = () => {
     setAmountDiscount(discount);
   };
   return (
-    <div className="mb-10">
+    <div className="mb-10 max-w-6xl mx-auto">
       <>
         <div class="flex flex-col mt-10 items-center justify-center border rounded-sm bg-slate-100 p-2 pb-4 sm:flex-row sm:px-5 lg:px-5 xl:px-12">
           <div class="flex  w-full mt-4 py-2 text-xs sm:mt-0 sm:ml-auto sm:text-base ">

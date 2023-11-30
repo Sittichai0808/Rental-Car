@@ -13,7 +13,7 @@ import { storage } from "../../../../firebase.js"; // Import your Firebase stora
 import axios from "axios";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import { useMutation } from "@tanstack/react-query";
-
+import dayjs from "dayjs";
 import {
   CloudUploadOutlined,
   PlusOutlined,
@@ -58,6 +58,7 @@ import Highlighter from "react-highlight-words";
 import { useRouter } from "next/router";
 import { defaultLayoutPlugin } from "@react-pdf-viewer/default-layout";
 import { useAccessTokenValue } from "@/recoils/accessToken.state.js";
+import isBetween from "dayjs/plugin/isBetween";
 import {
   GET_FINAL_CONTRACTS_KEY,
   GET_LIST_CONTRACTS_KEY,
@@ -96,6 +97,7 @@ export default function AdminManageContracts() {
   const [searchedColumn, setSearchedColumn] = useState("");
   const searchInput = useRef(null);
   const router = useRouter();
+  const [days, setDays] = useState();
   const [filteredInfo, setFilteredInfo] = useState({});
   const handleChange = (pagination, filters) => {
     setFilteredInfo(filters);
@@ -105,6 +107,41 @@ export default function AdminManageContracts() {
     confirm();
     setSearchText(selectedKeys[0]);
     setSearchedColumn(dataIndex);
+  };
+
+  function dateDiffInDays(date1, date2) {
+    const oneDay = 24 * 60 * 60 * 1000;
+
+    const timeDiff = Math.abs(date1.getTime() - date2.getTime());
+
+    const diffDays = Math.round(timeDiff / oneDay);
+
+    return diffDays;
+  }
+
+  useEffect(() => {
+    // Tính toán giá trị mới cho amount dựa trên totalDays
+
+    const newAmount =
+      form.getFieldValue("totalCostNumber") -
+      (form.getFieldValue("cost") * days * 70) / 100;
+
+    console.log(newAmount);
+    // Cập nhật initialValues
+    form.setFieldsValue({
+      cost_settlement: newAmount || null, // Định dạng số tiền theo ý muốn
+    });
+  }, [days]);
+
+  const handleDays = (value) => {
+    const startDate = new Date(moment(value?.format("YYYY-MM-DD"))?._i);
+    const endDate = new Date(
+      moment(
+        moment(form.getFieldValue("timeBookingEnd")).format("YYYY-DD-MM")
+      )?._i
+    );
+    const totalDays = dateDiffInDays(endDate, startDate);
+    setDays(totalDays);
   };
   const handleReset = (clearFilters) => {
     clearFilters();
@@ -295,15 +332,15 @@ export default function AdminManageContracts() {
       setTimeout(() => {
         setOpen(false);
       }, 500);
-      console.log(moment(values.timeFinish).format("YYYY-MM-DD"));
+
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_REACT_APP_BACKEND_URL}/final-contracts/create/${values._id}`,
         {
-          images: values?.images,
-          timeFinish: moment(values?.timeFinish.format("YYYY-MM-DD"))._i,
-
-          cost_settlement: values?.cost_settlement,
-          note: values?.note,
+          images: values?.images || undefined,
+          timeFinish:
+            moment(values?.timeFinish?.format("YYYY-MM-DD"))._i || undefined,
+          cost_settlement: values?.cost_settlement || undefined,
+          note: values?.note || undefined,
         },
         {
           headers: {
@@ -313,9 +350,10 @@ export default function AdminManageContracts() {
           withCredentials: true,
         }
       );
+      console.log(response);
 
       if (response.status === 201) {
-        message.success("Create Contract successfully");
+        message.success("Create final contract successfully");
         // router.reload();
       } else {
         // Handle API errors and display an error message
@@ -361,7 +399,10 @@ export default function AdminManageContracts() {
   const showModal = (booking) => {
     setOpen(true);
 
-    form.setFieldsValue({ ...booking });
+    form.setFieldsValue({
+      // timeFinish: moment(new Date()),
+      ...booking,
+    });
   };
   const handleOk = () => {
     setLoading(true);
@@ -373,6 +414,35 @@ export default function AdminManageContracts() {
   const handleCancel = () => {
     console.log("Clicked cancel button");
     setOpen(false);
+  };
+
+  const disabledDate = (current) => {
+    var dateEnd = new Date(
+      moment(
+        moment(form.getFieldValue("timeBookingEnd")).format("YYYY-DD-MM")
+      )?._i
+    );
+    dateEnd.setDate(dateEnd.getDate() + 1);
+
+    return (
+      // (current && current < dayjs().endOf("day")) ||
+      !(
+        current < dateEnd &&
+        current >
+          new Date(
+            moment(moment(form.getFieldValue("timeBookingStart"))._id).format(
+              "YYYY-MM-DD"
+            )
+          )
+      )
+      // dayjs("2023-12-3")?.isBetween(
+      //   current,
+      //   // moment(current?.format("YYYY-MM-DD"))?._i,
+      //   dayjs("2023-12-6")
+      // )
+
+      // dayjs().isAfter(dayjs("2023-12-01"))
+    );
   };
 
   const { data } = useQuery({
@@ -396,7 +466,7 @@ export default function AdminManageContracts() {
 
     numberCar: item?.bookingId?.carId?.numberCar,
     model: item?.bookingId?.carId?.model?.name,
-
+    cost: item?.bookingId?.carId?.cost,
     numberSeat: item?.bookingId?.carId?.numberSeat,
     yearManufacture: item?.bookingId?.carId?.yearManufacture,
 
@@ -407,6 +477,7 @@ export default function AdminManageContracts() {
       "DD-MM-YYYY HH:mm"
     ),
     totalCost: formatCurrency(item?.bookingId?.totalCost),
+    totalCostNumber: item?.bookingId?.totalCost,
     file: item?.file,
     status: item?.status,
   }));
@@ -414,18 +485,18 @@ export default function AdminManageContracts() {
   return (
     <>
       <div className="pt-10">
-        <div className="mb-4 flex justify-between items-center">
+        {/* <div className="mb-4 flex justify-between items-center">
           <div className="max-w-[30%] flex gap-2 items-center">
             <Input prefix={<SearchOutlined />} />
             <Button type="primary">Search</Button>
           </div>
-        </div>
+        </div> */}
 
         <Table
           onChange={handleChange}
-          scroll={{ x: 2400, y: 460 }}
+          scroll={{ x: 2300, y: 500 }}
           columns={[
-            { key: "id", title: "ID", dataIndex: "id", width: "2%" },
+            { key: "id", title: "ID", dataIndex: "id", width: "3%" },
             {
               key: "image",
               title: "Thumbnail",
@@ -581,7 +652,7 @@ export default function AdminManageContracts() {
               key: "action",
               title: "Action",
               fixed: "right",
-              width: "8%",
+              width: "6%",
               render: (_, contract) => (
                 <div className="flex gap-2">
                   {contract.status === "Đã tất toán" ? (
@@ -589,7 +660,7 @@ export default function AdminManageContracts() {
                       type="primary"
                       className=" border border-solid  "
                       onClick={() => showModal(contract)}
-                      disabled
+                      // disabled
                     >
                       <PlusCircleOutlined style={{ fontSize: "14px" }} />
                     </Button>
@@ -620,21 +691,6 @@ export default function AdminManageContracts() {
                     >
                       <DownloadOutlined style={{ fontSize: "14px" }} />
                     </Button>
-                  </Tooltip>
-
-                  <Tooltip
-                    placement="topRight"
-                    title={"Vô hiệu hóa thuê xê"}
-                    color={"red"}
-                  >
-                    <Popconfirm
-                      title="Are you sure to deactivate this booking?"
-                      okText="Deactivate"
-                    >
-                      <Button className="bg-red-500 text-white border-none hover:bg-red-500/70">
-                        <DeleteOutlined style={{ fontSize: "14px" }} />
-                      </Button>
-                    </Popconfirm>
                   </Tooltip>
                 </div>
 
@@ -712,15 +768,37 @@ export default function AdminManageContracts() {
                 <Input />
               </Form.Item>
 
+              <Form.Item label="Cost" hidden name="cost">
+                <Input />
+              </Form.Item>
+              <Form.Item
+                label="Tổng giá tiền thuê bang so"
+                hidden
+                name="totalCostNumber"
+              >
+                <Input readOnly />
+              </Form.Item>
+
               <h2>Trả xe trước thời hạn(nếu có)</h2>
               <Form.Item label="Thời gian kết thúc thuê" name="timeFinish">
-                <DatePicker format="DD-MM-YYYY" />
+                <DatePicker
+                  format="DD-MM-YYYY"
+                  disabledDate={disabledDate}
+                  onChange={handleDays}
+                />
               </Form.Item>
               <Form.Item
                 label="Giá trị kết toán hợp đồng"
                 name="cost_settlement"
               >
-                <Input />
+                <InputNumber
+                  readOnly
+                  formatter={(value) =>
+                    `${value} VND`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                  }
+                  parser={(value) => value.replace(/\VND\s?|(,*)/g, "")}
+                  style={{ width: "170px" }}
+                />
               </Form.Item>
               <Form.Item label="Ghi chú" name="note">
                 <Input />
@@ -734,42 +812,21 @@ export default function AdminManageContracts() {
             </div>
 
             <div className="grow w-1/3">
-              <Form.Item label="Images" name="images">
+              <Form.Item
+                label="Images"
+                name="images"
+                rules={[
+                  {
+                    required: true,
+                    message: "Hãy đăng ảnh tất toán hợp đồng lên!",
+                  },
+                ]}
+              >
                 <UploadContract />
               </Form.Item>
             </div>
           </Form>
         </>
-      </Modal>
-
-      <Modal
-        title="Hợp Đồng"
-        open={isModalOpen}
-        onOk={handleOkView}
-        footer={null}
-        width={1000}
-        onCancel={handleCancelView}
-      >
-        <div>
-          {/* <Loader isLoading={isLoading} /> */}
-          <section
-            id="pdf-section"
-            className="d-flex flex-column align-items-center w-100"
-          >
-            <Worker workerUrl="https://unpkg.com/pdfjs-dist@2.14.305/build/pdf.worker.min.js">
-              <Viewer
-                fileUrl={urlFile}
-                plugins={[defaultLayoutPluginInstance]}
-              />
-            </Worker>
-            {/* <embed
-              type="application/pdf"
-              src={urlFile}
-              width={100 + "%"}
-              height={100 + "%"}
-            /> */}
-          </section>
-        </div>
       </Modal>
     </>
   );

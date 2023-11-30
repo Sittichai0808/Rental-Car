@@ -13,9 +13,9 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { message } from "antd";
 import { Avatar, Button, Form, Input, Modal, Popconfirm, Table } from "antd";
 import { omit } from "lodash-es";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-function UpsertStaffForm({ staffId, onClose }) {
+function UpsertStaffForm({ actionType, staffId, onClose }) {
   const [accessToken] = useLocalStorage("access_token");
   const isInsert = !staffId;
   const queryClient = useQueryClient();
@@ -25,11 +25,18 @@ function UpsertStaffForm({ staffId, onClose }) {
     enabled: !!staffId,
   });
 
-  const staff = data?.result;
-  console.log("yiy", staffId, staff);
+  // const staff = actionType===undefined ? null : data?.result;
+  // console.log("yiy", staffId, staff);
 
   const [form] = Form.useForm();
-
+  if (actionType === "insert") {
+    // form.setFieldsValue(null);
+  } else {
+    const { password, profilePicture, ...rest } = { ...data?.result };
+    console.log(rest);
+    form.setFieldsValue({ ...rest, profilePicture: profilePicture });
+  }
+  // form.setFieldsValue({ ...data?.result });
   const apiUpsertStaff = useMutation({
     mutationFn: upsertStaff,
     onSuccess: () => {
@@ -56,25 +63,83 @@ function UpsertStaffForm({ staffId, onClose }) {
         layout="vertical"
         className="grid grid-cols-3 gap-4 mt-10"
         form={form}
-        initialValues={omit(staff, "password")}
+        // initialValues={omit(staff, "password")}
       >
         <div className="col-span-2">
-          <Form.Item label="Username" required name="username">
+          <Form.Item
+            label="Username"
+            name="username"
+            rules={[
+              {
+                required: true,
+                message: "Hãy nhập tên hiển thị!",
+              },
+            ]}
+          >
             <Input />
           </Form.Item>
-          <Form.Item label="Password" required name="password">
+          <Form.Item
+            label="Password"
+            name="password"
+            rules={[
+              {
+                required: true,
+                message: "Hãy nhập mật khẩu!",
+              },
+            ]}
+          >
             <Input.Password />
           </Form.Item>
-          <Form.Item label="Name" required name="fullname">
+          <Form.Item
+            label="Name"
+            required
+            name="fullname"
+            rules={[
+              {
+                required: true,
+                message: "Hãy nhập họ và tên!",
+              },
+            ]}
+          >
             <Input />
           </Form.Item>
-          <Form.Item label="Email" required name="email">
+          <Form.Item
+            label="Email"
+            required
+            name="email"
+            rules={[
+              {
+                required: true,
+                message: "Hãy nhập email!",
+              },
+            ]}
+          >
             <Input />
           </Form.Item>
-          <Form.Item label="Phone Number" required name="phoneNumber">
+          <Form.Item
+            label="Phone Number"
+            required
+            name="phoneNumber"
+            rules={[
+              {
+                required: true,
+                message: "Hãy nhập số điện thoại!",
+              },
+            ]}
+          >
             <Input className="w-full" />
           </Form.Item>
-          <Form.Item label="Address" required name="address">
+          <Form.Item
+            label="Address"
+            required
+            name="address"
+            rules={[
+              {
+                required: true,
+                message: "Hãy nhập địa chỉ!",
+              },
+            ]}
+          >
             <Input.TextArea rows={3} />
           </Form.Item>
         </div>
@@ -109,7 +174,7 @@ export default function AdminManageStaffs() {
   });
 
   const handleInsertStaff = () => {
-    setUpsertStaffModal({ actionType: "insert" });
+    setUpsertStaffModal({ actionType: "insert", staffId: undefined });
   };
 
   return (
@@ -216,6 +281,7 @@ export default function AdminManageStaffs() {
         onCancel={() => setUpsertStaffModal(undefined)}
       >
         <UpsertStaffForm
+          actionType={upsertStaffModal?.actionType}
           staffId={upsertStaffModal?.staffId}
           onClose={() => setUpsertStaffModal(undefined)}
         />

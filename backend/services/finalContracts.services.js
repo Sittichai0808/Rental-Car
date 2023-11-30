@@ -6,48 +6,84 @@ import moment from 'moment-timezone'
 class FinalContractsService {
   async createFinalContract(contractId, payload) {
     try {
-      const { file, cost_settlement, timeFinish, note } = payload
       // Parse the input date using the 'DD-MM-YYYY' format and set the timezone to Asia/Ho_Chi_Minh (ICT)
-      const formattedTimeFinish = moment.tz(timeFinish.concat(' 5:30'), 'YYYY-MM-DD HH:mm').toDate()
-      console.log(formattedTimeFinish)
-      const newFinalContract = new FinalContracts({
-        contractId: contractId,
-        timeFinish: formattedTimeFinish,
-        ...payload
-      })
 
-      const finalContractResult = await newFinalContract.save()
-      const getFinalContract = await FinalContracts.find({ _id: finalContractResult._id })
-        .populate({
-          path: 'contractId',
-          populate: {
-            path: 'createBy',
-            model: 'User'
-          }
+      var formattedTimeFinish
+      var newFinalContract
+
+      if (payload.timeFinish !== undefined) {
+        formattedTimeFinish = moment.tz(payload?.timeFinish.concat(' 5:30'), 'YYYY-MM-DD HH:mm').toDate()
+        newFinalContract = new FinalContracts({
+          contractId: contractId,
+          timeFinish: formattedTimeFinish,
+          ...payload
         })
-        .populate({
-          path: 'contractId',
-          populate: {
-            path: 'bookingId',
-            model: 'Bookings',
+
+        const finalContractResult = await newFinalContract.save()
+        const getFinalContract = await FinalContracts.find({ _id: finalContractResult._id })
+          .populate({
+            path: 'contractId',
             populate: {
-              path: 'bookBy',
+              path: 'createBy',
               model: 'User'
             }
-          }
+          })
+          .populate({
+            path: 'contractId',
+            populate: {
+              path: 'bookingId',
+              model: 'Bookings',
+              populate: {
+                path: 'bookBy',
+                model: 'User'
+              }
+            }
+          })
+
+        await BookedTimeSlots.findOneAndUpdate(
+          { bookingId: getFinalContract[0].contractId.bookingId._id },
+          { $set: { to: formattedTimeFinish } },
+          { new: true }
+        )
+
+        await Contracts.findByIdAndUpdate(contractId, { $set: { status: 'Đã tất toán' } }, { new: true })
+
+        // await Contracts.findByIdAndUpdate(contractId, { $set: { status: 'Đã tất toán' } }, { new: true })
+
+        return [finalContractResult, getFinalContract]
+      } else {
+        newFinalContract = new FinalContracts({
+          contractId: contractId,
+          ...payload
         })
 
-      await BookedTimeSlots.findOneAndUpdate(
-        { bookingId: getFinalContract[0].contractId.bookingId._id },
-        { $set: { to: formattedTimeFinish } },
-        { new: true }
-      )
+        const finalContractResult = await newFinalContract.save()
+        const getFinalContract = await FinalContracts.find({ _id: finalContractResult._id })
+          .populate({
+            path: 'contractId',
+            populate: {
+              path: 'createBy',
+              model: 'User'
+            }
+          })
+          .populate({
+            path: 'contractId',
+            populate: {
+              path: 'bookingId',
+              model: 'Bookings',
+              populate: {
+                path: 'bookBy',
+                model: 'User'
+              }
+            }
+          })
 
-      await Contracts.findByIdAndUpdate(contractId, { $set: { status: 'Đã tất toán' } }, { new: true })
+        await Contracts.findByIdAndUpdate(contractId, { $set: { status: 'Đã tất toán' } }, { new: true })
 
-      // await Contracts.findByIdAndUpdate(contractId, { $set: { status: 'Đã tất toán' } }, { new: true })
+        // await Contracts.findByIdAndUpdate(contractId, { $set: { status: 'Đã tất toán' } }, { new: true })
 
-      return [finalContractResult, getFinalContract]
+        return [finalContractResult, getFinalContract]
+      }
     } catch (error) {
       throw new Error(error)
     }

@@ -4,7 +4,8 @@ const finalContractsSchema = new mongoose.Schema(
   {
     contractId: { type: mongoose.Types.ObjectId, ref: 'Contracts' },
     images: {
-      type: Array
+      type: Array,
+      require: true
     },
     cost_settlement: { type: Number },
     timeFinish: {

@@ -472,7 +472,7 @@ export default function AdminManageBookings() {
   return (
     <>
       <div className="pt-14">
-        <div className="mb-4 flex justify-between items-center">
+        {/* <div className="mb-4 flex justify-between items-center">
           <div className="max-w-[30%] flex gap-2 items-center"></div>
 
           <div>
@@ -485,7 +485,7 @@ export default function AdminManageBookings() {
               Scan PDF
             </Button>
           </div>
-        </div>
+        </div> */}
         <Table
           // onChange={handleChange}
           scroll={{ x: 2400, y: 460 }}
@@ -638,7 +638,7 @@ export default function AdminManageBookings() {
                       type="primary"
                       className=" border border-solid  "
                       onClick={() => showModal(booking)}
-                      disabled
+                      // disabled
                     >
                       <PlusCircleOutlined style={{ fontSize: "14px" }} />
                     </Button>
@@ -746,7 +746,16 @@ export default function AdminManageBookings() {
             </div>
 
             <div className="grow w-1/3">
-              <Form.Item label="Images" name="images">
+              <Form.Item
+                label="Images"
+                name="images"
+                rules={[
+                  {
+                    required: true,
+                    message: "Hãy đăng ảnh hợp đồng lên!",
+                  },
+                ]}
+              >
                 <UploadContract />
               </Form.Item>
               {/* <Form.Item label="" name="file">

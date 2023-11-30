@@ -19,7 +19,7 @@ export const CarCard = ({ dataCar }) => {
 
         <div className="mt-4">
           <h5 className="text-xl line-clamp-1 mt-2 font-bold mb-2">
-            {dataCar?.model.name} {dataCar?.yearManufacture}
+            {dataCar?.model?.name} {dataCar?.yearManufacture}
           </h5>
           <div className="flex items-baseline">
             <Rate

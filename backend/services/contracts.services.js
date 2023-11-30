@@ -36,6 +36,20 @@ class ContractsService {
             model: 'User'
           }
         })
+        .populate({
+          path: 'bookingId',
+          populate: {
+            path: 'carId',
+            model: 'Cars',
+            populate: [
+              {
+                path: 'model',
+                model: 'Models'
+              },
+              { path: 'brand', model: 'Brands' }
+            ]
+          }
+        })
         .sort({ createdAt: -1 })
       return getContract
     } catch (error) {

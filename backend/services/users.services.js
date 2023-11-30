@@ -91,7 +91,6 @@ class UsersService {
       return { getUser, user_id }
     } catch (error) {}
   }
-
   async getUserByEmail(payload) {
     const { email } = { ...payload }
     console.log(email)

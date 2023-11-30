@@ -43,6 +43,7 @@ export const UploadProfilePicture = () => {
             profilePicture: response.data.result.profilePicture,
           },
         }));
+
         notification.success({
           message: "Cập nhật thành công",
         });

@@ -30,7 +30,7 @@ export const AdminLayout = ({ children }) => {
       label: (
         <div onClick={() => push("/admin/profile-admin")}>
           <UserOutlined className="mr-2" />
-          My Profile
+          Thông tin cá nhân
         </div>
       ),
       key: "0",
@@ -46,7 +46,7 @@ export const AdminLayout = ({ children }) => {
         >
           {" "}
           <LogoutOutlined className=" text-red-600 mr-2" />
-          Logout
+          Đăng xuất
         </div>
       ),
       key: "1",
@@ -63,48 +63,48 @@ export const AdminLayout = ({ children }) => {
           items={[
             {
               key: "manage-users",
-              label: "Users management",
+              label: "Quản lí người dùng",
               icon: <UsergroupAddOutlined />,
             },
             role === "admin"
               ? {
                   key: "manage-staffs",
-                  label: "Staffs management",
+                  label: "Quản lí nhân viên",
                   icon: <UsergroupAddOutlined />,
                 }
               : undefined,
             {
               key: "manage-cars",
-              label: "Cars management",
+              label: "Quản lí xe",
               icon: <CarOutlined />,
             },
             {
               key: "manage-bookings",
-              label: "Bookings management",
+              label: "Quản lí thuê xe",
               icon: <BookOutlined />,
             },
             {
               key: "manage-contracts",
-              label: "Contracts management",
+              label: "Quản lí hợp đồng",
               icon: (
                 <ContractIcon className="shrink-0 text-2xl text-green-500 w-0.5" />
               ),
             },
             {
               key: "manage-final-contracts",
-              label: "Final contracts management",
+              label: "Tất toán hợp đồng",
               icon: (
                 <FinalContractIcon className="shrink-0 text-2xl text-green-500 w-0.5" />
               ),
             },
             {
               key: "manage-gplx",
-              label: "GPLX management",
+              label: "Quản lí bằng lái xe",
               icon: <IdcardOutlined />,
             },
             {
               key: "profile-admin",
-              label: "Profile",
+              label: "Trang cá nhân",
               icon: <UserOutlined />,
             },
           ]}

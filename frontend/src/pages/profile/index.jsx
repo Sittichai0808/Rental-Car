@@ -83,7 +83,27 @@ export default function AccountPage() {
             width: "30%",
           }}
         >
-          <p className="  font-semibold text-xl mt-0 ">Thông tin tài khoản</p>
+          <div className="flex flex-row ">
+            {" "}
+            <p className="  font-semibold text-xl mt-0  ">
+              Thông tin tài khoản
+            </p>
+            <Button
+              className="items-center  "
+              style={{
+                border: "1px solid #e0e0e0",
+                borderRadius: "100%",
+                cursor: "pointer",
+              }}
+              onClick={showModalEdit}
+            >
+              <EditOutlined />
+            </Button>
+            <EditProfileModal
+              openEditModal={openEditModal}
+              handleCancleEditModal={handleCancleEditModal}
+            />
+          </div>
 
           <div className="flex w-full flex-col justify-center items-center mx-auto ">
             <UploadProfilePicture />
@@ -109,21 +129,6 @@ export default function AccountPage() {
               <p className="m-0 text-xl font-semibold text-gray-500 flex w-full">
                 {user?.result?.address}
               </p>
-              <Button
-                className="items-center absolute right-5"
-                style={{
-                  border: "1px solid #e0e0e0",
-                  borderRadius: "100%",
-                  cursor: "pointer",
-                }}
-                onClick={showModalEdit}
-              >
-                <EditOutlined />
-              </Button>
-              <EditProfileModal
-                openEditModal={openEditModal}
-                handleCancleEditModal={handleCancleEditModal}
-              />
             </div>
             <hr
               className="w-full"

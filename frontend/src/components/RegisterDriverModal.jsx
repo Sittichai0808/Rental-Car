@@ -6,15 +6,7 @@ import { useMutation } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import { UploadImage } from "@/components/UploadImage";
 import axios from "axios";
-import {
-  Button,
-  Input,
-  Form,
-  notification,
-  Modal,
-  InputNumber,
-  Select,
-} from "antd";
+import { Button, Form, notification, Modal, InputNumber, Select } from "antd";
 
 export default function RegisterDriverModal({
   openRegisterDriver,
@@ -122,15 +114,24 @@ export default function RegisterDriverModal({
         className="flex gap-4 mt-10"
       >
         <div className="w-2/3">
-          <Form.Item label="Số GPLX" name="drivingLicenseNo" required>
+          <Form.Item
+            label="Số GPLX"
+            name="drivingLicenseNo"
+            rules={[
+              {
+                required: true,
+                message: "Số GPLX không được để trống!",
+              },
+            ]}
+            hasFeedback
+          >
             <InputNumber className="w-full" />
           </Form.Item>
 
-          <Form.Item label="Hạng" name="class" required>
+          <Form.Item label="Hạng" name="class" required hasFeedback>
             <Select
               className="py-0"
               showSearch
-              placeholder="Search to Select"
               optionFilterProp="children"
               filterOption={(input, option) =>
                 (option?.value.toLowerCase() ?? "").includes(
@@ -159,7 +160,7 @@ export default function RegisterDriverModal({
         </div>
 
         <div className="grow w-1/3">
-          <Form.Item label="Hình ảnh" name="image">
+          <Form.Item label="Hình ảnh" name="image" required>
             <UploadImage />
           </Form.Item>
         </div>

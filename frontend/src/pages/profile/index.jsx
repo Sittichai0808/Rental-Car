@@ -1,26 +1,15 @@
 import React, { useState, useEffect } from "react";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import { useUserState } from "@/recoils/user.state.js";
-import { useDriverState } from "@/recoils/driver.state";
 import moment from "moment";
-import { Typography, Button, Input, Image, Space } from "antd";
-import {
-  EditOutlined,
-  QuestionCircleOutlined,
-  RotateLeftOutlined,
-  RotateRightOutlined,
-  SwapOutlined,
-  ZoomInOutlined,
-  ZoomOutOutlined,
-} from "@ant-design/icons";
+import { Typography, Button, Input } from "antd";
+import { EditOutlined } from "@ant-design/icons";
 
 import styled from "@emotion/styled";
 import { apiClient } from "@/apis/client";
 import { ProfileLayout } from "@/layouts/ProfileLayout";
 import EditProfileModal from "@/components/EditProfileModal";
-import RegisterDriverModal from "@/components/RegisterDriverModal";
 import { UploadProfilePicture } from "@/components/UploadProfilePicture";
-import { LogoutOutlined } from "@ant-design/icons";
 const { Title } = Typography;
 const StyleInput = styled(Input)`
   display: flex;
@@ -34,12 +23,7 @@ export default function AccountPage() {
   const showModalEdit = () => setOpenEditModal(true);
   const handleCancleEditModal = () => setOpenEditModal(false);
 
-  const [openRegisterDriver, setOpenRegisterDriver] = useState(false);
-  const showModalRegister = () => setOpenRegisterDriver(true);
-  const handleCancleRegisterDriver = () => setOpenRegisterDriver(false);
-
   const [user, setUser] = useUserState();
-  const [driver, setDriver] = useDriverState();
   const [profile, setProfile, clearProfile] = useLocalStorage("profile", "");
 
   const [loading, setLoading] = useState(false);
@@ -70,27 +54,24 @@ export default function AccountPage() {
     getProfile(); // Call the fetchData function
   }, [setUser]);
 
-  const status = user?.result?.driverLicenses?.status || "Chưa xác thực";
-
-  const backgroundColor = status === "Chưa xác thực" ? "#ffd0cd" : "#cff1db";
-
   return (
     <div className="flex flex-col mb-7 gap-5">
       <div className="flex flex-grow  relative border rounded-xl border-solid border-neutral-200 p-4  ">
         <div
-          className="flex flex-col relative justify-center items-center p-1 "
+          className="flex flex-col relative justify-center items-center p-1  "
           style={{
             width: "30%",
           }}
         >
-          <div className="flex flex-row ">
+          <div className="flex flex-row  ">
             {" "}
-            <p className="  font-semibold text-xl mt-0  ">
+            <p className="  font-semibold text-xl mt-0 mr-1">
               Thông tin tài khoản
             </p>
             <Button
-              className="items-center  "
+              className="flex items-center   "
               style={{
+                padding: "6px",
                 border: "1px solid #e0e0e0",
                 borderRadius: "100%",
                 cursor: "pointer",

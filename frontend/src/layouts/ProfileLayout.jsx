@@ -7,8 +7,9 @@ import {
   CarFilled,
   HeartFilled,
   LogoutOutlined,
+  IdcardOutlined,
 } from "@ant-design/icons";
-import { Divider, Tabs, Layout, Button } from "antd";
+import { Tabs, Layout } from "antd";
 import Account from "@/pages/profile/index";
 import Driver from "@/pages/profile/driver-licenses/index";
 import CarRental from "@/pages/profile/car-rental/index";
@@ -50,7 +51,7 @@ export const ProfileLayout = ({ children }) => {
       label: (
         <span className="text-base font-semibold text-center">
           {" "}
-          <UserOutlined />
+          <IdcardOutlined />
           Giấy phép lái xe
         </span>
       ),

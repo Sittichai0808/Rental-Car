@@ -68,7 +68,7 @@ export default function DriverPage() {
   return (
     <div className="flex flex-col mb-7 gap-5 ">
       <div className="flex flex-col  pl-10 pr-5  pb-6 relative border rounded-xl border-solid border-neutral-200 p-4">
-        <div className="flex  items-center justify-between">
+        <div className="flex items-center justify-between">
           <Title className="flex items-center font-semibold text-xl" level={3}>
             Giấy phép lái xe
             <p
@@ -84,7 +84,7 @@ export default function DriverPage() {
               {status}
             </p>
           </Title>
-          <div className="flex items-baseline ">
+          <div className="flex">
             <Button
               className="rounded-lg border-solid border-black font-bold text-xs"
               onClick={showModalRegister}
@@ -98,7 +98,7 @@ export default function DriverPage() {
             />
           </div>
         </div>
-        <div className="flex items-center ">
+        <div className="flex items-center  ">
           <Title className="text-xs font-medium ">
             Vì sao tôi phải xác thực GPLX
             <QuestionCircleOutlined />

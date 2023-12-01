@@ -2,11 +2,8 @@ import DriverLicenses from '../models/driverLicenses.model.js'
 import User from '../models/user.model.js'
 
 class DriverLicensesService {
-  async regisLicensesDriver(payloadBody, payloadFile, userId) {
+  async regisLicensesDriver(payloadBody, userId) {
     try {
-      if (payloadFile && payloadFile.path) {
-        payloadBody.image = payloadFile.path
-      }
       const result = await DriverLicenses.create({ ...payloadBody })
       await User.findByIdAndUpdate(userId, {
         driverLicenses: result._id
@@ -17,11 +14,8 @@ class DriverLicensesService {
       throw error
     }
   }
-  async updateDriverLicense(did, payload, payloadFile) {
+  async updateDriverLicense(did, payload) {
     try {
-      if (payloadFile && payloadFile.path) {
-        payload.image = payloadFile.path
-      }
       const updateDriverLicense = await DriverLicenses.findByIdAndUpdate(did, { ...payload }, { new: true })
       return updateDriverLicense
     } catch (error) {

@@ -4,24 +4,17 @@ import { useDriverState } from "@/recoils/driver.state.js";
 import { useUserState } from "@/recoils/user.state.js";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "react-toastify";
+import { UploadImage } from "@/components/UploadImage";
 import axios from "axios";
 import {
   Button,
   Input,
   Form,
-  Upload,
   notification,
   Modal,
   InputNumber,
   Select,
-  Spin,
-  Image,
 } from "antd";
-import {
-  UploadOutlined,
-  UserAddOutlined,
-  CloudUploadOutlined,
-} from "@ant-design/icons";
 
 export default function RegisterDriverModal({
   openRegisterDriver,
@@ -42,20 +35,6 @@ export default function RegisterDriverModal({
 
   const onSubmit = async (values) => {
     setLoading(true);
-    const formData = new FormData();
-    formData.append(
-      "drivingLicenseNo",
-      values.drivingLicenseNo || user?.result?.driverLicenses?.drivingLicenseNo
-    );
-
-    formData.append(
-      "class",
-      values.class || user?.result?.driverLicenses?.class
-    );
-    formData.append(
-      "image",
-      values.image?.file?.originFileObj || user?.result?.driverLicenses?.image
-    );
 
     try {
       const did = driver?.result?._id || user?.result?.driverLicenses?._id;
@@ -65,10 +44,10 @@ export default function RegisterDriverModal({
         url: did
           ? `${process.env.NEXT_PUBLIC_REACT_APP_BACKEND_URL}/drivers/updateDriver/${did}`
           : `${process.env.NEXT_PUBLIC_REACT_APP_BACKEND_URL}/drivers/registerDriver`,
-        data: formData,
+        data: values,
         headers: {
           Authorization: `Bearer ${accessToken}`,
-          "Content-Type": "multipart/form-data",
+          "Content-Type": "application/json",
           withCredentials: true,
         },
       });
@@ -181,31 +160,7 @@ export default function RegisterDriverModal({
 
         <div className="grow w-1/3">
           <Form.Item label="Hình ảnh" name="image">
-            <Upload.Dragger
-              listType="picture-card"
-              className="aspect-square  "
-              showUploadList={true}
-            >
-              <div className="p-2 py-0 relative group   ">
-                {driver?.result?.image ||
-                user?.result?.driverLicenses?.image ? (
-                  <Image
-                    className="w-full h-full  object-cover aspect-square rounded overflow-hidden  mt-0 pb-4"
-                    preview={false}
-                    src={
-                      driver?.result?.image ||
-                      user?.result?.driverLicenses?.image
-                    }
-                  />
-                ) : (
-                  <CloudUploadOutlined />
-                )}
-
-                <div className="absolute w-full h-full top-0 left-0 bg-white/80 opacity-0 hover:opacity-100 flex justify-center items-center transition-all">
-                  <CloudUploadOutlined />
-                </div>
-              </div>
-            </Upload.Dragger>
+            <UploadImage />
           </Form.Item>
         </div>
       </Form>

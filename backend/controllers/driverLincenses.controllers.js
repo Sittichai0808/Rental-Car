@@ -4,7 +4,7 @@ import { HTTP_STATUS } from '../constants/httpStatus.js'
 export const regisLicensesDriver = async (req, res, next) => {
   try {
     const userId = req.decoded_authorization.user_id
-    const result = await driverLicensesService.regisLicensesDriver(req.body, req?.file, userId)
+    const result = await driverLicensesService.regisLicensesDriver(req.body, userId)
     return res.status(HTTP_STATUS.OK).json({
       message: 'Register Driver License successfully',
       result
@@ -20,7 +20,7 @@ export const updateDriverLicense = async (req, res, next) => {
   const { did } = req.params
 
   try {
-    const result = await driverLicensesService.updateDriverLicense(did, req.body, req?.file)
+    const result = await driverLicensesService.updateDriverLicense(did, req.body)
 
     if (!result) {
       return res.status(HTTP_STATUS.NOT_FOUND).json({ error: 'Driver License not found' })

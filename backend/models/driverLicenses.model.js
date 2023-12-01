@@ -3,13 +3,16 @@ import mongoose from 'mongoose'
 const driverLicensesSchema = new mongoose.Schema(
   {
     image: {
-      type: String
+      type: String,
+      required: true
     },
     drivingLicenseNo: {
-      type: String
+      type: Number,
+      required: true
     },
     class: {
-      type: String
+      type: String,
+      required: true
     },
     status: {
       type: String,

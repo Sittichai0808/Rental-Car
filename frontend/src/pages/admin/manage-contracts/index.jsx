@@ -484,14 +484,7 @@ export default function AdminManageContracts() {
 
   return (
     <>
-      <div className="pt-10">
-        {/* <div className="mb-4 flex justify-between items-center">
-          <div className="max-w-[30%] flex gap-2 items-center">
-            <Input prefix={<SearchOutlined />} />
-            <Button type="primary">Search</Button>
-          </div>
-        </div> */}
-
+      <div className="mt-4 shadow-lg rounded-lg">
         <Table
           onChange={handleChange}
           scroll={{ x: 2300, y: 500 }}
@@ -499,7 +492,7 @@ export default function AdminManageContracts() {
             { key: "id", title: "ID", dataIndex: "id", width: "3%" },
             {
               key: "image",
-              title: "Thumbnail",
+              title: "Ảnh hợp đồng",
               dataIndex: "image",
 
               render: (images) => (
@@ -650,7 +643,6 @@ export default function AdminManageContracts() {
 
             {
               key: "action",
-              title: "Action",
               fixed: "right",
               width: "6%",
               render: (_, contract) => (
@@ -730,7 +722,8 @@ export default function AdminManageContracts() {
         open={open}
         onOk={handleOk}
         footer={null}
-        width={700}
+        width={800}
+        style={{ top: 20 }}
         onCancel={handleCancel}
       >
         <>
@@ -740,7 +733,7 @@ export default function AdminManageContracts() {
               mutate(values);
             }}
             layout="vertical"
-            className="flex gap-4 mt-10"
+            className="flex gap-4 mt-10 h-[80vh] overflow-y-scroll"
           >
             <div className="w-2/3">
               <Form.Item label="Tên khách hàng" name="bookBy">
@@ -813,7 +806,7 @@ export default function AdminManageContracts() {
 
             <div className="grow w-1/3">
               <Form.Item
-                label="Images"
+                label="Ảnh hợp đồng"
                 name="images"
                 rules={[
                   {

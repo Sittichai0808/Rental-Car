@@ -493,7 +493,7 @@ export default function AdminManageBookings() {
             { key: "id", title: "ID", dataIndex: "id", width: "2%" },
             {
               key: "thumb",
-              title: "Thumbnail",
+              title: "Ảnh",
               dataIndex: "thumb",
 
               render: (url) => (
@@ -506,59 +506,59 @@ export default function AdminManageBookings() {
 
             {
               key: "numberCar",
-              title: "No. Seat",
+              title: "Số ghế",
               dataIndex: "numberCar",
               ...getColumnSearchProps("numberCar"),
             },
             {
               key: "username",
-              title: "Customer",
+              title: "Khách hàng",
               dataIndex: "username",
               ...getColumnSearchProps("username"),
             },
 
             {
               key: "phone",
-              title: "Phone Number",
+              title: "Số điện thoại",
               dataIndex: "phone",
               ...getColumnSearchProps("phone"),
             },
             {
               key: "address",
-              title: "Address",
+              title: "Địa chỉ nhận xe",
               dataIndex: "address",
               ...getColumnSearchProps("address"),
             },
             {
               key: "totalCost",
-              title: "Total Cost",
+              title: "Tổng giá thuê",
               dataIndex: "totalCost",
               ...getColumnSearchProps("totalCost"),
             },
             {
               key: "timeBookingStart",
-              title: "Time Booking Start",
+              title: "Thời gian bắt đầu",
               dataIndex: "timeBookingStart",
             },
             {
               key: "timeBookingEnd",
-              title: "Time Booking End",
+              title: "Thời gian kết thúc",
               dataIndex: "timeBookingEnd",
             },
             {
               key: "codeTransaction",
-              title: "Code Transaction",
+              title: "Mã giao dịch",
               dataIndex: "codeTransaction",
             },
             {
               key: "timeTransaction",
-              title: "Time Transaction",
+              title: "Thời gian giao dịch",
               dataIndex: "timeTransaction",
             },
 
             {
               key: "status",
-              title: "Status",
+              title: "Trạng thái",
               dataIndex: "status",
               fixed: "right",
               // width: "%",
@@ -627,7 +627,6 @@ export default function AdminManageBookings() {
             },
             {
               key: "action",
-              title: "Action",
               fixed: "right",
               width: "8%",
               render: (_, booking) => (
@@ -747,7 +746,7 @@ export default function AdminManageBookings() {
 
             <div className="grow w-1/3">
               <Form.Item
-                label="Images"
+                label="Ảnh hợp đồng"
                 name="images"
                 rules={[
                   {

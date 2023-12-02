@@ -12,7 +12,11 @@ import {
 import { AdminLayout } from "@/layouts/AdminLayout";
 import { useUserState } from "@/recoils/user.state";
 import { formatCurrency } from "@/utils/number.utils";
-import { PlusOutlined, SearchOutlined } from "@ant-design/icons";
+import {
+  CloseCircleOutlined,
+  EditOutlined,
+  PlusOutlined,
+} from "@ant-design/icons";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import {
   Button,
@@ -25,6 +29,7 @@ import {
   Select,
   Skeleton,
   Table,
+  Tooltip,
 } from "antd";
 import { useState } from "react";
 import useLocalStorage from "@/hooks/useLocalStorage";
@@ -106,45 +111,49 @@ function UpsertCarForm({ carId, onOk }) {
       }}
     >
       <div className="h-[60vh] overflow-y-scroll flex gap-2">
-        <div className="w-2/3">
-          <Form.Item label="Brand" required name="brand">
-            <Select options={brandOptions} />
-          </Form.Item>
-          <Form.Item label="Model" required name="model">
-            <Select options={modelOptions} disabled={!brandId} />
-          </Form.Item>
-          <Form.Item label="No. Seat" required name="numberSeat">
-            <Select
-              options={[
-                { value: "1 chỗ" },
-                { value: "2 chỗ" },
-                { value: "3 chỗ" },
-                { value: "4 chỗ" },
-                { value: "5 chỗ" },
-              ]}
-            />
-          </Form.Item>
-          <Form.Item label="Transmissions" required name="transmissions">
-            <Select options={[{ value: "Số sàn" }, { value: "Số tự động" }]} />
-          </Form.Item>
-          <Form.Item label="Description" required name="description">
-            <Input.TextArea rows={3} />
-          </Form.Item>
-          <Form.Item label="License Plate" name="numberCar">
-            <Input />
-          </Form.Item>
-          <Form.Item label="Cost" name="cost">
-            <InputNumber className="w-full" prefix="$" />
-          </Form.Item>
-        </div>
-
-        <div className="grow w-1/3">
-          <Form.Item label="Thumbnail" name="thumb">
+        <div className="grow w-2/5 p-2">
+          <Form.Item label="Ảnh tiêu đề" name="thumb" className="w-4/5 h-4/5">
             <UploadImage />
           </Form.Item>
 
-          <Form.Item label="Images" name="images">
+          <Form.Item label="Ảnh" name="images">
             <UploadMultipleImage />
+          </Form.Item>
+        </div>
+        <div className="w-3/5 p-2">
+          <Form.Item label="Hãng xe" required name="brand">
+            <Select options={brandOptions} />
+          </Form.Item>
+          <Form.Item label="Loại xe" required name="model">
+            <Select options={modelOptions} disabled={!brandId} />
+          </Form.Item>
+          <Form.Item label="Số ghế" required name="numberSeat">
+            <Select
+              options={[
+                { value: "2 chỗ" },
+                { value: "4 chỗ" },
+                { value: "5 chỗ" },
+                { value: "7 chỗ" },
+                { value: "9 chỗ" },
+                { value: "12 chỗ" },
+              ]}
+            />
+          </Form.Item>
+          <Form.Item label="Truyền động" required name="transmissions">
+            <Select options={[{ value: "Số sàn" }, { value: "Số tự động" }]} />
+          </Form.Item>
+          <Form.Item label="Biển số xe" name="numberCar">
+            <Input />
+          </Form.Item>
+          <Form.Item label="Năm sản xuất" name="yearManufacture">
+            <Input />
+          </Form.Item>
+          <Form.Item label="Mô tả" required name="description">
+            <Input.TextArea rows={3} />
+          </Form.Item>
+
+          <Form.Item label="Cost" name="cost">
+            <InputNumber className="w-full" />
           </Form.Item>
         </div>
       </div>
@@ -171,12 +180,15 @@ export default function AdminManageCars() {
     _id: item?._id,
     thumb: item?.thumb,
     brand: item?.brand?.name,
+    model: item?.model?.name,
     numberSeat: item?.numberSeat,
     transmissions: item?.transmissions,
+    yearManufacture: item?.yearManufacture,
     numberCar: item?.numberCar,
     description: item?.description,
     cost: formatCurrency(item.cost),
     owner: item?.user?.username,
+    status: item?.status,
   }));
 
   const handleInsertCar = () => {
@@ -186,21 +198,22 @@ export default function AdminManageCars() {
   console.log(upsertCarModal);
   return (
     <>
-      <div className="pt-10 px-4">
-        <div className="mb-4 flex justify-between items-center">
-          <div>
-            <Button onClick={handleInsertCar}>
-              <PlusOutlined /> Add car
-            </Button>
-          </div>
+      <div className="mb-4 flex justify-between items-center">
+        <div>
+          <Button onClick={handleInsertCar}>
+            <PlusOutlined /> Tạo mới xe
+          </Button>
         </div>
+      </div>
+
+      <div className="shadow-lg rounded-md">
         <Table
-          scroll={{ x: 800 }}
+          scroll={{ y: 460, x: 2000 }}
+          pagination={{ pageSize: 4 }}
           columns={[
-            { key: "id", title: "ID", dataIndex: "id" },
             {
               key: "thumb",
-              title: "Thumbnail",
+              title: "Ảnh xe",
               dataIndex: "thumb",
               render: (url) => (
                 <Image
@@ -209,47 +222,81 @@ export default function AdminManageCars() {
                 />
               ),
             },
-            { key: "brand", title: "Brand", dataIndex: "brand" },
-            { key: "numberSeat", title: "No. Seat", dataIndex: "numberSeat" },
+            { key: "model", title: "Hãng xe", dataIndex: "model" },
+            { key: "numberSeat", title: "Số ghế", dataIndex: "numberSeat" },
             {
               key: "transmissions",
-              title: "Transmissions",
+              title: "Truyền động",
               dataIndex: "transmissions",
             },
             {
+              key: "yearManufacture",
+              title: "Năm sản xuất",
+              dataIndex: "yearManufacture",
+            },
+            {
               key: "numberCar",
-              title: "License plate",
+              title: "Biển số xe",
               dataIndex: "numberCar",
             },
             {
               key: "description",
-              title: "Description",
+              title: "Mô tả",
               dataIndex: "description",
             },
-            { key: "cost", title: "Cost", dataIndex: "cost" },
-            { key: "owner", title: "Owner", dataIndex: "owner" },
+            { key: "cost", title: "Giá", dataIndex: "cost" },
+            // { key: "owner", title: "Owner", dataIndex: "owner" },
+            {
+              key: "status",
+              title: "Trạng thái",
+              dataIndex: "status",
+              render: (status) => (
+                <>
+                  {status === "Hoạt động" ? (
+                    <>
+                      <p className="text-green-500 justify-center">Hoạt động</p>
+                    </>
+                  ) : (
+                    <>
+                      <p className="text-red-500 justify-center">
+                        Không hoạt động
+                      </p>
+                    </>
+                  )}
+                </>
+              ),
+            },
             {
               key: "action",
-              title: "Action",
+              fixed: "right",
+              width: "8%",
               render: (_, car) => (
                 <div className="flex gap-2">
-                  <Button
-                    className="bg-blue-500 text-white border-none hover:bg-blue-500/70"
-                    onClick={() => {
-                      setUpsertCarModal({
-                        actionType: "update",
-                        carId: car._id,
-                      });
-                    }}
+                  <Tooltip
+                    placement="top"
+                    title={"Chỉnh sửa xe"}
+                    color="#108ee9"
                   >
-                    Edit
-                  </Button>
+                    <Button
+                      className="bg-blue-500 text-white border-none hover:bg-blue-500/70"
+                      onClick={() => {
+                        setUpsertCarModal({
+                          actionType: "update",
+                          carId: car._id,
+                        });
+                      }}
+                    >
+                      <EditOutlined />
+                    </Button>
+                  </Tooltip>
+
                   <Popconfirm
-                    title="Are you sure to deactivate this car?"
-                    okText="Deactivate"
+                    title="Bạn có chắc vô hiệu hóa xe?"
+                    okText="Có"
+                    cancelText="Hủy"
                   >
                     <Button className="bg-red-500 text-white border-none hover:bg-red-500/70">
-                      Deactivate
+                      <CloseCircleOutlined />
                     </Button>
                   </Popconfirm>
                 </div>
@@ -264,9 +311,12 @@ export default function AdminManageCars() {
       <Modal
         open={upsertCarModal}
         title={
-          upsertCarModal?.actionType === "insert" ? "Add New Car" : "Update Car"
+          upsertCarModal?.actionType === "insert"
+            ? "Tạo mới xe"
+            : "Chỉnh sửa xe"
         }
-        width={800}
+        width={1000}
+        style={{ top: 20 }}
         destroyOnClose
         footer={null}
         onCancel={() => setUpsertCarModal(undefined)}

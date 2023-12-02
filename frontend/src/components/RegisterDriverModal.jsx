@@ -4,33 +4,9 @@ import { useDriverState } from "@/recoils/driver.state.js";
 import { useUserState } from "@/recoils/user.state.js";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "react-toastify";
+import { UploadImage } from "@/components/UploadImage";
 import axios from "axios";
-import { Button, Input, Form, Upload, notification, Modal } from "antd";
-import Image from "next/image";
-import styled from "@emotion/styled";
-import { useRouter } from "next/router";
-import Link from "next/link";
-import { UploadOutlined, UserAddOutlined } from "@ant-design/icons";
-
-const StyleInput = styled(Input)`
-  display: flex;
-  align-items: center;
-  padding: 12px;
-  width: 100%;
-`;
-
-const StyleInputModal = styled(Input)`
-  border-color: #949494;
-  height: 50px;
-  width: 100%;
-`;
-const ButtonSummit = styled(Button)`
-  width: 100%;
-  height: 50px;
-  font-size: 18px;
-  font-weight: 700;
-  padding: 30px auto;
-`;
+import { Button, Form, notification, Modal, InputNumber, Select } from "antd";
 
 export default function RegisterDriverModal({
   openRegisterDriver,
@@ -44,39 +20,42 @@ export default function RegisterDriverModal({
 
   const [accessToken, setAccessToken, clearAccessToken] =
     useLocalStorage("access_token");
+
   useEffect(() => {
     setDriver(profile);
   });
+
   const onSubmit = async (values) => {
     setLoading(true);
-    const formData = new FormData();
-    formData.append("fullName", values.fullName);
-    formData.append("drivingLicenseNo", values.drivingLicenseNo);
-    formData.append("dob", values.dob);
-    formData.append("class", values.class);
-    formData.append("image", values.image.file.originFileObj);
 
     try {
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_REACT_APP_BACKEND_URL}/drivers/registerDriver`,
-        formData,
+      const did = driver?.result?._id || user?.result?.driverLicenses?._id;
 
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-            "Content-Type": "multipart/form-data",
-            withCredentials: true,
-          },
-        }
-      );
+      const response = await axios({
+        method: did ? "put" : "post", // Use PUT if there's an existing driver ID, otherwise use POST
+        url: did
+          ? `${process.env.NEXT_PUBLIC_REACT_APP_BACKEND_URL}/drivers/updateDriver/${did}`
+          : `${process.env.NEXT_PUBLIC_REACT_APP_BACKEND_URL}/drivers/registerDriver`,
+        data: values,
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+          withCredentials: true,
+        },
+      });
 
       if (response.status === 200) {
         console.log(response.data);
         setDriver({ ...response.data });
         setProfile({ ...response.data });
         handleCancleRegisterDriver();
+        const successMessage =
+          driver || user?.result?.driverLicenses
+            ? "Cập nhật thành công"
+            : "Đăng kí thành công";
+
         notification.success({
-          message: "Đăng kí thành công",
+          message: successMessage,
         });
       } else {
         console.log(error.response.data.errors[0].msg);
@@ -89,7 +68,6 @@ export default function RegisterDriverModal({
       setLoading(false);
     }
   };
-
   const { mutate, isLoading } = useMutation(onSubmit, {
     onMutate: () => {
       setLoading(true);
@@ -104,19 +82,22 @@ export default function RegisterDriverModal({
       open={openRegisterDriver}
       onCancel={handleCancleRegisterDriver}
       footer={[
-        <ButtonSummit
+        <Button
           loading={isLoading}
           htmlType="submit"
           type="primary"
           onClick={() => mutate(form.getFieldsValue())}
         >
-          Đăng kí
-        </ButtonSummit>,
+          {driver || user?.result?.driverLicenses ? "Cập nhật" : " Đăng kí"}
+        </Button>,
       ]}
     >
       <p className="flex justify-center items-center w-full text-2xl font-bold">
-        Đăng kí GPLX
+        {driver || user?.result?.driverLicenses
+          ? "Cập nhật GPLX"
+          : "Đăng kí GPLX"}
       </p>
+
       <Form
         form={form}
         layout="vertical"
@@ -125,80 +106,64 @@ export default function RegisterDriverModal({
           mutate(values);
         }}
         label
-        initialValues={{}}
+        initialValues={{
+          ...(driver?.result || {}),
+          ...(user?.result?.driverLicenses || {}),
+        }}
         autoComplete="off"
-        className="mt-5 "
+        className="flex gap-4 mt-10"
       >
-        <Form.Item
-          label="Họ và tên"
-          name="fullName"
-          rules={[
-            {
-              type: "text",
-              message: "Please input your name",
-            },
-            {
-              required: true,
-              message: "Please input your name!",
-            },
-          ]}
-        >
-          <StyleInputModal type="text" size="large" />
-        </Form.Item>
-        <Form.Item
-          label="Số GPLX"
-          name="drivingLicenseNo"
-          rules={[
-            {
-              type: "text",
-              message: "The input is not valid drivingLicenseNo",
-            },
-            {
-              required: true,
-              message: "Please input your drivingLicenseNo!",
-            },
-          ]}
-        >
-          <StyleInputModal size="large" />
-        </Form.Item>
-        <Form.Item
-          label="Ngày sinh"
-          name="dob"
-          rules={[
-            {
-              type: "text",
-              message: "The input is not valid dob!",
-            },
-            {
-              required: true,
-              message: "Please input your drivingLicenseNo!",
-            },
-          ]}
-        >
-          <StyleInputModal size="large" />
-        </Form.Item>
-        <Form.Item
-          label="Hạng"
-          name="class"
-          rules={[
-            {
-              type: "text",
-              message: "The input is not valid class!",
-            },
-            {
-              required: true,
-              message: "Please input your class!",
-            },
-          ]}
-        >
-          <StyleInputModal size="large" />
-        </Form.Item>
+        <div className="w-2/3">
+          <Form.Item
+            label="Số GPLX"
+            name="drivingLicenseNo"
+            rules={[
+              {
+                required: true,
+                message: "Số GPLX không được để trống!",
+              },
+            ]}
+            hasFeedback
+          >
+            <InputNumber className="w-full" />
+          </Form.Item>
 
-        <Form.Item label="Hình ảnh" name="image">
-          <Upload.Dragger listType="picture-card" showUploadList={true}>
-            <Button icon={<UploadOutlined />}>Click to upload</Button>
-          </Upload.Dragger>
-        </Form.Item>
+          <Form.Item label="Hạng" name="class" required hasFeedback>
+            <Select
+              className="py-0"
+              showSearch
+              optionFilterProp="children"
+              filterOption={(input, option) =>
+                (option?.value.toLowerCase() ?? "").includes(
+                  input.toLowerCase()
+                )
+              }
+              filterSort={(optionA, optionB) =>
+                (optionA?.value ?? "")
+                  .toLowerCase()
+                  .localeCompare((optionB?.value ?? "").toLowerCase())
+              }
+              options={[
+                { value: "B1" },
+                { value: "B2" },
+                { value: "C" },
+                { value: "D" },
+                { value: "E" },
+                { value: "F" },
+                { value: "FB2" },
+                { value: "FC" },
+                { value: "FD" },
+                { value: "FE" },
+              ]}
+            />
+          </Form.Item>
+        </div>
+
+        <div className="grow w-1/3">
+          <Form.Item label="Hình ảnh" name="image" required>
+            <UploadImage />
+          </Form.Item>
+        </div>
       </Form>
     </Modal>
   );

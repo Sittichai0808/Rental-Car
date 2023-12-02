@@ -1,13 +1,10 @@
-import useLocalStorage from "@/hooks/useLocalStorage";
 import { UserFilledIcon } from "@/icons";
 import styled from "@emotion/styled";
-import { Divider, Layout, Menu } from "antd";
-import { useUserState } from "@/recoils/user.state.js";
-import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import logo from "../../public/logo.png";
-import { Button, Space } from "antd";
+import { Avatar, Layout, Menu, Space, Button } from "antd";
+import { useUserState } from "@/recoils/user.state.js";
 const StyledMenu = styled(Menu)`
   li {
     &::after {
@@ -77,10 +74,15 @@ export default function HeaderComponent() {
           </Space>
         ) : (
           <Link href="/profile">
-            <div className="flex items-center shrink-0">
+            <div className="flex items-center gap-2 shrink-0">
               <div className="flex bg-neutral-200 rounded-full p-1 cursor-pointer">
-                <UserFilledIcon className="text-neutral-500" />
+                {user?.result?.profilePicture ? (
+                  <Avatar src={user?.result?.profilePicture} />
+                ) : (
+                  <UserFilledIcon className="text-neutral-500" />
+                )}
               </div>
+              <span>{user?.result?.username}</span>
             </div>
           </Link>
         )}

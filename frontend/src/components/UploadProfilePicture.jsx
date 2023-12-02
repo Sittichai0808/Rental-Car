@@ -43,6 +43,7 @@ export const UploadProfilePicture = () => {
             profilePicture: response.data.result.profilePicture,
           },
         }));
+
         notification.success({
           message: "Cập nhật thành công",
         });
@@ -68,11 +69,11 @@ export const UploadProfilePicture = () => {
       <Upload.Dragger
         listType="picture-card"
         showUploadList={false}
-        className="aspect-square w-1/2 "
+        className="aspect-square w-2/3 "
         customRequest={({ file }) => updateProfile(file)}
       >
         <Spin spinning={loading}>
-          <div className="py-0 p-2 relative group flex  ">
+          <div className="py-0 p-2 relative group   ">
             {user?.result?.profilePicture ? (
               <Image
                 className="w-full h-full  object-cover aspect-square rounded overflow-hidden mt-0"

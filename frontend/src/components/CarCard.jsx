@@ -6,7 +6,7 @@ import { formatCurrency } from "@/utils/number.utils";
 export const CarCard = ({ dataCar }) => {
   return (
     <Link href={`/cars/${dataCar?._id}`}>
-      <div className="border rounded-lg border-solid border-neutral-300 p-4 cursor-pointer">
+      <div className="border rounded-md border-solid border-neutral-300 p-4 cursor-pointer shadow-md">
         <div className="relative aspect-video">
           <Image
             src={dataCar?.thumb}

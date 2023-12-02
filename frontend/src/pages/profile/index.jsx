@@ -55,25 +55,22 @@ export default function AccountPage() {
   }, [setUser]);
 
   return (
-    <div className="flex flex-col mb-7 gap-5">
-      <div className="flex flex-grow  relative border rounded-xl border-solid border-neutral-200 p-4  ">
+    <div className="flex flex-col gap-5">
+      <div className="flex flex-grow relative p-4  ">
         <div
-          className="flex flex-col relative justify-center items-center p-1  "
+          className="flex flex-col relative justify-center items-center"
           style={{
             width: "30%",
           }}
         >
-          <div className="flex flex-row  ">
-            {" "}
-            <p className="  font-semibold text-xl mt-0 mr-1">
-              Thông tin tài khoản
-            </p>
+          <div className="flex flex-row">
+            <p className="font-semibold text-xl mt-0">Thông tin tài khoản</p>
             <Button
-              className="flex items-center   "
+              className="flex items-center ml-2"
               style={{
-                padding: "6px",
+                padding: "8px",
                 border: "1px solid #e0e0e0",
-                borderRadius: "100%",
+                borderRadius: "50%",
                 cursor: "pointer",
               }}
               onClick={showModalEdit}
@@ -179,7 +176,7 @@ export default function AccountPage() {
               style={{
                 margin: "1rem 0",
                 color: "inherit",
-                opacity: ".25",
+                opacity: "0.25",
               }}
             />
           </div>

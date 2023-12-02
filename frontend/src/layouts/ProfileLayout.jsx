@@ -37,7 +37,7 @@ export const ProfileLayout = ({ children }) => {
     {
       key: "1",
       label: (
-        <span className="text-base font-semibold text-center">
+        <span className="text-base font-semibold">
           {" "}
           <UserOutlined />
           Profile
@@ -49,7 +49,7 @@ export const ProfileLayout = ({ children }) => {
     {
       key: "2",
       label: (
-        <span className="text-base font-semibold text-center">
+        <span className="text-base font-semibold">
           {" "}
           <IdcardOutlined />
           Giấy phép lái xe
@@ -62,7 +62,7 @@ export const ProfileLayout = ({ children }) => {
     {
       key: "3",
       label: (
-        <span className="text-base font-semibold text-center ">
+        <span className="text-base font-semibold">
           <CarFilled />
           Lịch sử thuê xe{" "}
         </span>
@@ -72,7 +72,7 @@ export const ProfileLayout = ({ children }) => {
     {
       key: "4",
       label: (
-        <span className="text-base font-semibold text-center">
+        <span className="text-base font-semibold">
           <HeartFilled />
           Xe yêu thích
         </span>
@@ -100,34 +100,25 @@ export const ProfileLayout = ({ children }) => {
       ),
     },
   ];
-  //overflow-y-scroll h-0
   return (
-    <Layout className="flex max-w-6xl mx-auto bg-white ">
+    <>
       <HeaderComponent />
-
-      <Layout
-        className=" flex max-w-6xl min-h-screen relative my-2 bg-white"
-        style={{
-          minHeight: "100vh",
-        }}
-        hasSider
-      >
-        <Content
-          className=" w-[calc(100%-23%)] flex flex-col my-5  border rounded-xl border-solid border-neutral-200 p-4  bg-white  "
-          style={{
-            minHeight: "100vh",
-          }}
-        >
-          <Tabs
-            className=" w-full mb-3 flex mt-3 "
-            defaultActiveKey="1"
-            tabPosition={tabPosition}
-            items={items}
-            onChange={onChange}
-          />
-        </Content>
-      </Layout>
+      <div>
+        <Layout className="flex max-w-6xl h-screen mx-auto bg-white ">
+          <Layout className=" flex max-w-6xl relative my-2 bg-white" hasSider>
+            <Content className="flex flex-col my-5 bg-white">
+              <Tabs
+                className="w-full flex mt-3 "
+                defaultActiveKey="1"
+                tabPosition={tabPosition}
+                items={items}
+                onChange={onChange}
+              />
+            </Content>
+          </Layout>
+        </Layout>
+      </div>
       <FooterComponent />
-    </Layout>
+    </>
   );
 };

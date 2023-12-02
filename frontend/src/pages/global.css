@@ -270,3 +270,30 @@ h3 {
 .toolbar-wrapper .anticon:hover {
   opacity: 0.3;
 }
+
+/* Slider */
+.ant-slider .ant-slider-track {
+  background-color: rgb(23, 203, 47);
+}
+.ant-slider:hover .ant-slider-track {
+  background-color: #66c836;
+}
+
+.ant-slider .ant-slider-handle::after {
+  content: "";
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  width: 10px;
+  height: 10px;
+  background-color: #ffffff;
+  box-shadow: 0 0 0 2px #66c836;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: inset-inline-start 0.2s, inset-block-start 0.2s, width 0.2s,
+    height 0.2s, box-shadow 0.2s;
+}
+
+.ant-slider-horizontal:hover .ant-slider-handle {
+  background-color: #575757;
+}

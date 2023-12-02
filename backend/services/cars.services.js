@@ -31,11 +31,12 @@ class CarsService {
       console.log(error)
     }
   }
+
   async getListCars(payload) {
     try {
       // Filtering
       const queryObj = { ...payload }
-      const { sort, fields, page = 1, limit = 4 } = payload
+      const { sort, fields, page = 1, limit = 8 } = payload
       const excludeFields = ['page', 'sort', 'limit', 'fields']
       excludeFields.forEach((el) => delete queryObj[el])
       let queryStr = JSON.stringify(queryObj)

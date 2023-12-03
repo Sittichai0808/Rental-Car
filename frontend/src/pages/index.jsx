@@ -104,7 +104,7 @@ export default function HomePage() {
         <div className="bg-white rounded-lg -mt-10 w-4/5 mx-auto z-50 relative pt-6 px-4 shadow-lg">
           <Form
             layout="vertical"
-            onFinish={handleSearch}
+            onFinish={handleSearch}   
             className="grid grid-cols-5 gap-6 h-full"
           >
             <Form.Item name="brand">

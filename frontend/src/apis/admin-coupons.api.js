@@ -9,10 +9,10 @@ export async function getCoupons() {
   return data;
 }
 
-export async function getCouponById(cId, accessToken) {
+export async function getCouponById({couponId, accessToken}) {
   const { data } = await apiClient.request({
     method: "GET",
-    url: `/coupon/${cId}`,
+    url: `/coupons/${couponId}`,
     headers: {
       Authorization: `Bearer ${accessToken}`,
       "Content-Type": "application/json",
@@ -21,7 +21,7 @@ export async function getCouponById(cId, accessToken) {
 
   return data;
 }
-export async function createCoupon(body, accessToken) {
+export async function createCoupon({body, accessToken}) {
     const { data } = await apiClient.request({
       method: "POST",
       url: `/coupons/createCoupon`,
@@ -37,10 +37,10 @@ export async function createCoupon(body, accessToken) {
   
   
   export async function updateCoupon({ couponId, body, accessToken }) {
-    console.log(couponId, body);
+
     const { data } = await apiClient.request({
       method: "PUT",
-      url: `/coupon/updateCoupon/${couponId}`,
+      url: `/coupons/updateCoupon/${couponId}`,
       headers: {
         Authorization: `Bearer ${accessToken}`,
         "Content-Type": "application/json",
@@ -48,5 +48,17 @@ export async function createCoupon(body, accessToken) {
       data: body,
     });
   
+    return data;
+  }
+  export async function deleteCoupon(couponId, accessToken){
+    console.log(couponId);
+    const {data} = await apiClient.request({
+      method:"DELETE",
+      url: `/coupons/deleteCoupon/${couponId}`,
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+    });
     return data;
   }

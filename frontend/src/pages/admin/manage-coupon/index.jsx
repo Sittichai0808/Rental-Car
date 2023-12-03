@@ -2,11 +2,11 @@ import React from 'react'
 import { AdminLayout } from "@/layouts/AdminLayout";
 import {
   GET_COUPONS,
-  GET_COUPON
+  GET_COUPON_BY_ID,
 } from "@/constants/react-query-key.constant";
 import { useUserState } from "@/recoils/user.state";
 
-import { createCoupon, getCoupons, getCouponById, updateCoupon } from "@/apis/admin-coupons.api"
+import { createCoupon, getCoupons, getCouponById, updateCoupon, deleteCoupon } from "@/apis/admin-coupons.api"
 import { PlusOutlined, SearchOutlined } from "@ant-design/icons";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import {
@@ -23,19 +23,22 @@ import {
   Table,
 } from "antd";
 import { useState } from "react";
+import useLocalStorage from '@/hooks/useLocalStorage';
+import moment from 'moment';
+
 
 function UpsertCouponForm({ couponId, onOk }) {
+  const [accessToken] = useLocalStorage("access_token");
+ 
   console.log({ couponId });
-  const [user] = useUserState();
+
   const isInsert = !couponId;
 
   const [form] = Form.useForm();
-
-
-  console.log("8734643", couponId);
+  console.log( couponId);
   const couponDetail = useQuery({
-    queryFn: () => getCoupons(couponId),
-    queryKey: [GET_COUPONS, couponId],
+    queryFn: () => getCouponById(couponId),
+    queryKey: [GET_COUPON_BY_ID, couponId],
   });
 
   console.log(couponDetail.data?.result);
@@ -43,15 +46,16 @@ function UpsertCouponForm({ couponId, onOk }) {
   const apiCreateCoupon = useMutation({
     mutationFn: createCoupon,
   });
+const apiGetCouponById = useMutation({
+  mutationFn: getCouponById,
+})
 
   const apiUpdateCoupon = useMutation({
     mutationFn: updateCoupon,
   });
 
-
-
-
   console.log(couponDetail.data?.results);
+  console.log(accessToken)
   return (
     <Form
       form={form}
@@ -64,14 +68,12 @@ function UpsertCouponForm({ couponId, onOk }) {
         console.log(values, couponId);
 
         if (isInsert) {
-          await apiCreateCoupon.mutateAsync({ ...values, user: user?._id });
-          console.log({values})
+          await apiCreateCoupon.mutateAsync({ body: { ...values }, accessToken });
+          console.log({ values })
         } else {
           console.log({ values });
           await apiUpdateCoupon.mutateAsync({
-            couponId,
-            body: { ...values, user: user?._id },
-          });
+            couponId, body: { ...values }, accessToken});
         }
 
         onOk?.();
@@ -84,7 +86,7 @@ function UpsertCouponForm({ couponId, onOk }) {
 
           </Form.Item>
           <Form.Item label="Mức giảm giá" required name="discount" className="w-full">
-            <Input />
+            <InputNumber />
 
           </Form.Item>
           <Form.Item label="Mô tả chi tiết" required name="description">
@@ -92,7 +94,7 @@ function UpsertCouponForm({ couponId, onOk }) {
 
           </Form.Item>
           <Form.Item label="Ngày hết hạn" required name="expiry">
-            <Input />
+            <InputNumber />
 
           </Form.Item>
           <div className="flex justify-end mt-10">
@@ -109,31 +111,45 @@ function UpsertCouponForm({ couponId, onOk }) {
 export default function AdminManageCoupon() {
 
 
-  const [upsertCouponModal, setUpsertCouponModal] = useState();
+  const [accessToken] = useLocalStorage("access_token");
 
+  const [upsertCouponModal, setUpsertCouponModal] = useState();
   const { data, refetch } = useQuery({
     queryFn: getCoupons,
     queryKey: [GET_COUPONS],
   });
 
-  const dataSource = data?.result.map((item, idcoupon) => ({
-    id: idcoupon + 1,
+  const dataSource = data?.result.map((item, idCoupon) => ({
+    id: idCoupon + 1,
     _id: item?._id,
     name: item?.name,
     discount: item?.discount,
     description: item?.description,
-    expiry: item?.expiry
+    expiry: moment(item?.expiry).format("DD-MM-YYYY HH:mm")
   }));
   const handleInsertCoupon = () => {
     setUpsertCouponModal({ actionType: "insert" });
   };
+  console.log(upsertCouponModal);
+  
+
   // const handleInsertCoupon = () => {
   //   setUpsertCouponModal({ actionType: "insert" });
   // };
-const handleDeleteConfirm = () => {
-  message.success('Đã xoá thành công');
-}
-  console.log(upsertCouponModal);
+  const deleteCouponMt = useMutation(
+    (couponId) => deleteCoupon(couponId, accessToken),
+    {
+      onSuccess: () => {
+        message.success("Xoá thành công");
+        refetch()
+      },
+
+      onError: (error) => {
+        message.error(`Xoá thất bại: ${error.message}`);
+      },
+    }
+  );
+
   return (
     <>
       <div className="pt-10 px-4">
@@ -153,12 +169,10 @@ const handleDeleteConfirm = () => {
           pagination={{ pageSize: 10 }}
           columns={[
             { key: "id", title: "ID", dataIndex: "id", width: "60px" },
-
             {
               key: "name",
               title: "Tên coupon",
               dataIndex: "name",
-
             },
             { key: "discount", title: "Mức giảm giá", dataIndex: "discount" },
             {
@@ -182,31 +196,28 @@ const handleDeleteConfirm = () => {
                     onClick={() => {
                       setUpsertCouponModal({
                         actionType: "update",
-                        couponId: coupon._id,
+                        couponId: coupon.id,
                       });
                     }}
                   >
                     Edit
                   </Button>
-                
+
                   <Popconfirm
                     title="Bạn có chắc chắn muốn xoá coupon này?"
-                    okText ="Delete"
-                    //onClick={handleDeleteConfirm}
+                    okText="Delete"
+                    onConfirm={() => deleteCouponMt.mutate(coupon._id)}
                   >
                     <Button className="bg-red-500 text-white border-none hover:bg-red-500/70">
                       Delete
                     </Button>
                   </Popconfirm>
-
-
                 </div>
               ),
             },
           ]}
           dataSource={dataSource}
           rowKey="id"
-
         />
       </div>
       <Modal
@@ -214,7 +225,7 @@ const handleDeleteConfirm = () => {
         title={
           upsertCouponModal?.actionType === "insert" ? "Add New Coupon" : "Update Coupon"
         }
-        width={800}
+        width={400}
         destroyOnClose
         footer={null}
         onCancel={() => setUpsertCouponModal(undefined)}
@@ -230,6 +241,4 @@ const handleDeleteConfirm = () => {
     </>
   )
 }
-
-
 AdminManageCoupon.Layout = AdminLayout;

@@ -15,7 +15,6 @@ class CarsService {
   async updateCar(carId, payload) {
     try {
       const updateCar = await Cars.findByIdAndUpdate(carId, payload, { new: true })
-
       return updateCar
     } catch (error) {
       throw new Error(error)

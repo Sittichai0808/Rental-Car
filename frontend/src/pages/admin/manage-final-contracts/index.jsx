@@ -416,22 +416,15 @@ export default function AdminManageContracts() {
 
   return (
     <>
-      <div className="pt-10">
-        <div className="mb-4 flex justify-between items-center">
-          <div className="max-w-[30%] flex gap-2 items-center">
-            <Input prefix={<SearchOutlined />} />
-            <Button type="primary">Search</Button>
-          </div>
-        </div>
-
+      <div className="mt-4 shadow-lg rounded-lg">
         <Table
           onChange={handleChange}
-          scroll={{ x: 2400, y: 460 }}
+          scroll={{ x: 2400, y: 480 }}
           columns={[
             { key: "id", title: "ID", dataIndex: "id", width: "4%" },
             {
               key: "image",
-              title: "Thumbnail",
+              title: "Ảnh tất toán hợp đồng",
               dataIndex: "image",
 
               render: (images) => (

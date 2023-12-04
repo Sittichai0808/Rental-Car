@@ -57,12 +57,12 @@ export default function BookingDetailPage() {
   const [isPreviewVisible, setPreviewVisible] = useState(false);
 
   return (
-    <div className="flex flex-col border-b bg-slate-100 my-8 py-5 max-w-6xl mx-auto">
-      <p className="flex justify-center items-center text-2xl font-bold mt-0  ">
+    <div className="flex flex-col border-b my-6 py-2 max-w-6xl mx-auto">
+      <p className="flex justify-center items-center text-2xl font-bold mt-0">
         Thông tin chi tiết
       </p>
-      <div className=" flex flex-row w-full px-5  ">
-        <div className="flex flex-col  bg-gray-50 p-4 ml-5 mr-5 w-1/2 ">
+      <div className=" flex flex-row w-full gap-4">
+        <div className="flex flex-col  bg-neutral-50 p-4 ml-5 mr-5 w-1/2 shadow-xl rounded-lg">
           <div className="flex p-4">
             <Image
               width={200}
@@ -147,7 +147,7 @@ export default function BookingDetailPage() {
           </div>
         </div>
 
-        <div className="flex flex-col gap-4 p-9 bg-gray-50  w-1/2">
+        <div className="flex flex-col gap-4 p-9 bg-neutral-50 shadow-xl rounded-lg w-1/2">
           <BorderlessTable
             columns={[
               { dataIndex: "label" },

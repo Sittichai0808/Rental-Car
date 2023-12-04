@@ -1,4 +1,5 @@
-import Coupons from "../models/coupons.model.js";
+
+  import Coupons from '../models/coupons.model.js'
 
 class CouponsService {
     async createCoupons(payload, expiry) {
@@ -18,15 +19,34 @@ class CouponsService {
             throw Error(error);
         }
     }
-
-    async updateCoupons(cid, payload) {
+    async getCouponById(couponId) {
+        console.log(couponId)
         try {
-            const updateCoupons = await Coupons.findByIdAndUpdate(cid, payload, { new: true })
-            return updateCoupons
+          const getCouponById = await Coupons.findById(couponId)
+          return getCouponById
+        } catch (error) {
+          console.log(error)
+        }
+      }
+
+    async updateCoupon(couponId, payload) {
+        try {
+            const updateCoupon = await Coupons.findByIdAndUpdate(couponId, payload, { new: true })
+            return updateCoupon
         } catch (error) {
             throw new Error(error)
         }
     }
+    async deleteCoupon(couponId) {
+        try { 
+             await Coupons.findByIdAndDelete(couponId);         
+          return {message: "Delete thanh cong!"}
+        } catch (error) {
+            throw new Error(error)
+        }
+    }
+     
 }
+ 
 const couponsService = new CouponsService();
 export default couponsService;

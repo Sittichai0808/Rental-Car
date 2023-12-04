@@ -12,22 +12,15 @@ import {
   updateCoupon,
   deleteCoupon,
 } from "@/apis/admin-coupons.api";
-import {
-  DeleteOutlined,
-  EditOutlined,
-  PlusOutlined,
-  SearchOutlined,
-} from "@ant-design/icons";
+import { DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import {
   Button,
   Form,
-  Image,
   Input,
   InputNumber,
   Modal,
   Popconfirm,
-  Select,
   Skeleton,
   message,
   Table,
@@ -38,7 +31,6 @@ import { useState } from "react";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import moment from "moment";
 import dayjs from "dayjs";
-import TextArea from "antd/es/input/TextArea";
 
 function UpsertCouponForm({ couponId, onOk }) {
   const [accessToken] = useLocalStorage("access_token");
@@ -103,7 +95,7 @@ function UpsertCouponForm({ couponId, onOk }) {
             <InputNumber className="w-[354px]" />
           </Form.Item>
           <Form.Item label="Mô tả chi tiết" required name="description">
-            <TextArea />
+            <Input.TextArea />
           </Form.Item>
           <Form.Item label="Ngày hết hạn" required name="timeExpired">
             <DatePicker

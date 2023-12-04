@@ -21,3 +21,4 @@ export const GET_BRANDS_KEY = "brands";
 export const GET_MODEL_KEY = "models";
 export const GET_GPLX_KEY = "gplxs";
 export const GET_FINAL_CONTRACTS_KEY = "get-final-contracts";
+export const GET_STAFFS = "get-staffs"

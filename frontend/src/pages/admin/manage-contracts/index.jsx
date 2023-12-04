@@ -11,7 +11,7 @@ import moment from "moment";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { storage } from "../../../../firebase.js"; // Import your Firebase storage instance
 import axios from "axios";
-import useLocalStorage from "@/hooks/useLocalStorage";
+
 import { useMutation } from "@tanstack/react-query";
 import dayjs from "dayjs";
 import {
@@ -76,7 +76,7 @@ if (typeof window !== "undefined") {
     PizZipUtils = r;
   });
 }
-
+import useLocalStorage from "@/hooks/useLocalStorage";
 function loadFile(url, callback) {
   PizZipUtils.getBinaryContent(url, callback);
 }
@@ -91,7 +91,7 @@ export default function AdminManageContracts() {
   const [loading, setLoading] = useState(false);
 
   const [file, setFile] = useState(null);
-  const accessToken = useAccessTokenValue();
+  const [accessToken] = useLocalStorage("access_token");
 
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState("");
@@ -489,7 +489,7 @@ export default function AdminManageContracts() {
           onChange={handleChange}
           scroll={{ x: 2300, y: 500 }}
           columns={[
-            { key: "id", title: "ID", dataIndex: "id", width: "3%" },
+            { key: "id", title: "ID", dataIndex: "id", width: "4%" },
             {
               key: "image",
               title: "Ảnh hợp đồng",

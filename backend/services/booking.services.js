@@ -8,7 +8,7 @@ class BookingServices {
       const { timeBookingStart, timeBookingEnd } = payload
 
       console.log(timeBookingStart, timeBookingEnd)
-
+      console.log(payload)
       const bookingStart = moment.utc(timeBookingStart).toDate()
       const bookingEnd = moment.utc(timeBookingEnd).toDate()
       console.log(bookingStart, bookingEnd)
@@ -129,7 +129,8 @@ class BookingServices {
 
   async getDetailBooking(bookingId) {
     try {
-      const getDetailBooking = await Bookings.findById(bookingId).populate('bookBy')
+      const getDetailBooking = await Bookings.findById(bookingId)
+        .populate('bookBy')
         .populate({
           path: 'carId',
           populate: [

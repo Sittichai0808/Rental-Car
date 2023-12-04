@@ -85,7 +85,7 @@ export default function AdminProfile() {
           boxShadow: "0 .25rem 1.125rem rgba(75,70,92,.1)",
         }}
       >
-        <h2 className="flex ml-0 text-2x">Profile information</h2>
+        <h2 className="flex ml-0 text-2x justify-center">Thông tin cá nhân</h2>
         <div>
           <Form
             layout="vertical"
@@ -158,13 +158,15 @@ export default function AdminProfile() {
                 </Form.Item>
               </div>
               <Form.Item>
-                <Button
-                  className="flex py-3 px-3 items-center "
-                  type="primary"
-                  htmlType="submit"
-                >
-                  Save All
-                </Button>
+                <div className="flex justify-center">
+                  <Button
+                    className="flex p-4 items-center justify-center"
+                    type="primary"
+                    htmlType="submit"
+                  >
+                    Lưu
+                  </Button>
+                </div>
               </Form.Item>
             </div>
           </Form>

@@ -1,4 +1,5 @@
 import mongoose from 'mongoose'
+import moment from 'moment'
 
 const couponsSchema = new mongoose.Schema(
     {
@@ -16,9 +17,11 @@ const couponsSchema = new mongoose.Schema(
             type: String,
             required: true
         },
-        expiry: {
+        timeExpired: {
             type: Date,
-            required: true
+            required: true,
+            get: (v) => moment(v).format('YYYY-MM-DD HH:mm'),
+            set: (v) => moment(v, 'YYYY-MM-DD HH:mm').toDate()
         }
     },
     { timestamps: true }

@@ -98,6 +98,11 @@ export const AdminLayout = ({ children }) => {
               ),
             },
             {
+              key: "manage-coupon",
+              label: "Quản lí mã giảm giá",
+              icon: <IdcardOutlined />,
+            },
+            {
               key: "manage-gplx",
               label: "Quản lí bằng lái xe",
               icon: <IdcardOutlined />,
@@ -106,11 +111,6 @@ export const AdminLayout = ({ children }) => {
               key: "profile-admin",
               label: "Trang cá nhân",
               icon: <UserOutlined />,
-            },
-            {
-              key: "manage-coupon",
-              label: "Coupon management",
-              icon: <IdcardOutlined />,
             },
           ]}
           onClick={(item) => push(`/admin/${item.key}`)}

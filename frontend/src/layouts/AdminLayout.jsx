@@ -107,6 +107,11 @@ export const AdminLayout = ({ children }) => {
               label: "Trang cá nhân",
               icon: <UserOutlined />,
             },
+            {
+              key: "manage-coupon",
+              label: "Coupon management",
+              icon: <IdcardOutlined />,
+            },
           ]}
           onClick={(item) => push(`/admin/${item.key}`)}
         />

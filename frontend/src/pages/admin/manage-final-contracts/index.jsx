@@ -61,7 +61,7 @@ import "@react-pdf-viewer/core/lib/styles/index.css";
 import Highlighter from "react-highlight-words";
 import { useRouter } from "next/router";
 import { defaultLayoutPlugin } from "@react-pdf-viewer/default-layout";
-import { useAccessTokenValue } from "@/recoils/accessToken.state.js";
+
 import {
   GET_FINAL_CONTRACTS_KEY,
   GET_LIST_CONTRACTS_KEY,
@@ -95,7 +95,7 @@ export default function AdminManageContracts() {
   const [loading, setLoading] = useState(false);
 
   const [file, setFile] = useState(null);
-  const accessToken = useAccessTokenValue();
+  const [accessToken] = useLocalStorage("access_token");
 
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState("");
@@ -428,7 +428,7 @@ export default function AdminManageContracts() {
           onChange={handleChange}
           scroll={{ x: 2400, y: 460 }}
           columns={[
-            { key: "id", title: "ID", dataIndex: "id", width: "2%" },
+            { key: "id", title: "ID", dataIndex: "id", width: "4%" },
             {
               key: "image",
               title: "Thumbnail",

@@ -65,7 +65,7 @@ export const createOrderPaymentController = async (req, res, next) => {
   vnp_Params['vnp_CurrCode'] = currCode
   vnp_Params['vnp_TxnRef'] = orderId
 
-  vnp_Params['vnp_OrderInfo'] = `${fullname},${phone},${address},${from},${to}`
+  vnp_Params['vnp_OrderInfo'] = `${fullname},:?${phone},:?${address},:?${from},:?${to}`
 
   vnp_Params['vnp_OrderType'] = 'other'
   vnp_Params['vnp_Amount'] = amount * 100
@@ -193,7 +193,7 @@ export const createOrderPaymentMOMOController = async (req, res, next) => {
       console.log(dataUrl)
     })
 
-    res.on('end', () => { })
+    res.on('end', () => {})
   })
 
   req1.on('error', (e) => {

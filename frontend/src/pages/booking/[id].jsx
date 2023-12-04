@@ -22,6 +22,7 @@ import {
   Radio,
   Space,
   DatePicker,
+  message,
 } from "antd";
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
@@ -38,6 +39,7 @@ const { RangePicker } = DatePicker;
 // moment.tz.setDefault("Asia/Ho_Chi_Minh");
 console.log(moment());
 
+const { TextArea } = Input;
 const BookingPage = () => {
   const [user, setUser] = useUserState();
   const router = useRouter();
@@ -78,7 +80,7 @@ const BookingPage = () => {
   const [totalDays, setTotalDays] = useState(endDate?.diff(startDate, "days"));
   const order = router.query?.vnp_OrderInfo;
   console.log(order);
-  const orderInfo = order?.split(",");
+  const orderInfo = order?.split(",:?");
   const [accessToken, setAccessToken, clearAccessToken] = useLocalStorage(
     "access_token",
     ""
@@ -153,12 +155,42 @@ const BookingPage = () => {
 
   const onSubmit = async (values) => {
     try {
-      // if (from === undefined || to === undefined) {
-      //   moment(value[0]?.format("YYYY-MM-DD HH:mm"))._i;
-      //   from = moment(startDate?.format("YYYY-MM-DD HH:mm"))._i;
-      //   to = moment(endDate?.format("YYYY-MM-DD HH:mm"))._i;
-      // }
-      console.log(from, to);
+      const response1 = await axios.get(
+        `${process.env.NEXT_PUBLIC_REACT_APP_BACKEND_URL}/bookings/${carId}`,
+
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+          },
+          withCredentials: true,
+        }
+      );
+
+      for (const slot of response1.data.result) {
+        const bookedStart = new Date(slot.from);
+        const bookedEnd = new Date(slot.to);
+        from = new Date(from);
+        to = new Date(to);
+        console.log(bookedStart >= from, bookedEnd <= to);
+        if (bookedStart >= from && bookedEnd <= to)
+          return message.error(
+            "Khoảng ngày đã được thuê. Vui lòng chọn lại ngày thuê!"
+          );
+        if (bookedStart <= from && bookedEnd >= to)
+          return message.error(
+            "Khoảng ngày đã được thuê. Vui lòng chọn lại ngày thuê!"
+          );
+        if (bookedEnd >= from && bookedEnd <= to)
+          return message.error(
+            "Khoảng ngày đã được thuê. Vui lòng chọn lại ngày thuê!"
+          );
+        if (bookedStart >= from && bookedStart <= to)
+          return message.error(
+            "Khoảng ngày đã được thuê. Vui lòng chọn lại ngày thuê!"
+          );
+      }
+
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_REACT_APP_BACKEND_URL}/payments/create_payment_url`,
 
@@ -185,9 +217,13 @@ const BookingPage = () => {
     for (const slot of bookedTimeSlots) {
       const bookedStart = new Date(slot.from);
       const bookedEnd = new Date(slot.to);
-
+      startDate = new Date(startDate);
+      endDate = new Date(endDate);
       console.log(bookedStart >= startDate, bookedEnd <= endDate);
       if (bookedStart >= startDate && bookedEnd <= endDate) return true;
+      if (bookedStart <= startDate && bookedEnd >= endDate) return true;
+      if (bookedEnd >= startDate && bookedEnd <= endDate) return true;
+      if (bookedStart >= startDate && bookedStart <= endDate) return true;
     }
 
     return false; // Khoảng ngày không được đặt
@@ -199,13 +235,27 @@ const BookingPage = () => {
 
     // Kiểm tra nếu ngày hiện tại nằm trong mảng bookedTimeSlots
     const isBookedDate = bookedTimeSlots.some((slot) => {
-      const slotStart = moment(slot.from).subtract(1, "days");
-      const slotEnd = moment(slot.to);
-      return current && current >= slotStart && current <= slotEnd;
+      const slotStart = moment(slot.from);
+      const slotEnd = moment(slot.to).add(1, "days");
+      return current >= slotStart && current <= slotEnd;
     });
 
     return isPastDate || isBookedDate;
   };
+
+  // const disabledDate = (current) => {
+  //   // Kiểm tra nếu ngày là ngày quá khứ
+  //   const isPastDate = current && current < moment().startOf("day");
+
+  //   // Kiểm tra nếu ngày hiện tại nằm trong mảng bookedTimeSlots
+  //   const isBookedDate = bookedTimeSlots.some((slot) => {
+  //     const slotStart = moment(slot.from).subtract(1, "days");
+  //     const slotEnd = moment(slot.to);
+  //     return current && current >= slotStart && current <= slotEnd;
+  //   });
+
+  //   return isPastDate || isBookedDate;
+  // };
 
   const result1 = useQuery({
     queryKey: ["getScheduleCar", carId],
@@ -238,7 +288,11 @@ const BookingPage = () => {
 
     // Cập nhật initialValues
     form.setFieldsValue({
-      amount: newAmount || 0, // Định dạng số tiền theo ý muốn
+      amount: newAmount || 0,
+      address:
+        costGetCar === 0
+          ? "88 Đ. Phạm Văn Nghị, Vĩnh Trung, Thanh Khê, Đà Nẵng(công ty CRT)"
+          : `${user?.result?.address || ""}`,
     });
   }, [totalDays, data?.cost, costGetCar]);
 
@@ -251,15 +305,26 @@ const BookingPage = () => {
     // setTotalDays(endDate?.diff(startDate, "days"));
     setCurrent(0);
   };
+
+  const disabledRangeTime = (_, type) => {
+    if (type === "start") {
+      return {
+        disabledHours: () => [0, 1, 2, 3, 4, 5, 6, 18, 19, 20, 21, 22, 23],
+      };
+    }
+    return {
+      disabledHours: () => [0, 1, 2, 3, 4, 5, 6, 21, 22, 23],
+    };
+  };
   const selectTimeSlots = (value) => {
     if (value && value.length === 2) {
       const [startDate, endDate] = value;
 
-      if (isDateBooked(startDate, endDate)) {
-        setValidationMessage("Khoảng ngày đã được thuê.");
-      } else {
-        setValidationMessage("");
-      }
+      // if (isDateBooked("2023-01-12", "2023-01-15")) {
+      //   setValidationMessage("Khoảng ngày đã được thuê.");
+      // } else {
+      //   setValidationMessage("");
+      // }
 
       setFrom(moment(value[0]?.format("YYYY-MM-DD HH:mm") || "")._i);
       setTo(moment(value[1]?.format("YYYY-MM-DD HH:mm") || "")._i);
@@ -285,7 +350,7 @@ const BookingPage = () => {
   return (
     <div className="mb-10 max-w-6xl mx-auto">
       <>
-        <div class="flex flex-col mt-10 items-center justify-center border rounded-sm bg-slate-100 p-2 pb-4 sm:flex-row sm:px-5 lg:px-5 xl:px-12">
+        <div class="flex flex-col mt-10 items-center justify-center border rounded-sm shadow-md bg-slate-100 p-2 pb-4 sm:flex-row sm:px-5 lg:px-5 xl:px-12">
           <div class="flex  w-full mt-4 py-2 text-xs sm:mt-0 sm:ml-auto sm:text-base ">
             <Steps
               className="mt-5"
@@ -310,11 +375,11 @@ const BookingPage = () => {
           </div>
         </div>
         {current === 0 && (
-          <div class="grid sm:px- mt-3 lg:grid-cols-2 p-5 rounded-sm  bg-slate-100 ">
+          <div class="grid sm:px- mt-3 lg:grid-cols-2 p-6 rounded-sm shadow-md  bg-slate-100 ">
             <div class="px-10 pt-8 ">
               <p class="text-xl font-medium">Tổng kết đơn hàng</p>
               <p class="text-gray-400"></p>
-              <div class="mt-8 space-y-3 rounded-lg border bg-white px-2 py-4 sm:px-6">
+              <div class="mt-8 space-y-3 rounded-lg shadow-md border bg-white px-2 py-4 sm:px-6">
                 <div class="flex flex-col rounded-lg bg-white sm:flex-row relative">
                   <div className="relative rounded-lg w-1/2">
                     <Image
@@ -348,7 +413,10 @@ const BookingPage = () => {
               <form class="mt-5 mb-5 grid gap-6">
                 <Radio.Group onChange={onChange} value={costGetCar}>
                   <Space direction="vertical">
-                    <Radio value={0}>Công ty CRT</Radio>
+                    <Radio value={0}>
+                      88 Đ. Phạm Văn Nghị, Vĩnh Trung, Thanh Khê, Đà Nẵng
+                      550000(công ty CRT)
+                    </Radio>
                     <Radio value={150000}>
                       Giao Tận nơi trong Thành phố Đà Nẵng (thêm 150k)
                     </Radio>
@@ -356,7 +424,7 @@ const BookingPage = () => {
                 </Radio.Group>
               </form>
             </div>
-            <div class="mt-14 bg-gray-50 px-10 pt-4 lg:mt-5 rounded-sm">
+            <div class="mt-14 bg-gray-50 px-10 pt-4 lg:mt-5 rounded-md shadow-md">
               <p class="text-xl font-medium">Thông tin thuê chi tiết</p>
               <p class="text-gray-400">Thời gian thuê xe</p>
               <Space direction="vertical" size={12}>
@@ -366,6 +434,7 @@ const BookingPage = () => {
                   onChange={selectTimeSlots}
                   size="large"
                   disabledDate={disabledDate}
+                  disabledTime={disabledRangeTime}
                   defaultValue={[startDate, endDate]}
 
                   // locale={locale}
@@ -413,10 +482,10 @@ const BookingPage = () => {
               mutate(values);
             }}
             labelCol={{
-              span: 7,
+              span: 6,
             }}
             wrapperCol={{
-              span: 18,
+              span: 20,
             }}
             layout="horizontal"
             name="basic"
@@ -426,13 +495,16 @@ const BookingPage = () => {
               amount: "0",
               fullname: `${user?.result?.fullname || ""}`,
               phone: `${user?.result?.phoneNumber || ""}`,
-              address: `${user?.result?.address || ""}`,
+              // address:
+              //   costGetCar !== 0
+              //     ? "88 Đ. Phạm Văn Nghị, Vĩnh Trung, Thanh Khê, Đà Nẵng(công ty CRT)"
+              //     : `${user?.result?.address || ""}`,
             }}
             size="large"
             className=""
           >
-            <div className="grid sm:px-10 lg:grid-cols-2 p-5 mt-3 rounded-sm  bg-slate-100">
-              <div class="px-10 pt-8 ">
+            <div className="grid sm:px-10 lg:grid-cols-2 p-5 mt-3 rounded-md  shadow-md  bg-slate-100">
+              <div class=" pt-8 pr-10 ">
                 <Form.Item
                   name="fullname"
                   label="Họ và tên:"
@@ -459,7 +531,7 @@ const BookingPage = () => {
                 </Form.Item>
                 <Form.Item
                   name="address"
-                  label="Địa chỉ:"
+                  label="Địa chỉ giao xe:"
                   rules={[
                     {
                       required: true,
@@ -467,12 +539,12 @@ const BookingPage = () => {
                     },
                   ]}
                 >
-                  <Input />
+                  <TextArea readOnly rows={3} placeholder="Địa chỉ giao xe" />
                 </Form.Item>
                 <Form.Item name="date" label="Thời gian thuê xe">
                   <RangePicker
                     showTime={{ format: "HH mm" }}
-                    format="YYYY-MM-DD HH:mm"
+                    format="DD-MM-YYYY HH:mm"
                     onChange={selectTimeSlots}
                     defaultValue={[
                       dayjs(from || startDate, "YYYY-MM-DD HH:mm"),
@@ -486,7 +558,7 @@ const BookingPage = () => {
                   <Input readOnly />
                 </Form.Item>
               </div>
-              <div class="mt-14 bg-gray-50 px-10 pt-8 lg:mt-5 rounded-sm">
+              <div class="mt-14 bg-gray-50 px-10 pt-8 lg:mt-5 rounded-md shadow-md">
                 <Form.Item name="bankCode" label="Thanh toán:">
                   <Radio.Group name="bankCode" className="mt-2">
                     <Space direction="vertical">

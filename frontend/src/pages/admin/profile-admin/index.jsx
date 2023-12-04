@@ -85,7 +85,7 @@ export default function AdminProfile() {
           boxShadow: "0 .25rem 1.125rem rgba(75,70,92,.1)",
         }}
       >
-        <h2 className="flex ml-0 text-2x">Profile information</h2>
+        <h2 className="flex ml-0 text-2x">Thông tin cá nhân</h2>
         <div>
           <Form
             layout="vertical"

@@ -71,7 +71,9 @@ export default function EditProfileModal({
         console.log(error.response.data.errors[0].msg);
       }
     } catch (error) {
-      console.log(error);
+      toast.error(error.response.data.errors[0].msg, {
+        position: toast.POSITION.TOP_CENTER,
+      });
     }
   };
 

@@ -9,7 +9,7 @@ import {
   UserOutlined,
   LogoutOutlined,
 } from "@ant-design/icons";
-import { ContractIcon, FinalContractIcon } from "@/icons";
+import { ContractIcon, FinalContractIcon, UserFilledIcon } from "@/icons";
 import { GPLXIcon } from "@/icons";
 import { useRouter } from "next/router";
 import { useUserState } from "@/recoils/user.state.js";
@@ -125,7 +125,11 @@ export const AdminLayout = ({ children }) => {
               trigger={["click"]}
             >
               <Space>
-                <Avatar src={user?.result?.profilePicture} />
+                {user?.result?.profilePicture ? (
+                  <Avatar src={user?.result?.profilePicture} />
+                ) : (
+                  <UserFilledIcon className="text-neutral-500" />
+                )}
               </Space>
             </Dropdown>
             <span className="flex ">{user?.result?.username}</span>

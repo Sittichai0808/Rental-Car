@@ -6,5 +6,18 @@ import { Divider, Layout, Menu } from "antd";
 const { Footer } = Layout;
 
 export default function FooterComponent() {
-  return <Footer>Footer</Footer>;
+  return (
+    <Footer
+      style={{
+        position: "sticky",
+        top: 0,
+        zIndex: 99,
+        width: "100%",
+        display: "flex",
+        alignItems: "center",
+      }}
+    >
+      Footer
+    </Footer>
+  );
 }

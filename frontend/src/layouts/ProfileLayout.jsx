@@ -1,19 +1,22 @@
-import React from "react";
+import React, { useState } from "react";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import { useUserState } from "@/recoils/user.state.js";
 import { useDriverState } from "@/recoils/driver.state";
-import { Tabs } from "antd";
-import moment from "moment";
-import { Layout, Button } from "antd";
+import {
+  UserOutlined,
+  CarFilled,
+  HeartFilled,
+  LogoutOutlined,
+  IdcardOutlined,
+} from "@ant-design/icons";
+import { Tabs, Layout } from "antd";
 import Account from "@/pages/profile/index";
+import Driver from "@/pages/profile/driver-licenses/index";
 import CarRental from "@/pages/profile/car-rental/index";
 import CarLiked from "@/pages/profile/car-liked";
 import HeaderComponent from "@/components/HeaderComponent";
 import FooterComponent from "@/components/FooterComponent";
 import { useRouter } from "next/router";
-import { LogoutOutlined } from "@ant-design/icons";
-
-import { UploadProfilePicture } from "@/components/UploadProfilePicture";
 
 const { TabPane } = Tabs;
 
@@ -22,110 +25,100 @@ const onChange = (key) => {
   console.log(key);
 };
 
-const items = [
-  {
-    key: "1",
-    label: <span className="text-lg font-semibold text-center ">Profile</span>,
-    children: <Account />,
-  },
-  {
-    key: "2",
-    label: (
-      <span className="text-lg font-semibold text-center">
-        Lịch sử thuê xe{" "}
-      </span>
-    ),
-    children: <CarRental />,
-  },
-  {
-    key: "3",
-    label: (
-      <span className="text-lg font-semibold text-center">Xe yêu thích</span>
-    ),
-    children: <CarLiked />,
-  },
-];
-
 export const ProfileLayout = ({ children }) => {
-  const router = useRouter();
+  const [tabPosition, setTabPosition] = useState("left");
   const [user, setUser] = useUserState();
-  const [driver, setDriver] = useDriverState();
-  const [profile, setProfile, clearProfile] = useLocalStorage("profile", "");
   const [accessToken, setAccessToken, clearAccessToken] =
     useLocalStorage("access_token");
+  const [profile, setProfile, clearProfile] = useLocalStorage("profile", "");
+  const [driver, setDriver] = useDriverState();
+  const router = useRouter();
+  const items = [
+    {
+      key: "1",
+      label: (
+        <span className="text-base font-semibold">
+          {" "}
+          <UserOutlined />
+          Profile
+        </span>
+      ),
 
-  return (
-    <Layout className="flex mx-auto border-b bg-white">
-      <HeaderComponent />
-      <div className="max-w-6xl mx-auto bg-white">
-        <Layout
-          className=" flex min-h-screen relative  mt-10 mb-10 border-b bg-white"
-          style={{
-            minHeight: "100vh",
+      children: <Account />,
+    },
+    {
+      key: "2",
+      label: (
+        <span className="text-base font-semibold">
+          {" "}
+          <IdcardOutlined />
+          Giấy phép lái xe
+        </span>
+      ),
+
+      children: <Driver />,
+    },
+
+    {
+      key: "3",
+      label: (
+        <span className="text-base font-semibold">
+          <CarFilled />
+          Lịch sử thuê xe{" "}
+        </span>
+      ),
+      children: <CarRental />,
+    },
+    {
+      key: "4",
+      label: (
+        <span className="text-base font-semibold">
+          <HeartFilled />
+          Xe yêu thích
+        </span>
+      ),
+      children: <CarLiked />,
+    },
+    {
+      key: "5",
+      label: (
+        <div
+          onClick={() => {
+            clearAccessToken();
+            setUser(null);
+            setDriver(null);
+            clearProfile();
+            router.push("/");
           }}
-          hasSider
         >
-          <div
-            className="flex mt-5 relative flex-col m-auto ml-5 mr-5 p-4 shadow-lg"
-            style={{
-              width: "30%",
-            }}
-          >
-            <div
-              className="flex w-full flex-col justify-center items-center p-4"
-              style={{
-                minHeight: "0vh",
-                backgroundColor: "#fff",
-              }}
-            >
-              <Button
-                className="absolute top-0 right-0 text-red-600 "
-                onClick={() => {
-                  clearAccessToken();
-
-                  setUser(null);
-
-                  setDriver(null);
-                  clearProfile();
-                  router.push("/");
-                }}
-              >
-                <LogoutOutlined />
-              </Button>
-              <UploadProfilePicture />
-
-              <div className="flex flex-col  ">
-                <h5 className="text-lg font-semibold text-center mt-1 mb-2 ">
-                  {user?.result?.username}
-                </h5>
-
-                <p className="mt-0">
-                  Tham gia:{" "}
-                  {moment(user?.result?.createdAt).format("DD/MM/YYYY")}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <Content
-            className=" w-[calc(100%-23%)]  mt-5 mb-5  overflow-y-scroll h-0 p-4 shadow-lg rounded-lg"
-            style={{
-              display: "flex",
-              minHeight: "100vh",
-              flexDirection: "column",
-            }}
-          >
-            <Tabs
-              className=" w-full mb-3 flex mt-0     "
-              defaultActiveKey="1"
-              centered
-              items={items}
-              onChange={onChange}
-            />
-          </Content>
+          {" "}
+          <span className="text-base font-semibold text-center ">
+            <LogoutOutlined className=" text-red-600  " />
+            Logout
+          </span>
+        </div>
+      ),
+    },
+  ];
+  return (
+    <>
+      <HeaderComponent />
+      <div>
+        <Layout className="flex max-w-6xl h-screen mx-auto bg-white ">
+          <Layout className=" flex max-w-6xl relative my-2 bg-white" hasSider>
+            <Content className="flex flex-col my-5 bg-white">
+              <Tabs
+                className="w-full flex mt-3 "
+                defaultActiveKey="1"
+                tabPosition={tabPosition}
+                items={items}
+                onChange={onChange}
+              />
+            </Content>
+          </Layout>
         </Layout>
       </div>
       <FooterComponent />
-    </Layout>
+    </>
   );
 };

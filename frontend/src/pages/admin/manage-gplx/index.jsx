@@ -49,7 +49,7 @@ export default function AdminManageGPLX() {
           { key: "id", title: "ID", dataIndex: "id", width: "60px" },
           {
             key: "img",
-            title: "Ảnh",
+            title: "Ảnh bằng lái xe",
             dataIndex: "img",
             render: (url) => (
               <Image
@@ -60,7 +60,7 @@ export default function AdminManageGPLX() {
           },
           {
             key: "drivingLicenseNo",
-            title: "Số GPLX",
+            title: "Số Bằng lái xe",
             dataIndex: "drivingLicenseNo",
             filterSearch: true,
             onFilter: (value, record) =>

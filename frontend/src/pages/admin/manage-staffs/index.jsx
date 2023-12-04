@@ -5,7 +5,7 @@ import {
   updateUserStatus,
 } from "@/apis/admin-staff.api";
 import { UploadImage } from "@/components/UploadImage";
-import { GET_STAFFS } from "@/constants/react-query-key.constant";
+import { GET_STAFFS } from "@/constants/react-query-key.constant.js";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import { AdminLayout } from "@/layouts/AdminLayout";
 import { UserAddOutlined } from "@ant-design/icons";
@@ -153,7 +153,7 @@ function UpsertStaffForm({ actionType, staffId, onClose }) {
 
       <div className="flex justify-end mt-10">
         <Button type="primary" onClick={handleAddStaff}>
-          {isInsert ? "Add" : "Update"}
+          {isInsert ? "Tạo mới" : "Cập nhật"}
         </Button>
       </div>
     </>
@@ -183,7 +183,7 @@ export default function AdminManageStaffs() {
         <div className="mb-4 flex justify-between items-center">
           <div className="max-w-[30%] flex gap-2 items-center">
             <Button onClick={handleInsertStaff}>
-              <UserAddOutlined /> <span>Add staff</span>
+              <UserAddOutlined /> <span>Tạo nhân viên</span>
             </Button>
           </div>
         </div>
@@ -203,14 +203,17 @@ export default function AdminManageStaffs() {
               render: (url) => <Avatar src={url} />,
             },
             { key: "username", title: "Username", dataIndex: "username" },
-            { key: "name", title: "Name", dataIndex: "fullname" },
+            { key: "name", title: "Họ tên", dataIndex: "fullname" },
             { key: "email", title: "Email", dataIndex: "email" },
-            { key: "phoneNumber", title: "Phone", dataIndex: "phoneNumber" },
+            {
+              key: "phoneNumber",
+              title: "Số điện thoại",
+              dataIndex: "phoneNumber",
+            },
             // { key: "role", title: "Role", dataIndex: "role" },
-            { key: "address", title: "Address", dataIndex: "address" },
+            { key: "address", title: "Địa chỉ", dataIndex: "address" },
             {
               key: "action",
-              title: "Action",
               render: (_, staff) => (
                 <div className="flex gap-2">
                   <Button
@@ -222,12 +225,13 @@ export default function AdminManageStaffs() {
                       })
                     }
                   >
-                    Update
+                    Cập nhật
                   </Button>
                   {staff?.status === "Hoạt động" && (
                     <Popconfirm
-                      title="Are you sure to block this user?"
-                      okText="Block"
+                      title="Bạn muốn chặn nhân viên này?"
+                      okText="Chặn"
+                      cancelText="Hủy"
                       onConfirm={() => {
                         apiUpdateStatus.mutateAsync({
                           accessToken,
@@ -237,15 +241,16 @@ export default function AdminManageStaffs() {
                       }}
                     >
                       <Button className="bg-red-500 text-white border-none hover:bg-red-500/70">
-                        Block
+                        Chặn
                       </Button>
                     </Popconfirm>
                   )}
 
                   {staff?.status === "Không hoạt động" && (
                     <Popconfirm
-                      title="Are you sure active this user?"
-                      okText="Active"
+                      title="Bạn muốn bỏ chặn nhân viên này?"
+                      okText="Bỏ chặn"
+                      cancelText="Hủy"
                       onConfirm={() => {
                         apiUpdateStatus.mutateAsync({
                           accessToken,
@@ -255,7 +260,7 @@ export default function AdminManageStaffs() {
                       }}
                     >
                       <Button className="bg-green-500 text-white border-none hover:bg-green-500/70">
-                        Unblock
+                        Bỏ chặn
                       </Button>
                     </Popconfirm>
                   )}

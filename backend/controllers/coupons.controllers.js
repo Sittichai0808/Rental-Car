@@ -1,13 +1,9 @@
 import couponsService from '../services/coupons.services.js'
 import { HTTP_STATUS } from '../constants/httpStatus.js'
-import { validate } from '../utils/validator.js';
-import Coupons from '../models/coupons.model.js';
-import moment from "moment-timezone";
 
 export const createCoupon = async (req, res, next) => {
   try {
-    const expiry = moment().add(req.body.expiry, 'days').valueOf();
-    const result = await couponsService.createCoupons(req.body, expiry);
+    const result = await couponsService.createCoupons(req.body);
 
     return res.status(HTTP_STATUS.CREATED).json({
       message: 'Created coupon successfully',

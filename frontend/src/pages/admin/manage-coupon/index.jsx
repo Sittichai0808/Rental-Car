@@ -57,6 +57,8 @@ function UpsertCouponForm({ couponId, onOk }) {
     return <Skeleton active />;
   }
 
+  console.log(couponDetail.data?.result?.timeExpired);
+
   return (
     <Form
       form={form}
@@ -64,6 +66,10 @@ function UpsertCouponForm({ couponId, onOk }) {
       className="flex flex-col gap-4 mt-10"
       initialValues={{
         ...couponDetail.data?.result,
+        timeExpired: dayjs(
+          couponDetail.data?.result?.timeExpired,
+          "YYYY-MM-DD HH:mm"
+        ),
       }}
       onFinish={async (values) => {
         console.log(values, couponId);
@@ -97,10 +103,10 @@ function UpsertCouponForm({ couponId, onOk }) {
           <Form.Item label="Mô tả chi tiết" required name="description">
             <Input.TextArea />
           </Form.Item>
-          <Form.Item label="Ngày hết hạn" required name="timeExpired">
+          <Form.Item label="Ngày hết hạn" name="timeExpired">
             <DatePicker
               showTime={{ format: "HH:mm" }}
-              format="YYYY-MM-DD HH:mm"
+              format="DD-MM-YYYY HH:mm"
               size="large"
             />
           </Form.Item>
@@ -130,7 +136,7 @@ export default function AdminManageCoupon() {
     name: item?.name,
     discount: item?.discount,
     description: item?.description,
-    timeExpired: moment(item?.timeExpired).format("DD-MM-YYYY HH:mm"),
+    timeExpired: moment(item?.timeExpired).format("YYYY-MM-DD HH:mm"),
   }));
   const handleInsertCoupon = () => {
     setUpsertCouponModal({ actionType: "insert" });
@@ -182,7 +188,7 @@ export default function AdminManageCoupon() {
               dataIndex: "description",
             },
             {
-              key: "expiry",
+              key: "timeExpired",
               title: "Ngày hết hạn",
               dataIndex: "timeExpired",
             },

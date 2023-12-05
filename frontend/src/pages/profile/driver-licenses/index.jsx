@@ -86,10 +86,11 @@ export default function DriverPage() {
           </Title>
           <div className="flex">
             <Button
-              className="rounded-lg border-solid border-black font-bold text-xs"
+              type="default"
+              // className="rounded-lg border-solid border-black font-bold text-xs"
               onClick={showModalRegister}
             >
-              Chỉnh sửa
+              Đăng ký
               <EditOutlined />
             </Button>
             <RegisterDriverModal

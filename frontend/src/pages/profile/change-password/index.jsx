@@ -69,7 +69,8 @@ export default function ChangePassword({}) {
     } catch (error) {
       notification.error({
         message: "Lỗi",
-        description: "Có lỗi xảy ra khi đánh giá. Vui lòng thử lại sau.",
+        description:
+          "Có lỗi xảy ra khi thay đổi mật khẩu. Vui lòng thử lại sau.",
       });
     }
     {

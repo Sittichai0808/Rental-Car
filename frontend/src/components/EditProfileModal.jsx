@@ -71,6 +71,12 @@ export default function EditProfileModal({
         console.log(error.response.data.errors[0].msg);
       }
     } catch (error) {
+      notification.error({
+        message: "Lỗi",
+        description: "Có lỗi xảy ra khi cập nhật. Vui lòng thử lại sau",
+      });
+    }
+    {
       toast.error(error.response.data.errors[0].msg, {
         position: toast.POSITION.TOP_CENTER,
       });

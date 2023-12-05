@@ -168,6 +168,40 @@ export const loginValidator = validate(
   )
 )
 
+export const updateValidator = validate(
+  checkSchema(
+    {
+      username: {
+        notEmpty: {
+          errorMessage: USER_MESSAGES.NAME_IS_REQUIRED
+        },
+        isString: {
+          errorMessage: USER_MESSAGES.NAME_MUST_BE_A_STRING
+        },
+        isLength: {
+          options: {
+            min: 1,
+            max: 100
+          },
+          errorMessage: USER_MESSAGES.NAME_LENGTH_MUST_BE_FROM_1_TO_100
+        },
+
+        trim: true
+      },
+      email: {
+        notEmpty: {
+          errorMessage: USER_MESSAGES.EMAIL_IS_REQUIRED
+        },
+        isEmail: {
+          errorMessage: USER_MESSAGES.EMAIL_IS_INVALID
+        },
+        trim: true
+      }
+    },
+    ['body']
+  )
+)
+
 export const accessTokenValidator = validate(
   checkSchema(
     {

@@ -112,7 +112,9 @@ export default function EditProfileModal({
           mutate(values);
         }}
         label
-        initialValues={{}}
+        initialValues={{
+          ...user?.result,
+        }}
         autoComplete="off"
         className="mt-5 "
       >
@@ -126,11 +128,7 @@ export default function EditProfileModal({
             },
           ]}
         >
-          <StyleInputModal
-            type="text"
-            defaultValue={user?.result?.username}
-            size="large"
-          />
+          <StyleInputModal type="text" size="large" />
         </Form.Item>
         <Form.Item
           label="Địa chỉ"
@@ -138,11 +136,11 @@ export default function EditProfileModal({
           rules={[
             {
               type: "text",
-              message: "The input is not valid name",
+              message: "The input is not valid address",
             },
           ]}
         >
-          <StyleInputModal defaultValue={user?.result?.address} size="large" />
+          <StyleInputModal size="large" />
         </Form.Item>
         <Form.Item
           label="Email"
@@ -154,7 +152,7 @@ export default function EditProfileModal({
             },
           ]}
         >
-          <StyleInputModal defaultValue={user?.result?.email} size="large" />
+          <StyleInputModal size="large" />
         </Form.Item>
         <Form.Item
           label="Số điện thoại"
@@ -166,10 +164,7 @@ export default function EditProfileModal({
             },
           ]}
         >
-          <StyleInputModal
-            defaultValue={user?.result?.phoneNumber}
-            size="large"
-          />
+          <StyleInputModal size="large" />
         </Form.Item>
       </Form>
     </Modal>

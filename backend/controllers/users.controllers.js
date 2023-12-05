@@ -134,3 +134,21 @@ export const getUserByEmailController = async (req, res, next) => {
     result: result
   })
 }
+export const changePasswordController = async (req, res, next) => {
+  const { oldPassword, newPassword } = req.body
+  const userId = req.decoded_authorization.user_id // Assuming you store user_id in the decoded authorization token
+
+  try {
+    // Perform logic to change the password using the usersService
+    const result = await usersService.changePassword(userId, oldPassword, newPassword)
+
+    return res.json({
+      message: USER_MESSAGES.CHANGE_PASSWORD_SUCCESS,
+      result: result.user
+    })
+  } catch (error) {
+    // Handle errors appropriately
+    console.error(error)
+    return res.status(500).json({ message: 'Internal Server Error' })
+  }
+}

@@ -3,6 +3,7 @@ import {
   registerValidator,
   loginValidator,
   accessTokenValidator,
+  updateValidator,
   adminValidator,
   staffValidator,
   adminAndStaffValidator
@@ -18,7 +19,8 @@ import {
   verifyOTPController,
   resetPasswordController,
   registerMailController,
-  getUserByEmailController
+  getUserByEmailController,
+  changePasswordController
 } from '../controllers/users.controllers.js'
 import uploadCloud from '../utils/cloudinary.config.js'
 const usersRoutes = express.Router()
@@ -73,7 +75,7 @@ usersRoutes.put(
   '/update-user/:userId',
   uploadCloud.single('profilePicture'),
   accessTokenValidator,
-
+  updateValidator,
   wrapRequestHandler(updateUserController)
 )
 
@@ -113,5 +115,6 @@ usersRoutes.put('/reset-password', wrapRequestHandler(resetPasswordController))
  * Body: {email: String,name: string, text: String, subject: String}
  */
 usersRoutes.post('/register-mail', wrapRequestHandler(registerMailController))
+usersRoutes.put('/change-password', accessTokenValidator, wrapRequestHandler(changePasswordController))
 
 export default usersRoutes

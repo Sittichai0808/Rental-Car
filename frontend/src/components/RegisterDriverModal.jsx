@@ -61,8 +61,10 @@ export default function RegisterDriverModal({
         console.log(error.response.data.errors[0].msg);
       }
     } catch (error) {
-      toast.error(error.response.data.errors[0].msg, {
-        position: toast.POSITION.TOP_CENTER,
+      notification.error({
+        message: "Lỗi",
+        description:
+          "Có lỗi xảy ra khi đăng kí. Vui lòng nhập đầy đủ thông tin",
       });
     } finally {
       setLoading(false);

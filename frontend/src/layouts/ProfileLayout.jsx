@@ -8,12 +8,14 @@ import {
   HeartFilled,
   LogoutOutlined,
   IdcardOutlined,
+  KeyOutlined,
 } from "@ant-design/icons";
 import { Tabs, Layout } from "antd";
 import Account from "@/pages/profile/index";
 import Driver from "@/pages/profile/driver-licenses/index";
 import CarRental from "@/pages/profile/car-rental/index";
 import CarLiked from "@/pages/profile/car-liked";
+import ChangePassword from "@/pages/profile/change-password";
 import HeaderComponent from "@/components/HeaderComponent";
 import FooterComponent from "@/components/FooterComponent";
 import { useRouter } from "next/router";
@@ -81,6 +83,16 @@ export const ProfileLayout = ({ children }) => {
     },
     {
       key: "5",
+      label: (
+        <span className="text-base font-semibold">
+          <KeyOutlined />
+          Thay đổi mật khẩu
+        </span>
+      ),
+      children: <ChangePassword />,
+    },
+    {
+      key: "6",
       label: (
         <div
           onClick={() => {

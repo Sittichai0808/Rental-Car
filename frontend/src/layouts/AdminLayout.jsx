@@ -98,6 +98,11 @@ export const AdminLayout = ({ children }) => {
               ),
             },
             {
+              key: "manage-coupon",
+              label: "Quản lí mã giảm giá",
+              icon: <IdcardOutlined />,
+            },
+            {
               key: "manage-gplx",
               label: "Quản lí bằng lái xe",
               icon: <IdcardOutlined />,

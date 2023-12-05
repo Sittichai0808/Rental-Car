@@ -1,9 +1,13 @@
-import Coupons from "../models/coupons.model.js";
+
+import moment from 'moment';
+import Coupons from '../models/coupons.model.js'
 
 class CouponsService {
-    async createCoupons(payload, expiry) {
+    async createCoupons(payload) {
         try {
-            const createCoupons = await Coupons.create({ ...payload, expiry: new Date(expiry) });
+            const { timeExpired } = payload
+            const expired = moment.utc(timeExpired).toDate()
+            const createCoupons = await Coupons.create({ ...payload, timeExpired: expired });
             return createCoupons;
         } catch (error) {
             throw Error(error);
@@ -18,15 +22,36 @@ class CouponsService {
             throw Error(error);
         }
     }
-
-    async updateCoupons(cid, payload) {
+    async getCouponById(couponId) {
+        console.log(couponId)
         try {
-            const updateCoupons = await Coupons.findByIdAndUpdate(cid, payload, { new: true })
-            return updateCoupons
+            const getCouponById = await Coupons.findById(couponId)
+            return getCouponById
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    async updateCoupon(couponId, payload) {
+        try {
+            const { timeExpired } = payload
+            const expired = moment.utc(timeExpired).toDate()
+            const updateCoupon = await Coupons.findByIdAndUpdate({ couponId, ...payload, timeExpired: expired }, { new: true })
+            return updateCoupon
         } catch (error) {
             throw new Error(error)
         }
     }
+    async deleteCoupon(couponId) {
+        try {
+            await Coupons.findByIdAndDelete(couponId);
+            return { message: "Delete thanh cong!" }
+        } catch (error) {
+            throw new Error(error)
+        }
+    }
+
 }
+
 const couponsService = new CouponsService();
 export default couponsService;

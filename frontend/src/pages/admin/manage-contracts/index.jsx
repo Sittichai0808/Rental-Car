@@ -339,7 +339,7 @@ export default function AdminManageContracts() {
           images: values?.images || undefined,
           timeFinish:
             moment(values?.timeFinish?.format("YYYY-MM-DD"))._i || undefined,
-          cost_settlement: values?.cost_settlement || undefined,
+          cost_settlement: values?.cost_settlement || values?.totalCostNumber,
           note: values?.note || undefined,
         },
         {
@@ -417,32 +417,24 @@ export default function AdminManageContracts() {
   };
 
   const disabledDate = (current) => {
-    var dateEnd = new Date(
-      moment(
-        moment(form.getFieldValue("timeBookingEnd")).format("YYYY-DD-MM")
-      )?._i
+    const arrayDayEnd = form
+      .getFieldValue("timeBookingEnd")
+      .split(" ")[0]
+      .split("-");
+    const dEnd = new Date(
+      `${arrayDayEnd[1]}-${arrayDayEnd[0]}-${arrayDayEnd[2]}`
     );
-    dateEnd.setDate(dateEnd.getDate() + 1);
+    dEnd.setDate(dEnd.getDate() + 1);
 
-    return (
-      // (current && current < dayjs().endOf("day")) ||
-      !(
-        current < dateEnd &&
-        current >
-          new Date(
-            moment(moment(form.getFieldValue("timeBookingStart"))._id).format(
-              "YYYY-MM-DD"
-            )
-          )
-      )
-      // dayjs("2023-12-3")?.isBetween(
-      //   current,
-      //   // moment(current?.format("YYYY-MM-DD"))?._i,
-      //   dayjs("2023-12-6")
-      // )
-
-      // dayjs().isAfter(dayjs("2023-12-01"))
+    const arrayDayStart = form
+      .getFieldValue("timeBookingStart")
+      .split(" ")[0]
+      .split("-");
+    const dStart = new Date(
+      `${arrayDayStart[1]}-${arrayDayStart[0]}-${arrayDayStart[2]}`
     );
+
+    return current < dStart || current > dEnd;
   };
 
   const { data } = useQuery({
@@ -659,7 +651,7 @@ export default function AdminManageContracts() {
                   ) : (
                     <Tooltip
                       placement="topLeft"
-                      title={"Tạo hợp đồng"}
+                      title={"Tạo hợp đồng tất toán"}
                       color={"rgb(74 222 128)"}
                     >
                       <Button
@@ -674,7 +666,7 @@ export default function AdminManageContracts() {
 
                   <Tooltip
                     placement="top"
-                    title={"Tải file để tạo hợp đồng"}
+                    title={"Tải file để tạo hợp đồng tất toán"}
                     color="cyan"
                   >
                     <Button

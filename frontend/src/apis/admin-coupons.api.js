@@ -35,9 +35,7 @@ export async function createCoupon({ body, accessToken }) {
   return data;
 }
 
-
 export async function updateCoupon({ couponId, body, accessToken }) {
-
   const { data } = await apiClient.request({
     method: "PUT",
     url: `/coupons/update/${couponId}`,

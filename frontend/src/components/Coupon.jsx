@@ -35,11 +35,11 @@ const Coupon = ({ applyCoupon }) => {
     queryFn: getCoupons,
   });
   const expiryDay = coupons?.result.map((value, idx) => ({
-    expiry: moment(value?.expiry).format("DD-MM-YYYY HH:mm:ss"),
+    timeExpired: moment(value?.timeExpired).format("DD-MM-YYYY HH:mm:ss"),
   }));
-  const isCouponExpired = (expiry) => {
+  const isCouponExpired = (timeExpired) => {
     const currentDateTime = moment();
-    const couponExpiryDateTime = moment(expiry, "DD-MM-YYYY HH:mm:ss");
+    const couponExpiryDateTime = moment(timeExpired, "DD-MM-YYYY HH:mm:ss");
     return currentDateTime.isAfter(couponExpiryDateTime);
   };
 
@@ -90,7 +90,7 @@ const Coupon = ({ applyCoupon }) => {
                       </div>
                       <p className="m-0 max-w-lg">{value.description}</p>
                     </div>
-                    {isCouponExpired(expiryDay[index].expiry) ? (
+                    {isCouponExpired(expiryDay[index].timeExpired) ? (
                       <Button
                         className=""
                         onClick={() => handleCouponClick(value)}

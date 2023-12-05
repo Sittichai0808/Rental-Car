@@ -3,6 +3,7 @@ import Contracts from '../models/contracts.model.js'
 import FinalContracts from '../models/finalContracts.model.js'
 import BookedTimeSlots from '../models/bookedTimeSlots.model.js'
 import moment from 'moment-timezone'
+import { ObjectId } from 'mongoose'
 class FinalContractsService {
   async createFinalContract(contractId, payload) {
     try {
@@ -91,12 +92,13 @@ class FinalContractsService {
 
   async getFinalContractById(createBy) {
     try {
+      console.log(createBy)
       const getListBooking = await FinalContracts.find({})
         .populate({
           path: 'contractId',
           populate: {
             path: 'createBy',
-            match: { _id: createBy },
+            match: { 'createBy._id': 'createBy.toString()' },
             model: 'User'
           }
         })

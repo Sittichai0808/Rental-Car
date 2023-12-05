@@ -490,7 +490,7 @@ export default function AdminManageBookings() {
           // onChange={handleChange}
           scroll={{ x: 2400, y: 460 }}
           columns={[
-            { key: "id", title: "ID", dataIndex: "id", width: "2%" },
+            { key: "id", title: "ID", dataIndex: "id", width: "4%" },
             {
               key: "thumb",
               title: "Ảnh",

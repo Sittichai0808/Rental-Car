@@ -34,7 +34,7 @@ import { HeartOutlined, HeartFilled } from "@ant-design/icons";
 import { GET_CAR_DETAILS } from "@/constants/react-query-key.constant";
 import { getCarDetail, likeCars } from "@/apis/user-cars.api";
 import { useRatingsOfCar } from "@/hooks/useGetRatings";
-
+import { apiClient } from "@/apis/client";
 const carServices = [
   { icon: MapIcon, name: "Bản đồ" },
   { icon: BluetoothIcon, name: "Bluetooth" },
@@ -53,6 +53,8 @@ export default function CarDetailPage() {
   const router = useRouter();
   const carId = router.query.id;
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalCheckOpen, setIsModalCheckOpen] = useState(false);
+
   const [user, setUser] = useUserState();
   const [accessToken, setAccessToken, clearAccessToken] = useLocalStorage(
     "access_token",
@@ -64,13 +66,51 @@ export default function CarDetailPage() {
     setIsModalOpen(false);
   };
 
+  useEffect(() => {
+    const getProfile = async () => {
+      try {
+        const value = window.localStorage.getItem("access_token");
+
+        if (value !== null) {
+          const { data } = await apiClient.request({
+            method: "GET",
+            url: "/users/get-user",
+            headers: {
+              Authorization: `Bearer ${JSON.parse(value)}`,
+              "Content-Type": "application/json",
+            },
+            withCredentials: true,
+          });
+          console.log(data);
+          // Update the Recoil state with the fetched user data
+          setUser(data);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    getProfile(); // Call the fetchData function
+  }, [setUser]);
+
   const handleCancel = () => {
     setIsModalOpen(false);
   };
 
+  const handleOk1 = () => {
+    setIsModalCheckOpen(false);
+  };
+
+  const handleCancel1 = () => {
+    setIsModalCheckOpen(false);
+  };
+  console.log(user?.result?.driverLicenses);
   const handleRent = () => {
     if (user === null) {
       setIsModalOpen(true);
+    } else if (user?.result?.driverLicenses === undefined) {
+      console.log(user?.result?.driverLicenses);
+      setIsModalCheckOpen(true);
     } else {
       router.push(`/booking/${car?.result._id}`);
     }
@@ -496,6 +536,20 @@ export default function CarDetailPage() {
         <Link href="/login ">
           <Button type="primary" className="mt-5">
             Login
+          </Button>
+        </Link>
+      </Modal>
+
+      <Modal
+        title="Bạn cần xác thực giấy phái lái xe để thuê xe"
+        open={isModalCheckOpen}
+        onOk={handleOk1}
+        onCancel={handleCancel1}
+        footer={false}
+      >
+        <Link href="/profile ">
+          <Button type="primary" className="mt-5">
+            Profile
           </Button>
         </Link>
       </Modal>

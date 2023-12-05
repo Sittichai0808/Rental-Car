@@ -77,3 +77,49 @@ export const updateStatusUser = async (req, res) => {
         });
     }
 };
+
+export const totalAdminDashboard = async (req, res) => {
+    try {
+        const result = await adminServices.totalAdminDashboard()
+        return res.status(HTTP_STATUS.OK).json({
+            result
+        })
+    } catch (error) {
+        return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
+            error: error.message
+        })
+    }
+}
+export const totalStaffDashboard = async (req, res) => {
+    try {
+        const staffId = req.decoded_authorization.user_id
+        const result = await adminServices.totalStaffDashboard(staffId)
+        if (!result) {
+            return res.status(HTTP_STATUS.NOT_FOUND).json({
+                message: "Staff not found"
+            })
+        } else {
+            return res.status(HTTP_STATUS.OK).json({
+                result
+            })
+        }
+    } catch (error) {
+        return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
+            error: error.message
+        })
+    }
+}
+
+export const getTotalRevenue = async (req, res) => {
+    try {
+        const result = await adminServices.getTotalRevenue();
+        return res.status(HTTP_STATUS.OK).json({
+            result
+        });
+    } catch (error) {
+        console.error('Error in getTotalRevenue API:', error.message);
+        return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
+            error: 'Internal Server Error'
+        });
+    }
+};

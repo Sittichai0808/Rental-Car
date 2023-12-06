@@ -92,7 +92,7 @@ export default function ChangePassword({}) {
   return (
     <div className="flex flex-col">
       <div className="flex flex-col justify-center items-center h-full mt-0 ">
-        <Title>Thay đổi mật khẩu</Title>
+        <Title>Đổi mật khẩu</Title>
 
         <div>
           <Form

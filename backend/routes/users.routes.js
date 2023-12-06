@@ -75,7 +75,6 @@ usersRoutes.put(
   '/update-user/:userId',
   uploadCloud.single('profilePicture'),
   accessTokenValidator,
-  updateValidator,
   wrapRequestHandler(updateUserController)
 )
 

@@ -63,29 +63,29 @@ export const AdminLayout = ({ children }) => {
           items={[
             {
               key: "manage-users",
-              label: "Quản lí người dùng",
+              label: "Quản lý người dùng",
               icon: <UsergroupAddOutlined />,
             },
             role === "admin"
               ? {
                   key: "manage-staffs",
-                  label: "Quản lí nhân viên",
+                  label: "Quản lý nhân viên",
                   icon: <UsergroupAddOutlined />,
                 }
               : undefined,
             {
               key: "manage-cars",
-              label: "Quản lí xe",
+              label: "Quản lý xe",
               icon: <CarOutlined />,
             },
             {
               key: "manage-bookings",
-              label: "Quản lí thuê xe",
+              label: "Quản lý thuê xe",
               icon: <BookOutlined />,
             },
             {
               key: "manage-contracts",
-              label: "Quản lí hợp đồng",
+              label: "Quản lý hợp đồng",
               icon: (
                 <ContractIcon className="shrink-0 text-2xl text-green-500 w-0.5" />
               ),
@@ -99,12 +99,12 @@ export const AdminLayout = ({ children }) => {
             },
             {
               key: "manage-coupon",
-              label: "Quản lí mã giảm giá",
+              label: "Quản lý mã giảm giá",
               icon: <IdcardOutlined />,
             },
             {
               key: "manage-gplx",
-              label: "Quản lí bằng lái xe",
+              label: "Quản lý bằng lái xe",
               icon: <IdcardOutlined />,
             },
             {

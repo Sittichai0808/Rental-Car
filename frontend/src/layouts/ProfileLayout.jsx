@@ -86,7 +86,7 @@ export const ProfileLayout = ({ children }) => {
       label: (
         <span className="text-base font-semibold">
           <KeyOutlined />
-          Thay đổi mật khẩu
+          Đổi mật khẩu
         </span>
       ),
       children: <ChangePassword />,
@@ -106,7 +106,7 @@ export const ProfileLayout = ({ children }) => {
           {" "}
           <span className="text-base font-semibold text-center ">
             <LogoutOutlined className=" text-red-600  " />
-            Logout
+            Đăng xuất
           </span>
         </div>
       ),

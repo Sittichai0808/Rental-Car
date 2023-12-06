@@ -147,11 +147,11 @@ export default function AdminManageBookings() {
         var doc = new Docxtemplater().loadZip(zip);
         doc.setData({
           address: booking.address,
-          fullName: booking?.username,
+          fullName: booking?.fullname,
           phone: booking.phone,
           id: booking._id,
           phoneNumber: user?.result.phoneNumber,
-          nameStaff: user?.result.username,
+          nameStaff: user?.result.fullname,
           role: user?.result.role === "staff" ? "Nhân viên" : "Quản lý",
 
           model: booking.model,
@@ -322,32 +322,11 @@ export default function AdminManageBookings() {
   });
 
   const onSubmit = async (values) => {
-    // try {
-    //   if (!file) {
-    //     message.error("Please upload a PDF file.");
-    //     return;
-    //   }
-
-    //   // Handle file upload to Firebase Cloud Storage
-    //   const filename = file.name;
-    //   const storageRef = ref(storage, "pdfs/" + filename); // 'pdfs/' is the folder in storage
-
-    //   const uploadTask = uploadBytesResumable(storageRef, file);
-
-    //   uploadTask.on("state_changed", (snapshot) => {
-    //     // Handle upload progress, if needed
-    //   });
-
-    //   uploadTask.on("state_changed", (snapshot) => {});
-
-    //   uploadTask.then(async (snapshot) => {
-    //     const downloadURL = await getDownloadURL(storageRef);
-
     try {
-      setTimeout(() => {
-        setOpen(false);
-      }, 500);
-      console.log(accessToken);
+      // setTimeout(() => {
+      //   setOpen(false);
+      // }, 500);
+      // console.log(accessToken);
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_REACT_APP_BACKEND_URL}/contracts/create/${values._id}`,
         { images: values.images },
@@ -362,14 +341,20 @@ export default function AdminManageBookings() {
 
       if (response.status === 201) {
         message.success("Create Contract successfully");
-        router.reload();
+        setOpen(false);
+        refetch();
+        // router.reload();
       } else {
         // Handle API errors and display an error message
         message.error("Error submitting the form. Please try again later.");
+        setOpen(false);
+        refetch();
       }
     } catch (apiError) {
       console.error("Error calling the API: ", apiError);
       message.error("Error submitting the form. Please try again later.");
+      setOpen(false);
+      refetch();
     }
     // });
 
@@ -413,10 +398,12 @@ export default function AdminManageBookings() {
   };
   const handleOk = () => {
     setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      setOpen(false);
-    }, 1000);
+    // setTimeout(() => {
+    //   setLoading(false);
+    //   setOpen(false);
+    // }, 1000);
+    setOpen(false);
+    refetch();
   };
   const handleCancel = () => {
     console.log("Clicked cancel button");
@@ -440,7 +427,7 @@ export default function AdminManageBookings() {
     numberSeat: item?.carId?.numberSeat,
     yearManufacture: item?.carId?.yearManufacture,
     username: item?.bookBy?.username,
-
+    fullname: item?.bookBy?.fullname,
     phone: item?.phone,
 
     address: item?.address,
@@ -511,10 +498,10 @@ export default function AdminManageBookings() {
               ...getColumnSearchProps("numberCar"),
             },
             {
-              key: "username",
+              key: "fullname",
               title: "Khách hàng",
-              dataIndex: "username",
-              ...getColumnSearchProps("username"),
+              dataIndex: "fullname",
+              ...getColumnSearchProps("fullname"),
             },
 
             {
@@ -637,7 +624,7 @@ export default function AdminManageBookings() {
                       type="primary"
                       className=" border border-solid  "
                       onClick={() => showModal(booking)}
-                      // disabled
+                      disabled
                     >
                       <PlusCircleOutlined style={{ fontSize: "14px" }} />
                     </Button>
@@ -675,8 +662,9 @@ export default function AdminManageBookings() {
                     color={"red"}
                   >
                     <Popconfirm
-                      title="Are you sure to deactivate this booking?"
-                      okText="Deactivate"
+                      title="Vô hiệu hóa thuê xe?"
+                      okText="Vô hiệu hóa"
+                      cancelText="Hủy bỏ"
                       onConfirm={() => cancelBook.mutate(booking._id)}
                     >
                       <Button className="bg-red-500 text-white border-none hover:bg-red-500/70">
@@ -733,9 +721,12 @@ export default function AdminManageBookings() {
               </Form.Item>
               <Form.Item label="Booking id" hidden name="_id">
                 <Input readOnly />
-                <Form.Item label="Username" hidden name="username">
-                  <Input readOnly />
-                </Form.Item>
+              </Form.Item>
+              <Form.Item label="Username" hidden name="username">
+                <Input readOnly />
+              </Form.Item>
+              <Form.Item label="fullname" hidden name="fullname">
+                <Input readOnly />
               </Form.Item>
               <div className=" mt-10">
                 <Button type="primary" htmlType="submit">

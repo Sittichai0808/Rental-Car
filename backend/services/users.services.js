@@ -4,7 +4,7 @@ import { signToken } from '../utils/jwt.js'
 import databaseServices from './database.services.js'
 import { ObjectId } from 'mongodb'
 import User from '../models/user.model.js'
-import { hashPassword } from '../utils/crypto.js'
+import { comparePassword, hashPassword } from '../utils/crypto.js'
 import { TokenType } from '../constants/enums.js'
 config()
 class UsersService {
@@ -124,6 +124,30 @@ class UsersService {
         { new: true }
       )
       return resetPassword
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  async changePassword(user_id, oldPassword, newPassword) {
+    try {
+      // Fetch user from the database
+      const user = await User.findById(user_id)
+
+      // Verify old password
+      const isPasswordValid = await comparePassword(oldPassword, user.password)
+      if (!isPasswordValid) {
+        throw new Error('Invalid old password')
+      }
+
+      // Hash and update the new password
+      user.password = hashPassword(newPassword).toString()
+      await user.save()
+
+      // Fetch the updated user after saving the changes
+      const updatedUser = await User.findById(user_id)
+
+      return { message: 'Password changed successfully', user: updatedUser }
     } catch (error) {
       console.log(error)
     }

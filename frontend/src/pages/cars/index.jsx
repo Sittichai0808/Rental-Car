@@ -405,27 +405,27 @@ export default function ListCarsPage() {
           next={fetchNextPage}
           hasMore={hasNextPage}
           onScroll={false}
-          loader={
-            <div className="overflow-hidden flex justify-center mt-4">
-              <Spin
-                indicator={
-                  <LoadingOutlined
-                    style={{
-                      fontSize: 40,
-                    }}
-                    spin
-                  />
-                }
-              />
-            </div>
-          }
+          // loader={
+          //   <div className="overflow-hidden flex justify-center mt-4">
+          //     <Spin
+          //       indicator={
+          //         <LoadingOutlined
+          //           style={{
+          //             fontSize: 40,
+          //           }}
+          //           spin
+          //         />
+          //       }
+          //     />
+          //   </div>
+          // }
         >
           {isLoading ? (
             <div className="example flex justify-center mt-40 overflow-hidden items-center max-w-6xl">
               <Spin size="large" />
             </div>
           ) : data?.pages?.flatMap((page) => page?.result?.cars)?.length > 0 ? (
-            <div className="mx-auto grid grid-cols-4 gap-4 mt-4">
+            <div className="mx-auto grid grid-cols-4 gap-4 mt-11">
               {data?.pages?.map((page, pageIndex) => (
                 <React.Fragment key={pageIndex}>
                   {page?.result?.cars.map((car, carIndex) => (

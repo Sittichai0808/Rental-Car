@@ -26,7 +26,7 @@ export const CarRentalCard = ({ info, accessToken }) => {
       <div className="flex flex-row ">
         <div className="flex flex-col relative aspect-video cursor-pointer">
           <Image
-            src={info?.carId.thumb}
+            src={info?.carId?.thumb}
             alt="car"
             height={150}
             width={150}
@@ -37,7 +37,7 @@ export const CarRentalCard = ({ info, accessToken }) => {
         <div className="flex flex-col w-3/4 ml-5 justify-around">
           <div className="flex justify-between">
             <h5 className="text-xl line-clamp-1 font-bold ml-2 mt-0 m-0">
-              {info?.carId.model.name} {info?.carId.yearManufacture}
+              {info?.carId?.model?.name} {info?.carId?.yearManufacture}
             </h5>
             <div>
               {info?.contract?.status === "Đã tất toán" ? (

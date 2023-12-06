@@ -2,7 +2,7 @@
 import moment from "moment-timezone";
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import styled from "@emotion/styled";
+
 import {
   CheckCircleOutlined,
   CloseCircleOutlined,
@@ -36,25 +36,17 @@ import Coupon from "@/components/Coupon";
 const { Title } = Typography;
 const { RangePicker } = DatePicker;
 
-// moment.tz.setDefault("Asia/Ho_Chi_Minh");
-console.log(moment());
-
 const { TextArea } = Input;
 const BookingPage = () => {
-  const [user, setUser] = useUserState();
+  const [user] = useUserState();
   const router = useRouter();
-  const { query, pathname } = useRouter();
-  const carId = query?.id || "653912b7f01c77b98e74364c";
+  const { query } = useRouter();
+  const carId = query?.id || "6539111ff01c77b98e74364a";
 
-  const [amount, setAmount] = useState();
-  const [value, setValue] = useState(1);
   const [costGetCar, setCostGetCar] = useState(0);
-  const [amoutDiscount, setAmountDiscount] = useState(0);
+  const [amountDiscount, setAmountDiscount] = useState(0);
   const [dates, setDates] = useDatesState();
-  // [
-  //   moment(dates[0]?.format("YYYY-MM-DD HH:mm") || "")._i,
-  //   moment(dates[1]?.format("YYYY-MM-DD HH:mm") || "")._i,
-  // ];
+
   const [from, setFrom] = useState(
     moment(dates?.[0]?.format("YYYY-MM-DD HH:mm") || undefined)._i
   );
@@ -65,10 +57,9 @@ const BookingPage = () => {
   const onChange = (e) => {
     setCostGetCar(e.target.value);
   };
-  const status = ["process", "wait", "finish"];
+
   const [result, setResult] = useState("");
   const [current, setCurrent] = useState(0);
-  const [paymentMethod, setPaymentMethod] = useState("");
   const [form] = Form.useForm();
 
   const codeTransaction = router.query?.vnp_TxnRef;
@@ -81,10 +72,8 @@ const BookingPage = () => {
   const order = router.query?.vnp_OrderInfo;
   console.log(order);
   const orderInfo = order?.split(",:?");
-  const [accessToken, setAccessToken, clearAccessToken] = useLocalStorage(
-    "access_token",
-    ""
-  );
+  const [accessToken] = useLocalStorage("access_token");
+
   useEffect(() => {
     if (router.query.vnp_TransactionStatus) {
       if (router.query.vnp_TransactionStatus === "00") {
@@ -133,7 +122,8 @@ const BookingPage = () => {
       setCurrent(2);
     }
   }, [router?.query?.vnp_TransactionStatus]);
-  const { isLoading, isError, data, error } = useQuery({
+
+  const { data, error } = useQuery({
     queryKey: ["getCar", carId],
     queryFn: async () => {
       try {
@@ -210,30 +200,41 @@ const BookingPage = () => {
     }
   };
 
+  const { mutate } = useMutation(onSubmit);
   const [bookedTimeSlots, setBookedTimeSlots] = useState([]);
 
   const [validationMessage, setValidationMessage] = useState("");
+
   function isDateBooked(startDate, endDate) {
     for (const slot of bookedTimeSlots) {
-      const bookedStart = new Date(slot.from);
-      const bookedEnd = new Date(slot.to);
-      startDate = new Date(startDate);
-      endDate = new Date(endDate);
-      console.log(bookedStart >= startDate, bookedEnd <= endDate);
+      const bookedStart = moment(slot.from);
+      const bookedEnd = moment(slot.to);
+      console.log(bookedStart, bookedEnd);
+
       if (bookedStart >= startDate && bookedEnd <= endDate) return true;
-      if (bookedStart <= startDate && bookedEnd >= endDate) return true;
-      if (bookedEnd >= startDate && bookedEnd <= endDate) return true;
-      if (bookedStart >= startDate && bookedStart <= endDate) return true;
     }
 
     return false; // Khoảng ngày không được đặt
   }
 
-  const disabledDate = (current) => {
-    // Kiểm tra nếu ngày là ngày quá khứ
-    const isPastDate = current && current < moment().startOf("day");
+  // function isDateBooked(startDate, endDate) {
+  //   for (const slot of bookedTimeSlots) {
+  //     const bookedStart = new Date(slot.from);
+  //     const bookedEnd = new Date(slot.to);
+  //     startDate = new Date(startDate);
+  //     endDate = new Date(endDate);
+  //     console.log(bookedStart >= startDate, bookedEnd <= endDate);
+  //     if (bookedStart >= startDate && bookedEnd <= endDate) return true;
+  //     if (bookedStart <= startDate && bookedEnd >= endDate) return true;
+  //     if (bookedEnd >= startDate && bookedEnd <= endDate) return true;
+  //     if (bookedStart >= startDate && bookedStart <= endDate) return true;
+  //   }
 
-    // Kiểm tra nếu ngày hiện tại nằm trong mảng bookedTimeSlots
+  //   return false;
+  // }
+
+  const disabledDate = (current) => {
+    const isPastDate = current && current < moment().startOf("day");
     const isBookedDate = bookedTimeSlots.some((slot) => {
       const slotStart = moment(slot.from);
       const slotEnd = moment(slot.to).add(1, "days");
@@ -242,20 +243,6 @@ const BookingPage = () => {
 
     return isPastDate || isBookedDate;
   };
-
-  // const disabledDate = (current) => {
-  //   // Kiểm tra nếu ngày là ngày quá khứ
-  //   const isPastDate = current && current < moment().startOf("day");
-
-  //   // Kiểm tra nếu ngày hiện tại nằm trong mảng bookedTimeSlots
-  //   const isBookedDate = bookedTimeSlots.some((slot) => {
-  //     const slotStart = moment(slot.from).subtract(1, "days");
-  //     const slotEnd = moment(slot.to);
-  //     return current && current >= slotStart && current <= slotEnd;
-  //   });
-
-  //   return isPastDate || isBookedDate;
-  // };
 
   const result1 = useQuery({
     queryKey: ["getScheduleCar", carId],
@@ -279,14 +266,13 @@ const BookingPage = () => {
       }
     },
   });
+
   useEffect(() => {
-    // Tính toán giá trị mới cho amount dựa trên totalDays
     const newAmount =
       totalDays * data?.cost +
         costGetCar -
-        ((totalDays * data?.cost + costGetCar) * amoutDiscount) / 100 || 0;
+        ((totalDays * data?.cost + costGetCar) * amountDiscount) / 100 || 0;
 
-    // Cập nhật initialValues
     form.setFieldsValue({
       amount: newAmount || 0,
       address:
@@ -294,7 +280,7 @@ const BookingPage = () => {
           ? "88 Đ. Phạm Văn Nghị, Vĩnh Trung, Thanh Khê, Đà Nẵng(công ty CRT)"
           : `${user?.result?.address || ""}`,
     });
-  }, [totalDays, data?.cost, costGetCar]);
+  }, [totalDays, data?.cost, costGetCar, amountDiscount]);
 
   const handleBack = () => {
     setFrom(null);
@@ -302,7 +288,6 @@ const BookingPage = () => {
     setDates(null);
     setTotalDays(0);
     setAmountDiscount(0);
-    // setTotalDays(endDate?.diff(startDate, "days"));
     setCurrent(0);
   };
 
@@ -316,23 +301,23 @@ const BookingPage = () => {
       disabledHours: () => [0, 1, 2, 3, 4, 5, 6, 21, 22, 23],
     };
   };
+
   const selectTimeSlots = (value) => {
     if (value && value.length === 2) {
       const [startDate, endDate] = value;
 
-      // if (isDateBooked("2023-01-12", "2023-01-15")) {
-      //   setValidationMessage("Khoảng ngày đã được thuê.");
-      // } else {
-      //   setValidationMessage("");
-      // }
+      if (isDateBooked(startDate, endDate)) {
+        setValidationMessage("Khoảng ngày đã được thuê.");
+      } else {
+        setValidationMessage("");
+      }
 
       setFrom(moment(value[0]?.format("YYYY-MM-DD HH:mm") || "")._i);
       setTo(moment(value[1]?.format("YYYY-MM-DD HH:mm") || "")._i);
-
       setTotalDays(Math.ceil(value[1]?.diff(value[0], "hours") / 24));
     }
   };
-  const { mutate } = useMutation(onSubmit);
+
   const handleCheckout = () => {
     if (from == undefined || to == undefined) {
       setValidationMessage("Hãy chọn ngày thuê");
@@ -341,12 +326,12 @@ const BookingPage = () => {
       setCurrent(1);
     }
   };
-  console.log(current);
 
   const applyCoupon = (coupon) => {
     const discount = coupon?.discount || 0;
     setAmountDiscount(discount);
   };
+
   return (
     <div className="mb-10 max-w-6xl mx-auto">
       <>
@@ -457,7 +442,7 @@ const BookingPage = () => {
                 {(
                   totalDays * data?.cost +
                     costGetCar -
-                    ((totalDays * data?.cost + costGetCar) * amoutDiscount) /
+                    ((totalDays * data?.cost + costGetCar) * amountDiscount) /
                       100 || 0
                 ).toLocaleString("it-IT", {
                   style: "currency",
@@ -495,10 +480,6 @@ const BookingPage = () => {
               amount: "0",
               fullname: `${user?.result?.fullname || ""}`,
               phone: `${user?.result?.phoneNumber || ""}`,
-              // address:
-              //   costGetCar !== 0
-              //     ? "88 Đ. Phạm Văn Nghị, Vĩnh Trung, Thanh Khê, Đà Nẵng(công ty CRT)"
-              //     : `${user?.result?.address || ""}`,
             }}
             size="large"
             className=""

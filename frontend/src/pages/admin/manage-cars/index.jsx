@@ -30,6 +30,7 @@ import {
   Skeleton,
   Table,
   Tooltip,
+  message,
 } from "antd";
 import { useState } from "react";
 import useLocalStorage from "@/hooks/useLocalStorage";
@@ -98,6 +99,7 @@ function UpsertCarForm({ carId, onOk }) {
             body: { ...values, user: user.id },
             accessToken,
           });
+          message.success("Tạo xe thành công");
         } else {
           console.log({ values });
           await apiUpdateCar.mutateAsync({
@@ -105,6 +107,7 @@ function UpsertCarForm({ carId, onOk }) {
             body: { ...values, user: user.id },
             accessToken,
           });
+          message.success("Cập nhập xe thành công");
         }
 
         onOk?.();
@@ -152,7 +155,7 @@ function UpsertCarForm({ carId, onOk }) {
             <Input.TextArea rows={3} />
           </Form.Item>
 
-          <Form.Item label="Cost" name="cost">
+          <Form.Item label="Cost" required name="cost">
             <InputNumber className="w-full" />
           </Form.Item>
         </div>

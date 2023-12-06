@@ -37,7 +37,7 @@ export default function CarRentalPage() {
             />
           </div>
         ) : (
-          <div className="flex flex-col gap-5 ">
+          <div className="flex flex-col gap-5 overflow-y-scroll h-[580px]">
             {data?.result.map((value, index) => (
               <CarRentalCard
                 key={index}

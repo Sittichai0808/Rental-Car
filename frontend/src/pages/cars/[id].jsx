@@ -109,7 +109,6 @@ export default function CarDetailPage() {
     if (user === null) {
       setIsModalOpen(true);
     } else if (user?.result?.driverLicenses === undefined) {
-      console.log(user?.result?.driverLicenses);
       setIsModalCheckOpen(true);
     } else {
       router.push(`/booking/${car?.result._id}`);
@@ -479,7 +478,7 @@ export default function CarDetailPage() {
               <p className="text-red-500 ml-2">{validationMessage}</p>
             )}
 
-            <div className="border border-solid rounded-lg border-gray-300 bg-white p-4">
+            {/* <div className="border border-solid rounded-lg border-gray-300 bg-white p-4">
               <h4 className="m-0 mb-3 font-medium text-gray-800">
                 Địa điểm giao xe
               </h4>
@@ -488,9 +487,9 @@ export default function CarDetailPage() {
                 Bạn sẽ nhận trả xe tại địa chỉ xe do chủ xe không hỗ trợ giao
                 nhận tận nơi. Địa chỉ cụ thể sẽ được hiển thị sau khi đặt cọc.
               </p>
-            </div>
+            </div> */}
 
-            <Divider />
+            {/* <Divider /> */}
             {/*
             <BorderlessTable
               columns={[

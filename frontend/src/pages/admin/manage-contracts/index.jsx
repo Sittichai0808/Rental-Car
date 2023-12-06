@@ -134,12 +134,21 @@ export default function AdminManageContracts() {
   }, [days]);
 
   const handleDays = (value) => {
+    console.log(value);
     const startDate = new Date(moment(value?.format("YYYY-MM-DD"))?._i);
+
+    const arrayDayEnd = form
+      .getFieldValue("timeBookingEnd")
+      .split(" ")[0]
+      .split("-");
     const endDate = new Date(
-      moment(
-        moment(form.getFieldValue("timeBookingEnd")).format("YYYY-DD-MM")
-      )?._i
+      `${arrayDayEnd[1]}-${arrayDayEnd[0]}-${arrayDayEnd[2]}`
     );
+    // const endDate = new Date(
+    //   moment(
+    //     moment(form.getFieldValue("timeBookingEnd")).format("YYYY-DD-MM")
+    //   )?._i
+    // );
     const totalDays = dateDiffInDays(endDate, startDate);
     setDays(totalDays);
   };
@@ -261,11 +270,11 @@ export default function AdminManageContracts() {
         var doc = new Docxtemplater().loadZip(zip);
         doc.setData({
           address: contract.address,
-          fullName: contract.bookBy,
+          fullName: contract?.bookBy,
           phone: contract.phone,
           id: contract.bookingId,
           phoneNumber: user?.result.phoneNumber,
-          nameStaff: user?.result.username,
+          nameStaff: user?.result.fullname,
           role: user?.result.role === "staff" ? "Nhân viên" : "Quản lý",
 
           model: contract.model,
@@ -329,9 +338,9 @@ export default function AdminManageContracts() {
 
   const onSubmit = async (values) => {
     try {
-      setTimeout(() => {
-        setOpen(false);
-      }, 500);
+      // setTimeout(() => {
+      //   setOpen(false);
+      // }, 500);
 
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_REACT_APP_BACKEND_URL}/final-contracts/create/${values._id}`,
@@ -354,14 +363,17 @@ export default function AdminManageContracts() {
 
       if (response.status === 201) {
         message.success("Create final contract successfully");
-        // router.reload();
+        setOpen(false);
+        refetch();
       } else {
-        // Handle API errors and display an error message
         message.error("Error submitting the form. Please try again later.");
+        setOpen(false);
+        refetch();
       }
     } catch (apiError) {
-      console.error("Error calling the API: ", apiError);
       message.error("Error submitting the form. Please try again later.");
+      setOpen(false);
+      refetch();
     }
   };
 
@@ -437,7 +449,7 @@ export default function AdminManageContracts() {
     return current < dStart || current > dEnd;
   };
 
-  const { data } = useQuery({
+  const { data, refetch } = useQuery({
     queryKey: [GET_LIST_CONTRACTS_KEY, accessToken, user?.result?.role],
     queryFn: async () =>
       await getListContracts(accessToken, user?.result?.role),
@@ -450,8 +462,8 @@ export default function AdminManageContracts() {
     _id: item?._id,
     bookingId: item?.bookingId?._id,
     image: item?.images,
-    createBy: item?.createBy?.username,
-    bookBy: item?.bookingId?.bookBy?.username,
+    createBy: item?.createBy?.fullname,
+    bookBy: item?.bookingId?.bookBy?.fullname,
     email: item?.bookingId?.bookBy?.email,
     phone: item?.bookingId?.phone,
     address: item?.bookingId?.address,
@@ -644,7 +656,7 @@ export default function AdminManageContracts() {
                       type="primary"
                       className=" border border-solid  "
                       onClick={() => showModal(contract)}
-                      // disabled
+                      disabled
                     >
                       <PlusCircleOutlined style={{ fontSize: "14px" }} />
                     </Button>

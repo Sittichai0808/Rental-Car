@@ -391,22 +391,22 @@ export default function AdminManageContracts() {
   const dataSource = data?.result.map((item, idx) => ({
     id: idx + 1,
     _id: item?._id,
-    bookingId: item?.contractId.bookingId?._id,
+    bookingId: item?.contractId?.bookingId?._id,
     image: item?.images,
-    createBy: item?.contractId.createBy?.username,
-    bookBy: item?.contractId.bookingId?.bookBy?.username,
-    email: item?.contractId.bookingId?.bookBy?.email,
-    phone: item?.contractId.bookingId?.phone,
-    address: item?.contractId.bookingId?.address,
+    createBy: item?.contractId?.createBy?.fullname,
+    bookBy: item?.contractId?.bookingId?.bookBy?.fullname,
+    email: item?.contractId?.bookingId?.bookBy?.email,
+    phone: item?.contractId?.bookingId?.phone,
+    address: item?.contractId?.bookingId?.address,
 
-    numberCar: item?.contractId.bookingId?.carId?.numberCar,
-    model: item?.contractId.bookingId?.carId?.model?.name,
+    numberCar: item?.contractId?.bookingId?.carId?.numberCar,
+    model: item?.contractId?.bookingId?.carId?.model?.name,
 
-    numberSeat: item?.contractId.bookingId?.carId?.numberSeat,
-    yearManufacture: item?.contractId.bookingId?.carId?.yearManufacture,
+    numberSeat: item?.contractId?.bookingId?.carId?.numberSeat,
+    yearManufacture: item?.contractId?.bookingId?.carId?.yearManufacture,
 
     timeBookingStart: moment(
-      item?.contractId.bookingId?.timeBookingStart
+      item?.contractId?.bookingId?.timeBookingStart
     ).format("DD-MM-YYYY"),
     timeBookingEnd: moment(item?.timeFinish).format("DD-MM-YYYY"),
     totalCost: item?.cost_settlement,

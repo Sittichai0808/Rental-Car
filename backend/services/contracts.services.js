@@ -50,7 +50,8 @@ class ContractsService {
             ]
           }
         })
-        .sort({ createdAt: -1 })
+        .sort({ status: 1 })
+
       return getContract
     } catch (error) {
       throw error

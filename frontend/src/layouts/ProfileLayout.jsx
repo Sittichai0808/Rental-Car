@@ -8,6 +8,7 @@ import {
   HeartFilled,
   LogoutOutlined,
   IdcardOutlined,
+  KeyOutlined,
 } from "@ant-design/icons";
 import { Tabs, Layout } from "antd";
 import Account from "@/pages/profile/index";
@@ -17,6 +18,7 @@ import CarLiked from "@/pages/profile/car-liked";
 import HeaderComponent from "@/components/HeaderComponent";
 import FooterComponent from "@/components/FooterComponent";
 import { useRouter } from "next/router";
+import ChangePassword from "@/pages/profile/change-password";
 
 const { TabPane } = Tabs;
 
@@ -82,6 +84,16 @@ export const ProfileLayout = ({ children }) => {
     {
       key: "5",
       label: (
+        <span className="text-base font-semibold">
+          <KeyOutlined />
+          Đổi mật khẩu
+        </span>
+      ),
+      children: <ChangePassword />,
+    },
+    {
+      key: "6",
+      label: (
         <div
           onClick={() => {
             clearAccessToken();
@@ -108,7 +120,7 @@ export const ProfileLayout = ({ children }) => {
           <Layout className=" flex max-w-6xl relative my-2 bg-white" hasSider>
             <Content className="flex flex-col my-5 bg-white">
               <Tabs
-                className="w-full flex mt-3 "
+                className="w-full flex mt-10 "
                 defaultActiveKey="1"
                 tabPosition={tabPosition}
                 items={items}

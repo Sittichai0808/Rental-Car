@@ -236,8 +236,11 @@ const BookingPage = () => {
   const disabledDate = (current) => {
     const isPastDate = current && current < moment().startOf("day");
     const isBookedDate = bookedTimeSlots.some((slot) => {
-      const slotStart = moment(slot.from);
-      const slotEnd = moment(slot.to).add(1, "days");
+      // const slotStart = moment(slot.from);
+      // const slotEnd = moment(slot.to).add(1, "days");
+
+      const slotStart = moment(slot.from).subtract(1, "days");
+      const slotEnd = moment(slot.to);
       return current >= slotStart && current <= slotEnd;
     });
 

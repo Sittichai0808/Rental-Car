@@ -255,12 +255,9 @@ const BookingPage = () => {
         `${arrayDayStart[1]}-${arrayDayStart[0]}-${arrayDayStart[2]}`
       );
 
-      console.log("start: ", dStart);
-      console.log("end: ", dEnd);
-
-      return current < dStart || current > dEnd;
+      return current >= dStart && current <= dEnd;
     });
-    return isPastDate || !isBookedDate;
+    return isPastDate || isBookedDate;
   };
 
   const result1 = useQuery({

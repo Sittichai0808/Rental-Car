@@ -24,7 +24,7 @@ function OAuthGoogle() {
         `${process.env.NEXT_PUBLIC_REACT_APP_BACKEND_URL}/users/google`,
 
         {
-          username: result.user.displayName,
+          fullname: result.user.displayName,
           email: result.user.email,
           photo: result.user.photoURL,
         },
@@ -56,7 +56,7 @@ function OAuthGoogle() {
       <Button
         onClick={handleGoogleAuthClick}
         type="default"
-        className="relative  text-base h-[50px] w-[400px] py-2 mt-2"
+        className="relative  text-lg font-medium text-gray-500 h-[50px] w-[400px] py-2 mt-2"
       >
         <GooglePlusOutlined
           style={{
@@ -66,7 +66,7 @@ function OAuthGoogle() {
             color: "gray",
           }}
         />
-        Sign Up With Google
+        Google
       </Button>
     </>
   );

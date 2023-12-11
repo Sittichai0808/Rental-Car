@@ -70,6 +70,7 @@ export default function HomePage() {
         {
           headers: { "Content-Type": "application/json" },
           withCredentials: true,
+          params: { status: "Hoạt động" },
         }
       );
       return response.data.result;
@@ -95,7 +96,7 @@ export default function HomePage() {
         <div className="bg-white rounded-xl -mt-16 w-4/5 mx-auto z-50 relative pt-8 px-8 shadow-lg h-28">
           <Form
             layout="vertical"
-            onFinish={handleSearch}   
+            onFinish={handleSearch}
             className="grid grid-cols-5 gap-6 h-full"
           >
             <Form.Item name="brand">

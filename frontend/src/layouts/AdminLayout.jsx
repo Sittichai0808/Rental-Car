@@ -133,7 +133,7 @@ export const AdminLayout = ({ children }) => {
                 <Avatar src={user?.result?.profilePicture} />
               </Space>
             </Dropdown>
-            <span className="flex ">{user?.result?.username}</span>
+            <span className="flex ">{user?.result?.fullname}</span>
           </div>
         </Header>
         <Content className="p-4 bg-white">{children}</Content>

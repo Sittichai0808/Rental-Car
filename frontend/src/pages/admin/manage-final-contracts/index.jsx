@@ -233,7 +233,7 @@ export default function AdminManageContracts() {
           phone: contract.phone,
           id: contract.bookingId,
           phoneNumber: user?.result.phoneNumber,
-          nameStaff: user?.result.username,
+          nameStaff: user?.result.fullname,
           role: user?.result.role === "staff" ? "Nhân viên" : "Quản lý",
 
           model: contract.model,

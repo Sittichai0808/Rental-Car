@@ -25,8 +25,58 @@ function UpsertStaffForm({ actionType, staffId, onClose }) {
     enabled: !!staffId,
   });
 
-  // const staff = actionType===undefined ? null : data?.result;
-  // console.log("yiy", staffId, staff);
+  const validatePhoneNumber = (_, value) => {
+    // Simple regex pattern for a basic phone number validation
+    const phoneNumberRegex = /^(?:\d{10}|\d{11})$/;
+
+    if (!value) {
+      return Promise.reject("Hãy nhập số điện thoại!");
+    }
+
+    if (!phoneNumberRegex.test(value)) {
+      return Promise.reject("Không phải số điện thoại!");
+    }
+
+    return Promise.resolve();
+  };
+
+  const validateStrongPassword = (_, value) => {
+    if (!value) {
+      return Promise.reject("Hãy nhập mật khẩu!");
+    }
+    if (value.length < 6 || value.length > 40) {
+      return Promise.reject("Độ dài mật khẩu từ 6 đến 40 ký tự!");
+    }
+
+    if (
+      !/[a-z]/.test(value) ||
+      !/[A-Z]/.test(value) ||
+      !/\d/.test(value) ||
+      !/[\W_]/.test(value)
+    ) {
+      return Promise.reject(
+        `Phải có ít nhật một ký tự đặc biệt(@!>...), in hoa,
+         thường, số!`
+      );
+    }
+
+    return Promise.resolve();
+  };
+
+  const validateFullname = (_, value) => {
+    // Simple regex pattern for checking if fullname contains numbers
+    const numberRegex = /\d/;
+
+    if (!value) {
+      return Promise.reject("Hãy nhập họ và tên!");
+    }
+
+    if (numberRegex.test(value)) {
+      return Promise.reject("Họ và tên không được nhập số!");
+    }
+
+    return Promise.resolve();
+  };
 
   const [form] = Form.useForm();
   if (actionType === "insert") {
@@ -57,16 +107,21 @@ function UpsertStaffForm({ actionType, staffId, onClose }) {
     await apiUpsertStaff.mutateAsync({ accessToken, body: values, staffId });
   };
 
+  const { mutate } = useMutation(handleAddStaff);
+
   return (
     <>
       <Form
         layout="vertical"
         className="grid grid-cols-3 gap-4 mt-10"
+        onFinish={(values) => {
+          mutate(values);
+        }}
         form={form}
         // initialValues={omit(staff, "password")}
       >
         <div className="col-span-2">
-          <Form.Item
+          {/* <Form.Item
             label="Username"
             name="username"
             rules={[
@@ -77,60 +132,79 @@ function UpsertStaffForm({ actionType, staffId, onClose }) {
             ]}
           >
             <Input />
-          </Form.Item>
-          <Form.Item
-            label="Password"
-            name="password"
-            rules={[
-              {
-                required: true,
-                message: "Hãy nhập mật khẩu!",
-              },
-            ]}
-          >
-            <Input.Password />
-          </Form.Item>
-          <Form.Item
-            label="Name"
-            required
-            name="fullname"
-            rules={[
-              {
-                required: true,
-                message: "Hãy nhập họ và tên!",
-              },
-            ]}
-          >
-            <Input />
-          </Form.Item>
+          </Form.Item> */}
           <Form.Item
             label="Email"
             required
             name="email"
             rules={[
               {
+                type: "email",
+                message: "Không phải E-mail!",
+              },
+              {
                 required: true,
-                message: "Hãy nhập email!",
+                message: "Hãy nhập E-mail để đăng ký tài khoản!",
               },
             ]}
           >
             <Input />
           </Form.Item>
           <Form.Item
-            label="Phone Number"
+            label="Mật khẩu"
+            name="password"
+            required
+            rules={[{ validator: validateStrongPassword }]}
+          >
+            <Input.Password />
+          </Form.Item>
+          {actionType !== "insert" ? (
+            <></>
+          ) : (
+            <Form.Item
+              name="confirm_password"
+              label="Nhập lại Mật khẩu"
+              dependencies={["password"]}
+              rules={[
+                {
+                  required: true,
+                  message: "Hãy xác thực mật khẩu!",
+                },
+                ({ getFieldValue }) => ({
+                  validator(_, value) {
+                    if (!value || getFieldValue("password") === value) {
+                      return Promise.resolve();
+                    }
+                    return Promise.reject(
+                      new Error("Mật khẩu bạn nhập vào không giống!")
+                    );
+                  },
+                }),
+              ]}
+            >
+              <Input.Password />
+            </Form.Item>
+          )}
+
+          <Form.Item
+            label="Họ và tên"
+            required
+            name="fullname"
+            rules={[{ validator: validateFullname }]}
+          >
+            <Input />
+          </Form.Item>
+
+          <Form.Item
+            label="Số điện thoại"
             required
             name="phoneNumber"
-            rules={[
-              {
-                required: true,
-                message: "Hãy nhập số điện thoại!",
-              },
-            ]}
+            rules={[{ validator: validatePhoneNumber }]}
           >
             <Input className="w-full" />
           </Form.Item>
           <Form.Item
-            label="Address"
+            label="Địa chỉ"
             required
             name="address"
             rules={[
@@ -142,20 +216,19 @@ function UpsertStaffForm({ actionType, staffId, onClose }) {
           >
             <Input.TextArea rows={3} />
           </Form.Item>
+          <div className="flex justify-end mt-10">
+            <Button type="primary" htmlType="submit">
+              {isInsert ? "Tạo mới" : "Cập nhật"}
+            </Button>
+          </div>
         </div>
 
         <div>
-          <Form.Item label="Avatar" name="profilePicture">
+          <Form.Item label="Ảnh đại diện" name="profilePicture">
             <UploadImage />
           </Form.Item>
         </div>
       </Form>
-
-      <div className="flex justify-end mt-10">
-        <Button type="primary" onClick={handleAddStaff}>
-          {isInsert ? "Tạo mới" : "Cập nhật"}
-        </Button>
-      </div>
     </>
   );
 }
@@ -202,7 +275,7 @@ export default function AdminManageStaffs() {
               dataIndex: "profilePicture",
               render: (url) => <Avatar src={url} />,
             },
-            { key: "username", title: "Username", dataIndex: "username" },
+            // { key: "username", title: "Username", dataIndex: "username" },
             { key: "name", title: "Họ tên", dataIndex: "fullname" },
             { key: "email", title: "Email", dataIndex: "email" },
             {

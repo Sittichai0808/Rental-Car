@@ -41,6 +41,14 @@ class UsersService {
     return Boolean(user)
   }
 
+  async checkActivityUser(email) {
+    const user = await User.findOne({ email })
+    if (user?.status === 'Không hoạt động') {
+      return Boolean(true)
+    }
+    return Boolean(false)
+  }
+
   async login(payload) {
     const user = { ...payload }
 
@@ -64,7 +72,7 @@ class UsersService {
         const generatedPassword = Math.random().toString(36).slice(-8) + Math.random().toString(36).slice(-8)
         const hashedPassword1 = hashPassword(generatedPassword).toString()
         const newUser = new User({
-          username: user.username,
+          fullname: user.fullname,
           email: user.email,
           password: hashedPassword1,
           profilePicture: user.photo,

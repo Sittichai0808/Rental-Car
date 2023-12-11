@@ -82,7 +82,7 @@ export default function HeaderComponent() {
                   <UserFilledIcon className="text-neutral-500" />
                 )}
               </div>
-              <span>{user?.result?.username}</span>
+              <span>{user?.result?.fullname}</span>
             </div>
           </Link>
         )}

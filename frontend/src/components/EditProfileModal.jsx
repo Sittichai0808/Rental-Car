@@ -59,7 +59,7 @@ export default function EditProfileModal({
             address: response.data.result.address,
             email: response.data.result.email,
             phoneNumber: response.data.result.phoneNumber,
-            username: response.data.result.username,
+            fullname: response.data.result.fullname,
           },
         }));
 
@@ -115,18 +115,18 @@ export default function EditProfileModal({
         className="mt-5 "
       >
         <Form.Item
-          label="UserName"
-          name="username"
+          label="Fullname"
+          name="fullname"
           rules={[
             {
               type: "text",
-              message: "Please input your name",
+              message: "Hãy nhập họ và tên!",
             },
           ]}
         >
           <StyleInputModal
             type="text"
-            defaultValue={user?.result?.username}
+            defaultValue={user?.result?.fullname}
             size="large"
           />
         </Form.Item>

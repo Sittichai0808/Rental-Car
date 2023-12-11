@@ -204,7 +204,7 @@ export default function AdminManageBookings() {
             "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
         });
 
-        saveAs(out, `hop_dong_${booking.username}_${booking.numberCar}.docx`);
+        saveAs(out, `hop_dong_${booking.fullname}_${booking.numberCar}.docx`);
       }
     );
   };
@@ -426,7 +426,7 @@ export default function AdminManageBookings() {
 
     numberSeat: item?.carId?.numberSeat,
     yearManufacture: item?.carId?.yearManufacture,
-    username: item?.bookBy?.username,
+    // username: item?.bookBy?.username,
     fullname: item?.bookBy?.fullname,
     phone: item?.phone,
 
@@ -698,7 +698,7 @@ export default function AdminManageBookings() {
             className="flex gap-4 mt-10"
           >
             <div className="w-2/3">
-              <Form.Item label="Tên khách hàng" name="username">
+              <Form.Item label="Tên khách hàng" name="fullname">
                 <Input readOnly />
               </Form.Item>
               <Form.Item label="Số điện thoại" name="phone">
@@ -722,12 +722,7 @@ export default function AdminManageBookings() {
               <Form.Item label="Booking id" hidden name="_id">
                 <Input readOnly />
               </Form.Item>
-              <Form.Item label="Username" hidden name="username">
-                <Input readOnly />
-              </Form.Item>
-              <Form.Item label="fullname" hidden name="fullname">
-                <Input readOnly />
-              </Form.Item>
+
               <div className=" mt-10">
                 <Button type="primary" htmlType="submit">
                   Submit

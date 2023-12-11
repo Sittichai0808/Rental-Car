@@ -47,7 +47,7 @@ const RecoverPasswordPage = () => {
 
           {
             ...values,
-            name: response1.data.result.username,
+            name: response1.data.result.fullname,
             text,
             subject: "Password Recovery OTP",
           },

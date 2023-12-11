@@ -160,22 +160,22 @@ const BookingPage = () => {
       for (const slot of response1.data.result) {
         const bookedStart = new Date(slot.from);
         const bookedEnd = new Date(slot.to);
-        from = new Date(from);
-        to = new Date(to);
+        var from1 = new Date(from);
+        var to1 = new Date(to);
         console.log(bookedStart >= from, bookedEnd <= to);
-        if (bookedStart >= from && bookedEnd <= to)
+        if (bookedStart >= from1 && bookedEnd <= to1)
           return message.error(
             "Khoảng ngày đã được thuê. Vui lòng chọn lại ngày thuê!"
           );
-        if (bookedStart <= from && bookedEnd >= to)
+        if (bookedStart <= from1 && bookedEnd >= to1)
           return message.error(
             "Khoảng ngày đã được thuê. Vui lòng chọn lại ngày thuê!"
           );
-        if (bookedEnd >= from && bookedEnd <= to)
+        if (bookedEnd >= from1 && bookedEnd <= to1)
           return message.error(
             "Khoảng ngày đã được thuê. Vui lòng chọn lại ngày thuê!"
           );
-        if (bookedStart >= from && bookedStart <= to)
+        if (bookedStart >= from1 && bookedStart <= to1)
           return message.error(
             "Khoảng ngày đã được thuê. Vui lòng chọn lại ngày thuê!"
           );
@@ -330,6 +330,8 @@ const BookingPage = () => {
 
       setFrom(moment(value[0]?.format("YYYY-MM-DD HH:mm") || "")._i);
       setTo(moment(value[1]?.format("YYYY-MM-DD HH:mm") || "")._i);
+      console.log(from);
+      console.log(to);
       setTotalDays(Math.ceil(value[1]?.diff(value[0], "hours") / 24));
     }
   };

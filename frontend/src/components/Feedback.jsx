@@ -15,7 +15,7 @@ export const Feedback = ({ dataRatings }) => {
       <div className="grow">
         <div className="flex justify-between items-center">
           <span className="font-medium text-2xl">
-            {dataRatings.postBy?.username}
+            {dataRatings.postBy?.fullname}
           </span>
           <span>{moment(dataRatings.createdAt).format("DD-MM-YYYY")}</span>
         </div>

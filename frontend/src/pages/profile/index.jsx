@@ -88,7 +88,7 @@ export default function AccountPage() {
           </div>
           <div className="flex flex-col mt-2 ">
             <h5 className="text-lg font-semibold text-center mt-1 mb-2 ">
-              {user?.result?.username}
+              {user?.result?.fullname}
             </h5>
 
             <p className="mt-0">

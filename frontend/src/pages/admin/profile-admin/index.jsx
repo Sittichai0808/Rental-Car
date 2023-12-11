@@ -68,7 +68,7 @@ export default function AdminProfile() {
 
           <div className="flex flex-col mt-10 ">
             <h5 className="text-lg font-semibold text-center mt-1 mb-2 ">
-              {user?.result?.username}
+              {user?.result?.fullname}
             </h5>
 
             <p className="mt-0">
@@ -99,7 +99,7 @@ export default function AdminProfile() {
           >
             <div className="w-full ">
               <div className="flex flex-row ">
-                <Form.Item
+                {/* <Form.Item
                   className="w-full mr-5  "
                   label="Username"
                   name="username"
@@ -108,7 +108,7 @@ export default function AdminProfile() {
                     defaultValue={user?.result?.username}
                     className="py-3 px-3"
                   />
-                </Form.Item>
+                </Form.Item> */}
 
                 <Form.Item name="fullname" className="w-full" label="Họ và tên">
                   <Input

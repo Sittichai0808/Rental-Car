@@ -5,7 +5,7 @@ import { useDriverState } from "@/recoils/driver.state";
 import {
   UserOutlined,
   CarFilled,
-  HeartFilled,
+  HeartOutlined,
   LogoutOutlined,
   IdcardOutlined,
   KeyOutlined,
@@ -75,7 +75,7 @@ export const ProfileLayout = ({ children }) => {
       key: "4",
       label: (
         <span className="text-base font-semibold">
-          <HeartFilled />
+          <HeartOutlined />
           Xe yêu thích
         </span>
       ),

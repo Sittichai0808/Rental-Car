@@ -31,6 +31,28 @@ const ResetPasswordPage = () => {
 
   const router = useRouter();
   const email = searchParams?.email;
+  const validateStrongPassword = (_, value) => {
+    if (!value) {
+      return Promise.reject("Hãy nhập mật khẩu!");
+    }
+    if (value.length < 6 || value.length > 40) {
+      return Promise.reject("Độ dài mật khẩu từ 6 đến 40 ký tự!");
+    }
+
+    if (
+      !/[a-z]/.test(value) ||
+      !/[A-Z]/.test(value) ||
+      !/\d/.test(value) ||
+      !/[\W_]/.test(value)
+    ) {
+      return Promise.reject(
+        `Phải có ít nhật một ký tự đặc biệt(@!>...), in hoa,
+         thường, số!`
+      );
+    }
+
+    return Promise.resolve();
+  };
 
   const onSubmit = async (values) => {
     try {
@@ -88,29 +110,22 @@ const ResetPasswordPage = () => {
           >
             <Form.Item
               name="password"
-              rules={[
-                {
-                  required: true,
-                  message: "Please input your password!",
-                },
-              ]}
-              hasFeedback
+              rules={[{ validator: validateStrongPassword }]}
             >
               <StyleInputPassword
                 type="password"
-                placeholder="Password"
+                placeholder="Mật khẩu"
                 size="large"
               />
             </Form.Item>
 
             <Form.Item
-              name="confirm"
+              name="confirm_password"
               dependencies={["password"]}
-              hasFeedback
               rules={[
                 {
                   required: true,
-                  message: "Please confirm your password!",
+                  message: "Hãy xác thực mật khẩu!",
                 },
                 ({ getFieldValue }) => ({
                   validator(_, value) {
@@ -118,9 +133,7 @@ const ResetPasswordPage = () => {
                       return Promise.resolve();
                     }
                     return Promise.reject(
-                      new Error(
-                        "The new password that you entered do not match!"
-                      )
+                      new Error("Mật khẩu bạn nhập vào không giống!")
                     );
                   },
                 }),
@@ -128,7 +141,7 @@ const ResetPasswordPage = () => {
             >
               <StyleInputPassword
                 type="password"
-                placeholder="Confirm Password"
+                placeholder="Xác thực mật khẩu"
                 size="large"
               />
             </Form.Item>

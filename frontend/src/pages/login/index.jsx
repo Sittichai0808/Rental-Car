@@ -37,6 +37,29 @@ const LoginPage = () => {
   const loaderProp = ({ src }) => {
     return src;
   };
+
+  const validateStrongPassword = (_, value) => {
+    if (!value) {
+      return Promise.reject("Hãy nhập mật khẩu!");
+    }
+    if (value.length < 6 || value.length > 40) {
+      return Promise.reject("Độ dài mật khẩu từ 6 đến 40 ký tự!");
+    }
+
+    if (
+      !/[a-z]/.test(value) ||
+      !/[A-Z]/.test(value) ||
+      !/\d/.test(value) ||
+      !/[\W_]/.test(value)
+    ) {
+      return Promise.reject(
+        `Phải có ít nhật một ký tự đặc biệt(@!>...), in hoa,
+         thường, số!`
+      );
+    }
+
+    return Promise.resolve();
+  };
   const [form] = Form.useForm();
   const router = useRouter();
   const [user, setUser] = useUserState();
@@ -115,11 +138,11 @@ const LoginPage = () => {
               rules={[
                 {
                   type: "email",
-                  message: "The input is not valid E-mail!",
+                  message: "Không phải E-mail!",
                 },
                 {
                   required: true,
-                  message: "Please input your E-mail!",
+                  message: "Hãy nhập E-mail để đăng nhập!",
                 },
               ]}
             >
@@ -129,17 +152,26 @@ const LoginPage = () => {
             <Form.Item
               name="password"
               rules={[
-                {
-                  required: true,
-                  message: "Please input your password!",
-                },
+                // { required: true, message: "Hãy nhập mật khẩu để đăng nhập!" },
+                // {
+                //   type: "string",
+                //   message: "Mật khẩu phải là một chuỗi!",
+                // },
+                // {
+                //   min: 6,
+                //   max: 40,
+                //   message: "Độ dài mật khẩu từ 6 đến 40 ký tự!",
+                // },
+                { validator: validateStrongPassword },
               ]}
-              hasFeedback
+              // style={{ width: "70%" }}
+              // hasFeedback
             >
               <StyleInputPassword
                 type="password"
-                placeholder="Password"
+                placeholder="Mật khẩu"
                 size="large"
+                // style={{ width: "100%" }}
               />
             </Form.Item>
             <div className="flex justify-end">

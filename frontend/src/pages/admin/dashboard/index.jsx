@@ -80,19 +80,19 @@ export default function AdminDashboard() {
   return (
     <div>
       <div className="mt-10 grid grid-cols-4 gap-4">
-        <div className="shadow-lg rounded-md p-6 flex flex-col justify-center items-center">
+        <div className="shadow-lg rounded-md p-6 flex flex-col justify-center items-center bg-white">
           <div className="text-3xl font-bold mb-1">{data?.totalBookingByMonth}</div>
           <span>lượt thuê xe</span>
         </div>
-        <div className="shadow-lg rounded-md p-6 flex flex-col justify-center items-center">
+        <div className="shadow-lg rounded-md p-6 flex flex-col justify-center items-center bg-white">
           <div className="text-3xl font-bold mb-1">{data?.totalCars}</div>
           <span>xe</span>
         </div>
-        <div className="shadow-lg rounded-md p-6 flex flex-col justify-center items-center">
+        <div className="shadow-lg rounded-md p-6 flex flex-col justify-center items-center bg-white">
           <div className="text-3xl font-bold mb-1">{data?.totalUsers}</div>
           <span>người dùng</span>
         </div>
-        <div className="shadow-lg rounded-md p-6 flex flex-col justify-center items-center">
+        <div className="shadow-lg rounded-md p-6 flex flex-col justify-center items-center bg-white">
           <div className="text-3xl font-bold mb-1">{formatCurrency(data?.totalRevenue)}</div>
           <span>doanh thu</span>
         </div>

@@ -22,6 +22,7 @@ import {
 import moment from "moment-timezone";
 import { Button, Divider, Table, Tag, Modal, message } from "antd";
 import Image from "next/image";
+import { Image as AntImage } from "antd";
 import styled from "@emotion/styled";
 import { useRouter } from "next/router";
 import { useQuery, useMutation } from "@tanstack/react-query";
@@ -30,7 +31,18 @@ import axios from "axios";
 import React, { useState, useEffect } from "react";
 import { useDatesState } from "@/recoils/dates.state";
 import { useUserState } from "@/recoils/user.state";
-import { HeartOutlined, HeartFilled } from "@ant-design/icons";
+import {
+  HeartOutlined,
+  HeartFilled,
+  CloseOutlined,
+  RotateLeftOutlined,
+  RotateRightOutlined,
+  ZoomInOutlined,
+  ZoomOutOutlined,
+  LeftOutlined,
+  RightOutlined,
+  SwapOutlined,
+} from "@ant-design/icons";
 import { GET_CAR_DETAILS } from "@/constants/react-query-key.constant";
 import { getCarDetail, likeCars } from "@/apis/user-cars.api";
 import { useRatingsOfCar } from "@/hooks/useGetRatings";
@@ -55,11 +67,10 @@ export default function CarDetailPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isModalCheckOpen, setIsModalCheckOpen] = useState(false);
 
+  const [showPreview, setShowPreview] = useState(false);
+
   const [user, setUser] = useUserState();
-  const [accessToken, setAccessToken, clearAccessToken] = useLocalStorage(
-    "access_token",
-    ""
-  );
+  const [accessToken, setAccessToken, clearAccessToken] = useLocalStorage("access_token", "");
   const [liked, setLiked] = useState();
   console.log(liked);
   const handleOk = () => {
@@ -185,12 +196,7 @@ export default function CarDetailPage() {
   //   queryFn: () => getRatingsOfCar(carId),
   // });
 
-  const {
-    data: ratings,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-  } = useRatingsOfCar(carId);
+  const { data: ratings, fetchNextPage, hasNextPage, isFetchingNextPage } = useRatingsOfCar(carId);
 
   console.log(ratings);
 
@@ -203,9 +209,7 @@ export default function CarDetailPage() {
     const checkLikeStatus = async () => {
       try {
         // Fetch chi tiết xe từ API
-        const response = await axios.get(
-          `${process.env.NEXT_PUBLIC_REACT_APP_BACKEND_URL}/cars/${carId}`
-        );
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_REACT_APP_BACKEND_URL}/cars/${carId}`);
         const carData = response.data.result;
 
         // Kiểm tra xem user hiện tại có trong mảng likes không
@@ -257,6 +261,9 @@ export default function CarDetailPage() {
       }
     },
   });
+
+  console.log({ showPreview });
+
   return (
     <div className="max-w-6xl mx-auto">
       <div className="grid h-[600px] gap-4 grid-cols-4 grid-rows-3 relative">
@@ -273,8 +280,20 @@ export default function CarDetailPage() {
           <Image alt="car" src={car?.result.images[2]} layout="fill" />
         </div>
 
-        <div className="absolute bg-white rounded-md px-4 py-2 bottom-4 right-4 flex items-center gap-2 text-gray-800">
-          <ImageFilledIcon className="text-" />
+        <AntImage.PreviewGroup
+          items={car ? [car?.result.thumb, ...(car?.result.images ?? [])] : []}
+          preview={{
+            visible: showPreview,
+            closeIcon: <CloseOutlined onClick={() => setShowPreview(false)} />,
+          }}
+        />
+        <div
+          className="absolute bg-white rounded-md px-4 py-2 bottom-4 right-4 flex items-center gap-2 text-gray-800 cursor-pointer"
+          onClick={() => {
+            setShowPreview(true);
+          }}
+        >
+          <ImageFilledIcon />
           Xem tất cả ảnh
         </div>
       </div>
@@ -315,9 +334,7 @@ export default function CarDetailPage() {
           </div>
 
           <div className="flex gap-2 mt-4">
-            <Tag className="rounded-full border-none bg-green-100">
-              {car?.result.transmissions}
-            </Tag>
+            <Tag className="rounded-full border-none bg-green-100">{car?.result.transmissions}</Tag>
             {/* <Tag className="rounded-full border-none bg-rose-100">
               Đặt xe nhanh
             </Tag> */}
@@ -340,10 +357,7 @@ export default function CarDetailPage() {
                 <TransmissionIcon className="shrink-0 text-2xl text-green-500" />
                 <div className="flex flex-col items-center text-base">
                   <span className="text-gray-800">Truyền động</span>
-                  <span className="font-bold">
-                    {" "}
-                    {car?.result.transmissions}
-                  </span>
+                  <span className="font-bold"> {car?.result.transmissions}</span>
                 </div>
               </div>
 
@@ -402,9 +416,7 @@ export default function CarDetailPage() {
             <h2 className="font-medium">Điều khoản</h2>
             <ul>
               <li>Sử dụng xe đúng mục đích.</li>
-              <li>
-                Không sử dụng xe thuê vào mục đích phi pháp, trái pháp luật.
-              </li>
+              <li>Không sử dụng xe thuê vào mục đích phi pháp, trái pháp luật.</li>
               <li>Không sử dụng xe thuê để cầm cố, thế chấp.</li>
               <li>Không hút thuốc, nhả kẹo cao su, xả rác trong xe.</li>
               <li>Không chở hàng quốc cấm dễ cháy nổ.</li>
@@ -448,12 +460,8 @@ export default function CarDetailPage() {
           <div className="flex gap-4 border border-solid rounded-lg border-gray-300 p-4 items-center">
             <ShieldCheckOutlineIcon className="text-green-500" />
             <div className="flex flex-col gap-2">
-              <span className="text-lg text-green-500 font-bold">
-                Hỗ trợ bảo hiểm với VNI
-              </span>
-              <span className="font-medium text-xs text-gray-900">
-                Xem chi tiết
-              </span>
+              <span className="text-lg text-green-500 font-bold">Hỗ trợ bảo hiểm với VNI</span>
+              <span className="font-medium text-xs text-gray-900">Xem chi tiết</span>
             </div>
           </div>
 
@@ -477,9 +485,7 @@ export default function CarDetailPage() {
               className="rounded-full"
               onChange={handleDateChange}
             />
-            {validationMessage && (
-              <p className="text-red-500 ml-2">{validationMessage}</p>
-            )}
+            {validationMessage && <p className="text-red-500 ml-2">{validationMessage}</p>}
 
             {/* <div className="border border-solid rounded-lg border-gray-300 bg-white p-4">
               <h4 className="m-0 mb-3 font-medium text-gray-800">

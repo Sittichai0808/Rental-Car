@@ -67,8 +67,8 @@ export default function AdminDashboard() {
           const found = revenue?.find((item) => Number(item?.month) === index);
           console.log(found);
 
-          // return found?.totalRevenue ?? 0;
-          return random(3000);
+          return found?.totalRevenue ?? 0;
+          // return random(3000);
         }),
         fill: true,
         borderColor: "rgb(142, 228, 157)",

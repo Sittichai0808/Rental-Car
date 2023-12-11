@@ -304,8 +304,8 @@ export default function CarDetailPage() {
               />
             ) : (
               <HeartFilled
-                className="p-3 border border-solid text-gray-500 rounded-full"
-                style={{ fontSize: "24px" }}
+                className="p-3 border border-solid rounded-full"
+                style={{ fontSize: "24px", color: "#fb452b" }}
                 onClick={handleLikeClick}
               />
             )}

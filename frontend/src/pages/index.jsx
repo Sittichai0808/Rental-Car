@@ -139,7 +139,7 @@ export default function HomePage() {
           <Carousel ref={carouselRef} rows={1} slidesToShow={3}>
             {range(12).map((value) => (
               <div key={value} className="px-2">
-                <div className="bg-green-300 h-96 rounded-md flex justify-center items-center">{value + 1}</div>
+                <div className="bg-green-300 h-60 rounded-md flex justify-center items-center">{value + 1}</div>
               </div>
             ))}
           </Carousel>

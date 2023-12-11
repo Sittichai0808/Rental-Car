@@ -19,23 +19,23 @@ config()
 export const registerValidator = validate(
   checkSchema(
     {
-      username: {
-        notEmpty: {
-          errorMessage: USER_MESSAGES.NAME_IS_REQUIRED
-        },
-        isString: {
-          errorMessage: USER_MESSAGES.NAME_MUST_BE_A_STRING
-        },
-        isLength: {
-          options: {
-            min: 1,
-            max: 100
-          },
-          errorMessage: USER_MESSAGES.NAME_LENGTH_MUST_BE_FROM_1_TO_100
-        },
+      // username: {
+      //   notEmpty: {
+      //     errorMessage: USER_MESSAGES.NAME_IS_REQUIRED
+      //   },
+      //   isString: {
+      //     errorMessage: USER_MESSAGES.NAME_MUST_BE_A_STRING
+      //   },
+      //   isLength: {
+      //     options: {
+      //       min: 1,
+      //       max: 100
+      //     },
+      //     errorMessage: USER_MESSAGES.NAME_LENGTH_MUST_BE_FROM_1_TO_100
+      //   },
 
-        trim: true
-      },
+      //   trim: true
+      // },
       email: {
         notEmpty: {
           errorMessage: USER_MESSAGES.EMAIL_IS_REQUIRED
@@ -50,6 +50,7 @@ export const registerValidator = validate(
             if (result) {
               throw new Error(USER_MESSAGES.EMAIL_ALREADY_EXISTS)
             }
+
             return true
           }
         }
@@ -76,9 +77,7 @@ export const registerValidator = validate(
             minSymbols: 1
           },
           errorMessage: USER_MESSAGES.PASSWORD_MUST_BE_STRONG
-        },
-
-        trim: true
+        }
       },
       confirm_password: {
         notEmpty: {
@@ -133,6 +132,12 @@ export const loginValidator = validate(
             })
             if (result === null) {
               throw new Error(USER_MESSAGES.EMAIL_OR_PASSWORD_IS_INCORRECT)
+            }
+            const result2 = await usersService.checkActivityUser(value)
+            console.log(result2)
+
+            if (result2) {
+              throw new Error('Tài khoản này không còn hoạt động!')
             }
             req.user = result
             return true

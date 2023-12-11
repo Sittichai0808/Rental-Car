@@ -42,7 +42,7 @@ export const USER_MESSAGES = {
   RESET_PASSWORD_SUCCESS: 'Reset password successfully',
   GET_PROFILE_SUCCESS: 'Get profile successfully',
   UPDATE_PROFILE_SUCCESS: 'Update profile successfully',
-  UPLOAD_IMAGE_SUCCESS: 'Upload image successfully',
+  UPLOAD_IMAGE_SUCCESS: 'Upload image successfully'
 }
 
 export const BRAND_MESSAGE = {
@@ -59,7 +59,6 @@ export const CARS_MESSAGE = {
   GET_CARS_SUCCESS: 'Get list cars successfully',
   UPDATE_RATING_SUCCESS: 'Update rating successfully'
 }
-export const COUPON_MESSAGE ={
+export const COUPON_MESSAGE = {
   DELETE_COUPON_SUCCESS: 'delete successfullY'
-
 }

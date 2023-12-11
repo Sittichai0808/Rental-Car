@@ -1,5 +1,12 @@
 import { getBrands } from "@/apis/brands.api";
-import { createCar, getCar, getCars, updateCar } from "@/apis/cars.api";
+import {
+  changeStatusCar,
+  createCar,
+  getCar,
+  getCars,
+  updateCar,
+  updateCarStatus,
+} from "@/apis/cars.api";
 import { getMOdels } from "@/apis/model.api";
 import { UploadImage } from "@/components/UploadImage";
 import { UploadMultipleImage } from "@/components/UploadMultipleImage";
@@ -34,6 +41,8 @@ import {
 } from "antd";
 import { useState } from "react";
 import useLocalStorage from "@/hooks/useLocalStorage";
+import { useAccessTokenValue } from "@/recoils/accessToken.state";
+import { updateUserStatus } from "@/apis/admin-staff.api";
 
 function UpsertCarForm({ carId, onOk }) {
   console.log({ carId });
@@ -76,6 +85,10 @@ function UpsertCarForm({ carId, onOk }) {
     value: item._id,
     label: item.name,
   }));
+  const statusCar = [
+    { value: "Hoạt động", label: "Hoạt động" },
+    { value: "Không hoạt động", label: "Không hoạt động" },
+  ];
 
   if (carDetail.isLoading) {
     return <Skeleton active />;
@@ -115,22 +128,71 @@ function UpsertCarForm({ carId, onOk }) {
     >
       <div className="h-[60vh] overflow-y-scroll flex gap-2">
         <div className="grow w-2/5 p-2">
-          <Form.Item label="Ảnh tiêu đề" name="thumb" className="w-4/5 h-4/5">
+          <Form.Item
+            label="Ảnh tiêu đề"
+            name="thumb"
+            className="w-4/5 h-4/5"
+            rules={[
+              {
+                required: true,
+                message: "Hình Ảnh Không được để trống!",
+              },
+            ]}
+          >
             <UploadImage />
           </Form.Item>
 
-          <Form.Item label="Ảnh" name="images">
+          <Form.Item
+            label="Ảnh"
+            name="images"
+            rules={[
+              {
+                required: true,
+                message: "Hình ảnh không được để trống!",
+              },
+            ]}
+          >
             <UploadMultipleImage />
           </Form.Item>
         </div>
         <div className="w-3/5 p-2">
-          <Form.Item label="Hãng xe" required name="brand">
+          <Form.Item
+            label="Hãng xe"
+            required
+            name="brand"
+            rules={[
+              {
+                required: true,
+                message: "Hãy chọn hãng xe!",
+              },
+            ]}
+          >
             <Select options={brandOptions} />
           </Form.Item>
-          <Form.Item label="Loại xe" required name="model">
+          <Form.Item
+            label="Loại xe"
+            required
+            name="model"
+            rules={[
+              {
+                required: true,
+                message: "Hãy chọn loại xe!",
+              },
+            ]}
+          >
             <Select options={modelOptions} disabled={!brandId} />
           </Form.Item>
-          <Form.Item label="Số ghế" required name="numberSeat">
+          <Form.Item
+            label="Số ghế"
+            required
+            name="numberSeat"
+            rules={[
+              {
+                required: true,
+                message: "Hãy chọn số ghế của xe!",
+              },
+            ]}
+          >
             <Select
               options={[
                 { value: "2 chỗ" },
@@ -142,20 +204,68 @@ function UpsertCarForm({ carId, onOk }) {
               ]}
             />
           </Form.Item>
-          <Form.Item label="Truyền động" required name="transmissions">
+          <Form.Item
+            label="Truyền động"
+            required
+            name="transmissions"
+            rules={[
+              {
+                required: true,
+                message: "Hãy chọn truyền động!",
+              },
+            ]}
+          >
             <Select options={[{ value: "Số sàn" }, { value: "Số tự động" }]} />
           </Form.Item>
-          <Form.Item label="Biển số xe" name="numberCar">
+          <Form.Item
+            label="Biển số xe"
+            name="numberCar"
+            rules={[
+              {
+                required: true,
+                message: "Hãy nhập biển số xe!",
+              },
+            ]}
+          >
             <Input />
           </Form.Item>
-          <Form.Item label="Năm sản xuất" name="yearManufacture">
-            <Input />
+          <Form.Item
+            label="Năm sản xuất"
+            name="yearManufacture"
+            rules={[
+              {
+                required: true,
+                message: "Hãy nhập năm sản xuất !",
+              },
+            ]}
+          >
+            <InputNumber className="w-full" min={1800} max={2024} />
           </Form.Item>
-          <Form.Item label="Mô tả" required name="description">
+          <Form.Item
+            label="Mô tả"
+            required
+            name="description"
+            rules={[
+              {
+                required: true,
+                message: "Hãy mô tả chiếc xe!",
+              },
+            ]}
+          >
             <Input.TextArea rows={3} />
           </Form.Item>
 
-          <Form.Item label="Cost" required name="cost">
+          <Form.Item
+            label="Giá tiền thuê xe trong 1 ngày"
+            required
+            name="cost"
+            rules={[
+              {
+                required: true,
+                message: "Hãy đăng ảnh tất toán hợp đồng lên!",
+              },
+            ]}
+          >
             <InputNumber className="w-full" />
           </Form.Item>
         </div>
@@ -172,7 +282,7 @@ function UpsertCarForm({ carId, onOk }) {
 
 export default function AdminManageCars() {
   const [upsertCarModal, setUpsertCarModal] = useState();
-
+  const [accessToken] = useLocalStorage("access_token");
   const { data, refetch } = useQuery({
     queryFn: getCars,
     queryKey: [GET_CARS_KEY],
@@ -190,13 +300,18 @@ export default function AdminManageCars() {
     numberCar: item?.numberCar,
     description: item?.description,
     cost: formatCurrency(item.cost),
-    owner: item?.user?.username,
+    owner: item?.user?.fullname,
     status: item?.status,
   }));
 
   const handleInsertCar = () => {
     setUpsertCarModal({ actionType: "insert" });
   };
+
+  const apiUpdateStatus = useMutation({
+    mutationFn: updateCarStatus,
+    onSuccess: refetch,
+  });
 
   console.log(upsertCarModal);
   return (
@@ -249,10 +364,13 @@ export default function AdminManageCars() {
             },
             { key: "cost", title: "Giá", dataIndex: "cost" },
             // { key: "owner", title: "Owner", dataIndex: "owner" },
+
             {
               key: "status",
               title: "Trạng thái",
+              fixed: "right",
               dataIndex: "status",
+              width: "8%",
               render: (status) => (
                 <>
                   {status === "Hoạt động" ? (
@@ -272,7 +390,7 @@ export default function AdminManageCars() {
             {
               key: "action",
               fixed: "right",
-              width: "8%",
+              width: "11%",
               render: (_, car) => (
                 <div className="flex gap-2">
                   <Tooltip
@@ -293,15 +411,45 @@ export default function AdminManageCars() {
                     </Button>
                   </Tooltip>
 
-                  <Popconfirm
-                    title="Bạn có chắc vô hiệu hóa xe?"
-                    okText="Có"
-                    cancelText="Hủy"
-                  >
-                    <Button className="bg-red-500 text-white border-none hover:bg-red-500/70">
-                      <CloseCircleOutlined />
-                    </Button>
-                  </Popconfirm>
+                  <div className="flex gap-2">
+                    {car?.status === "Hoạt động" && (
+                      <Popconfirm
+                        title="Bạn có chắc muốn vô hiệu hóa chiếc xe này?"
+                        okText="Vô hiệu hóa"
+                        cancelText="Hủy bỏ"
+                        onConfirm={() => {
+                          apiUpdateStatus.mutateAsync({
+                            accessToken,
+                            carId: car?._id,
+                            status: "Không hoạt động",
+                          });
+                        }}
+                      >
+                        <Button className="bg-red-500 text-white border-none hover:bg-red-500/70">
+                          Vô hiệu hóa
+                        </Button>
+                      </Popconfirm>
+                    )}
+
+                    {car?.status === "Không hoạt động" && (
+                      <Popconfirm
+                        title="Bạn muốn Hủy vô hiệu hóa chiếc xe này?"
+                        okText="Hủy vô hiệu hóa "
+                        cancelText="Hủy bỏ"
+                        onConfirm={() => {
+                          apiUpdateStatus.mutateAsync({
+                            accessToken,
+                            carId: car?._id,
+                            status: "Hoạt động",
+                          });
+                        }}
+                      >
+                        <Button className="bg-green-500 text-white border-none hover:bg-green-500/70">
+                          Hủy vô hiệu hóa
+                        </Button>
+                      </Popconfirm>
+                    )}
+                  </div>
                 </div>
               ),
             },

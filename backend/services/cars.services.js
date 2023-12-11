@@ -44,7 +44,7 @@ class CarsService {
       let getListCars = Cars.find(JSON.parse(queryStr))
         .populate('brand', 'name')
         .populate('model', 'name')
-        .populate('user', 'username')
+        .populate('user', 'fullname')
 
       // Sorting
       if (sort) {
@@ -72,9 +72,11 @@ class CarsService {
       }
       const totalCars = await Cars.countDocuments()
       const totalPages = Math.ceil(totalCars / limit)
-      const currentPage = page ? parseInt(page) : 1;
+      const currentPage = page ? parseInt(page) : 1
       const result = {
-        cars: await getListCars, totalPages, currentPage
+        cars: await getListCars,
+        totalPages,
+        currentPage
       }
       return result
     } catch (error) {
@@ -134,16 +136,19 @@ class CarsService {
 
   async getRatingsOfCar(carId, page = 1, limit = 4) {
     try {
-      const skip = (page - 1) * limit;
-      const getRatingsOfCar = await Ratings.find({ carId: carId }).populate('postBy', 'username profilePicture').skip(skip).limit(limit);
+      const skip = (page - 1) * limit
+      const getRatingsOfCar = await Ratings.find({ carId: carId })
+        .populate('postBy', 'fullname profilePicture')
+        .skip(skip)
+        .limit(limit)
 
-      const totalReviews = await Ratings.countDocuments({ carId: carId });
+      const totalReviews = await Ratings.countDocuments({ carId: carId })
 
-      const totalPages = Math.ceil(totalReviews / limit);
+      const totalPages = Math.ceil(totalReviews / limit)
 
       return { getRatingsOfCar, totalPages, page }
     } catch (error) {
-      throw Error(error);
+      throw Error(error)
     }
   }
 

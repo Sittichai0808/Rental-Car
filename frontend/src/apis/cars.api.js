@@ -46,3 +46,16 @@ export async function updateCar({ carId, body, accessToken }) {
 
   return data;
 }
+export const updateCarStatus = async ({ accessToken, carId, status }) => {
+  const { data } = await apiClient.request({
+    method: "PUT",
+    url: `/admin/update-status-car/${carId}`,
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      "Content-Type": "application/json",
+    },
+    data: {
+      status,
+    },
+  });
+};

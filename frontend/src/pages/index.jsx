@@ -9,9 +9,14 @@ import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { GET_BRANDS_KEY } from "@/constants/react-query-key.constant";
 import { getBrands } from "@/apis/brands.api";
-
+import { Carousel } from "antd";
+import { range } from "lodash-es";
+import { LeftOutlined, RightOutlined } from "@ant-design/icons";
+import { useRef } from "react";
 export default function HomePage() {
   const router = useRouter();
+
+  const carouselRef = useRef(null);
 
   const handleSearch = (values) => {
     const { brand, numberSeat, transmissions, cost } = values;
@@ -118,6 +123,37 @@ export default function HomePage() {
           </Form>
         </div>
       </div>
+
+      <div className="my-10">
+        <h2 className="text-center font-medium text-2xl">Chương Trình Khuyến Mãi</h2>
+        <div className="text-center text-lg text-gray-500">Nhận nhiều ưu đãi hấp dẫn từ CRT</div>
+        <div className="relative mt-10">
+          <div
+            className="absolute left-0 -translate-x-1/2 top-1/2 -translate-y-1/2 z-20 rounded-full w-12 h-12 bg-white/50 flex justify-center items-center border border-solid border-gray-200 cursor-pointer"
+            onClick={() => {
+              carouselRef.current?.prev();
+            }}
+          >
+            <LeftOutlined className="text-gray-400" />
+          </div>
+          <Carousel ref={carouselRef} rows={1} slidesToShow={3}>
+            {range(12).map((value) => (
+              <div key={value} className="px-2">
+                <div className="bg-green-300 h-96 rounded-md flex justify-center items-center">{value + 1}</div>
+              </div>
+            ))}
+          </Carousel>
+          <div
+            className="absolute right-0 translate-x-1/2 top-1/2 -translate-y-1/2 z-20 rounded-full w-12 h-12 bg-white/50 flex justify-center items-center border border-solid border-gray-200 cursor-pointer"
+            onClick={() => {
+              carouselRef.current?.next();
+            }}
+          >
+            <RightOutlined className="text-gray-400" />
+          </div>
+        </div>
+      </div>
+
       <div className="mb-20">
         <h2 className="text-center text-2xl">Xe dành cho bạn</h2>
         {isLoading ? (

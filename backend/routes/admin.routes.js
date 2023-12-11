@@ -1,7 +1,16 @@
 import express from 'express'
 import { adminAndStaffValidator, adminValidator, staffValidator } from '../middlewares/users.middlewares.js'
 import { wrapRequestHandler } from '../utils/handlers.js'
-import { getUsers, getStaffs, getDetailUser, createStaff, updateStatusUser, totalAdminDashboard, totalStaffDashboard, getTotalRevenue } from '../controllers/admins.controllers.js'
+import {
+  getUsers,
+  getStaffs,
+  getDetailUser,
+  createStaff,
+  updateStatusUser,
+  totalAdminDashboard,
+  totalStaffDashboard,
+  getTotalRevenue
+} from '../controllers/admins.controllers.js'
 const adminRoutes = express.Router()
 
 adminRoutes.get('/list-users', adminAndStaffValidator, wrapRequestHandler(getUsers))

@@ -1,9 +1,4 @@
-import {
-  upsertStaff,
-  getStaffs,
-  getUser,
-  updateUserStatus,
-} from "@/apis/admin-staff.api";
+import { upsertStaff, getStaffs, getUser, updateUserStatus } from "@/apis/admin-staff.api";
 import { UploadImage } from "@/components/UploadImage";
 import { GET_STAFFS } from "@/constants/react-query-key.constant.js";
 import useLocalStorage from "@/hooks/useLocalStorage";
@@ -78,18 +73,25 @@ function UpsertStaffForm({ actionType, staffId, onClose }) {
           >
             <Input />
           </Form.Item>
-          <Form.Item
-            label="Password"
-            name="password"
-            rules={[
-              {
-                required: true,
-                message: "Hãy nhập mật khẩu!",
-              },
-            ]}
-          >
-            <Input.Password />
-          </Form.Item>
+          {isInsert && (
+            <Form.Item
+              label="Password"
+              name="password"
+              rules={[
+                {
+                  required: true,
+                  message: "Hãy nhập mật khẩu!",
+                },
+                { min: 8, message: "Mật khẩu phải có ít nhất 6 kí tự." },
+                {
+                  pattern: /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/,
+                  message: "Mật khẩu phải có ít nhất 1 chữ cái và 1 số.",
+                },
+              ]}
+            >
+              <Input.Password />
+            </Form.Item>
+          )}
           <Form.Item
             label="Name"
             required
@@ -111,6 +113,10 @@ function UpsertStaffForm({ actionType, staffId, onClose }) {
               {
                 required: true,
                 message: "Hãy nhập email!",
+              },
+              {
+                type: "email",
+                message: "Email không hợp lệ.",
               },
             ]}
           >
@@ -240,9 +246,7 @@ export default function AdminManageStaffs() {
                         });
                       }}
                     >
-                      <Button className="bg-red-500 text-white border-none hover:bg-red-500/70">
-                        Chặn
-                      </Button>
+                      <Button className="bg-red-500 text-white border-none hover:bg-red-500/70">Chặn</Button>
                     </Popconfirm>
                   )}
 
@@ -259,9 +263,7 @@ export default function AdminManageStaffs() {
                         });
                       }}
                     >
-                      <Button className="bg-green-500 text-white border-none hover:bg-green-500/70">
-                        Bỏ chặn
-                      </Button>
+                      <Button className="bg-green-500 text-white border-none hover:bg-green-500/70">Bỏ chặn</Button>
                     </Popconfirm>
                   )}
                 </div>
@@ -275,11 +277,7 @@ export default function AdminManageStaffs() {
 
       <Modal
         open={upsertStaffModal}
-        title={
-          upsertStaffModal?.actionType === "insert"
-            ? "Add new staff"
-            : "Update staff"
-        }
+        title={upsertStaffModal?.actionType === "insert" ? "Add new staff" : "Update staff"}
         width={800}
         destroyOnClose
         footer={null}

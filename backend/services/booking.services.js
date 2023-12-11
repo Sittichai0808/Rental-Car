@@ -108,7 +108,7 @@ class BookingServices {
   async getListBooking() {
     try {
       const getListBooking = await Bookings.find({})
-        .populate('bookBy', 'username fullname')
+        .populate('bookBy', 'fullname')
         .populate({
           path: 'carId',
           populate: [

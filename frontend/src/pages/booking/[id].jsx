@@ -236,15 +236,31 @@ const BookingPage = () => {
   const disabledDate = (current) => {
     const isPastDate = current && current < moment().startOf("day");
     const isBookedDate = bookedTimeSlots.some((slot) => {
-      // const slotStart = moment(slot.from);
-      // const slotEnd = moment(slot.to).add(1, "days");
+      const arrayDayEnd = moment(slot.to)
+        .format("DD-MM-YYYY HH:mm")
+        .split(" ")[0]
+        .split("-");
 
-      const slotStart = moment(slot.from).subtract(1, "days");
-      const slotEnd = moment(slot.to);
-      return current >= slotStart && current <= slotEnd;
+      const dEnd = new Date(
+        `${arrayDayEnd[1]}-${arrayDayEnd[0]}-${arrayDayEnd[2]}`
+      );
+      dEnd.setDate(dEnd.getDate() + 1);
+
+      const arrayDayStart = moment(slot.from)
+        .format("DD-MM-YYYY HH:mm")
+        .split(" ")[0]
+        .split("-");
+
+      const dStart = new Date(
+        `${arrayDayStart[1]}-${arrayDayStart[0]}-${arrayDayStart[2]}`
+      );
+
+      console.log("start: ", dStart);
+      console.log("end: ", dEnd);
+
+      return current < dStart || current > dEnd;
     });
-
-    return isPastDate || isBookedDate;
+    return isPastDate || !isBookedDate;
   };
 
   const result1 = useQuery({

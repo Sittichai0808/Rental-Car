@@ -200,7 +200,7 @@ export default function HomePage() {
             <span>Hướng Dẫn Thuê Xe</span>
           </div>
           <div className="text-3xl font-bold my-6">Bắt đầu trải nghiệm cùng chúng tôi</div>
-          <div className="text-gray-500">Chỉ với 4 bước đơn giản để trải nghiệm thuê xe Mioto một cách nhanh chóng</div>
+          <div className="text-gray-500">Chỉ với 4 bước đơn giản để trải nghiệm thuê xe CRT một cách nhanh chóng</div>
 
           <div className="mt-4 grid grid-cols-1 grid-rows-4 gap-6">
             <div className="flex gap-4 items-center">

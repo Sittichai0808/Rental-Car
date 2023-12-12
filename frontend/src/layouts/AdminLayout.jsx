@@ -16,6 +16,7 @@ import Image from "next/image";
 import { useUserState } from "@/recoils/user.state.js";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import logo from "../../public/logo.png";
+import Link from "next/link";
 
 const { Sider, Header, Content } = Layout;
 
@@ -58,15 +59,17 @@ export const AdminLayout = ({ children }) => {
     <Layout hasSider className="h-screen">
       <Sider theme="light" className="border-r shadow bg-white p-6" width={310}>
         <div className="w-full  h-32 flex justify-center items-center mb-10">
-          {" "}
-          <Image
-            src={logo}
-            alt="logo"
-            width={170}
-            height={100}
-            // loader={loaderProp}
-            unoptimized={true}
-          />
+          <Link href={`/admin/dashboard`}>
+            <Image
+              src={logo}
+              alt="logo"
+              width={170}
+              height={100}
+              // loader={loaderProp}
+              unoptimized={true}
+              className="cursor-pointer"
+            />
+          </Link>
         </div>
         <Menu
           selectedKeys={selectedKeys}

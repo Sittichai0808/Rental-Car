@@ -85,6 +85,13 @@ export default function HomePage() {
   };
 
   const { isLoading, error, data } = useQuery(["cars"], fetchCars);
+  const arrayImage = [
+    "/discount_1.png",
+    "/discount_2.png",
+    "/discount_3.png",
+    "/discount_4.png",
+    "/discount_5.png",
+  ];
 
   return (
     <div className="max-w-6xl mx-auto">
@@ -172,11 +179,18 @@ export default function HomePage() {
             <LeftOutlined className="text-gray-400" />
           </div>
           <Carousel ref={carouselRef} rows={1} slidesToShow={3}>
-            {range(12).map((value) => (
+            {arrayImage.map((value) => (
               <div key={value} className="px-2">
-                <div className="bg-green-300 h-60 rounded-md flex justify-center items-center">
+                {/* <div className="bg-green-300 h-60 rounded-md flex justify-center items-center">
                   {value + 1}
-                </div>
+                </div> */}
+                <Image
+                  src={value}
+                  alt="banner"
+                  width={400}
+                  height={300}
+                  className="object-cover rounded-xl "
+                />
               </div>
             ))}
           </Carousel>
@@ -220,13 +234,9 @@ export default function HomePage() {
           </div>
 
           <div className="text-gray-500 leading-6">
-            Lorem Ipsum is simply dummy text of the printing and typesetting
-            industry. Lorem Ipsum has been the industry's standard dummy text
-            ever since the 1500s, when an unknown printer took a galley of type
-            and scrambled it to make a type specimen book. It has survived not
-            only five centuries, but also the leap into electronic typesetting,
-            remaining essentially unchanged. It was popularised in the 1960s
-            with the release of
+            CRT đặt mục tiêu trở thành cộng động người dùng ô tô Văn minh & Uy
+            tín #1 tại Đà Nẵng, nhằm mang lại những giá trị thiết thực cho tất
+            cả những thành viên hướng đến một cuộc sống tốt đẹp hơn.
           </div>
         </div>
         <div className="relative">
@@ -314,10 +324,10 @@ export default function HomePage() {
                 <div className="text-xl font-semibold text-gray-700 mb-2">
                   Đặt xe trên app/web CRT
                 </div>
-                <div className="text-gray-500">
+                {/* <div className="text-gray-500">
                   Lorem ipsum dolor sit, amet consectetur adipisicing elit.
                   Pariatur voluptatibus ex iusto, culpa nulla
-                </div>
+                </div> */}
               </div>
             </div>
 
@@ -329,10 +339,10 @@ export default function HomePage() {
                 <div className="text-xl font-semibold text-gray-700 mb-2">
                   Nhận xe
                 </div>
-                <div className="text-gray-500">
+                {/* <div className="text-gray-500">
                   Lorem ipsum dolor sit, amet consectetur adipisicing elit.
                   Pariatur voluptatibus ex iusto, culpa nulla
-                </div>
+                </div> */}
               </div>
             </div>
 
@@ -344,10 +354,10 @@ export default function HomePage() {
                 <div className="text-xl font-semibold text-gray-700 mb-2">
                   Bắt đầu hành trình
                 </div>
-                <div className="text-gray-500">
+                {/* <div className="text-gray-500">
                   Lorem ipsum dolor sit, amet consectetur adipisicing elit.
                   Pariatur voluptatibus ex iusto, culpa nulla
-                </div>
+                </div> */}
               </div>
             </div>
 
@@ -359,10 +369,10 @@ export default function HomePage() {
                 <div className="text-xl font-semibold text-gray-700 mb-2">
                   Trả xe & kết thúc chuyến đi
                 </div>
-                <div className="text-gray-500">
+                {/* <div className="text-gray-500">
                   Lorem ipsum dolor sit, amet consectetur adipisicing elit.
                   Pariatur voluptatibus ex iusto, culpa nulla
-                </div>
+                </div> */}
               </div>
             </div>
           </div>

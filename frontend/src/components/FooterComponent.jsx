@@ -13,13 +13,15 @@ export default function FooterComponent() {
       <div className="max-w-6xl mx-auto grid grid-cols-4 gap-8">
         <div>
           <div className="flex items-center gap-2">
-            <div className="relative w-12 h-12">
+            <div className="relative w-20 h-12">
               <Image src="/logo.png" layout="fill" />
             </div>
-            <div className="text-2xl font-semibold tracking-wider text-green-500">CRT</div>
+            {/* <div className="text-2xl font-semibold tracking-wider text-green-500">CRT</div> */}
           </div>
 
-          <div className="mt-4 text-lg font-bold text-gray-700 mb-2">Liên hệ với chúng tôi</div>
+          <div className="mt-4 text-lg font-bold text-gray-700 mb-2">
+            Liên hệ với chúng tôi
+          </div>
           <div className="flex gap-3">
             <span className="w-28">Số điện thoại:</span>
             <a href="tel:038658742" className="text-gray-900 underline">
@@ -28,7 +30,10 @@ export default function FooterComponent() {
           </div>
           <div className="flex gap-3 mt-2">
             <span className="w-28">Email:</span>
-            <a href="mailto:crtteam@gmail.com" className="text-gray-900 underline">
+            <a
+              href="mailto:crtteam@gmail.com"
+              className="text-gray-900 underline"
+            >
               crtteam@gmail.com
             </a>
           </div>
@@ -40,12 +45,17 @@ export default function FooterComponent() {
 
           <div className="mt-4">
             <div className="font-semibold text-lg">Địa chỉ:</div>
-            <div>Khu đô thị FPT, Phường Hoà Hải, Quận Ngũ Hành Sơn, Thành phố Đà Nẵng</div>
+            <div>
+              Khu đô thị FPT, Phường Hoà Hải, Quận Ngũ Hành Sơn, Thành phố Đà
+              Nẵng
+            </div>
           </div>
         </div>
 
         <div className="flex flex-col gap-3 text-gray-600">
-          <div className="text-lg font-semibold my-2 text-gray-700">Chính sách</div>
+          <div className="text-lg font-semibold my-2 text-gray-700">
+            Chính sách
+          </div>
           <div>Chính sách thuê xe</div>
           <div>Quy chế hoạt động</div>
           <div>Bảo mật thông tin</div>
@@ -53,7 +63,9 @@ export default function FooterComponent() {
         </div>
 
         <div className="flex flex-col gap-3 text-gray-600">
-          <div className="text-lg font-semibold my-2 text-gray-700">Tìm hiểu thêm</div>
+          <div className="text-lg font-semibold my-2 text-gray-700">
+            Tìm hiểu thêm
+          </div>
           <div>Hướng dẫn chung</div>
           <div>Hướng dẫn thuê xe</div>
           <div>Hướng dẫn thanh toán</div>
@@ -61,7 +73,9 @@ export default function FooterComponent() {
         </div>
 
         <div className="flex flex-col gap-3 text-gray-600">
-          <div className="text-lg font-semibold my-2 text-gray-700">Đối tác</div>
+          <div className="text-lg font-semibold my-2 text-gray-700">
+            Đối tác
+          </div>
           <div>Trở thành đối tác</div>
         </div>
       </div>

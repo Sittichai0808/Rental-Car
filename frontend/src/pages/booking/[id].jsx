@@ -257,6 +257,7 @@ const BookingPage = () => {
 
       return current >= dStart && current <= dEnd;
     });
+
     return isPastDate || isBookedDate;
   };
 

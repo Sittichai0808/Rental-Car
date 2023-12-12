@@ -1,5 +1,5 @@
 import { CarCard } from "@/components/CarCard";
-import { SearchBrokenIcon } from "@/icons";
+import { CarIcon, SearchBrokenIcon } from "@/icons";
 import { Select } from "antd";
 import { Button, Form } from "antd";
 import Image from "next/image";
@@ -9,9 +9,14 @@ import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { GET_BRANDS_KEY } from "@/constants/react-query-key.constant";
 import { getBrands } from "@/apis/brands.api";
-
+import { Carousel } from "antd";
+import { range } from "lodash-es";
+import { LeftOutlined, RightOutlined } from "@ant-design/icons";
+import { useRef } from "react";
 export default function HomePage() {
   const router = useRouter();
+
+  const carouselRef = useRef(null);
 
   const handleSearch = (values) => {
     const { brand, numberSeat, transmissions, cost } = values;
@@ -149,6 +154,43 @@ export default function HomePage() {
           </Form>
         </div>
       </div>
+
+      <div className="my-10">
+        <h2 className="text-center font-medium text-2xl">
+          Chương Trình Khuyến Mãi
+        </h2>
+        <div className="text-center text-lg text-gray-500">
+          Nhận nhiều ưu đãi hấp dẫn từ CRT
+        </div>
+        <div className="relative mt-10">
+          <div
+            className="absolute left-0 -translate-x-1/2 top-1/2 -translate-y-1/2 z-20 rounded-full w-12 h-12 bg-white/50 flex justify-center items-center border border-solid border-gray-200 cursor-pointer"
+            onClick={() => {
+              carouselRef.current?.prev();
+            }}
+          >
+            <LeftOutlined className="text-gray-400" />
+          </div>
+          <Carousel ref={carouselRef} rows={1} slidesToShow={3}>
+            {range(12).map((value) => (
+              <div key={value} className="px-2">
+                <div className="bg-green-300 h-60 rounded-md flex justify-center items-center">
+                  {value + 1}
+                </div>
+              </div>
+            ))}
+          </Carousel>
+          <div
+            className="absolute right-0 translate-x-1/2 top-1/2 -translate-y-1/2 z-20 rounded-full w-12 h-12 bg-white/50 flex justify-center items-center border border-solid border-gray-200 cursor-pointer"
+            onClick={() => {
+              carouselRef.current?.next();
+            }}
+          >
+            <RightOutlined className="text-gray-400" />
+          </div>
+        </div>
+      </div>
+
       <div className="mb-20">
         <h2 className="text-center text-2xl">Xe dành cho bạn</h2>
         {isLoading ? (
@@ -165,115 +207,163 @@ export default function HomePage() {
           </div>
         )}
       </div>
-      <div className="mb-40">
-        <div className="mx-auto grid grid-cols-3 gap-4">
-          <div className="flex flex-col items-center">
-            <div className="relative aspect-square w-60 h-60">
+
+      <div className="mb-40 grid grid-cols-3 min-h-[300px] gap-4">
+        <div>
+          <div className="text-xl font-semibold flex items-center gap-3 text-green-500">
+            <CarIcon />
+            <span>Giới thiệu</span>
+          </div>
+
+          <div className="text-3xl my-6 font-bold">
+            Cung cấp dịch vụ cho thuê xe đáng tin cậy
+          </div>
+
+          <div className="text-gray-500 leading-6">
+            Lorem Ipsum is simply dummy text of the printing and typesetting
+            industry. Lorem Ipsum has been the industry's standard dummy text
+            ever since the 1500s, when an unknown printer took a galley of type
+            and scrambled it to make a type specimen book. It has survived not
+            only five centuries, but also the leap into electronic typesetting,
+            remaining essentially unchanged. It was popularised in the 1960s
+            with the release of
+          </div>
+        </div>
+        <div className="relative">
+          <Image
+            src="/images/bg-landingpage.png"
+            alt="banner"
+            layout="fill"
+            className="object-cover rounded-xl"
+          />
+        </div>
+        <div className="grid grid-cols-1 grid-rows-3 items-center gap-4">
+          <div className="flex gap-4 items-center">
+            <div className="relative aspect-square w-16 h-16">
               <Image src="/images/ad-1.svg" alt="ad" layout="fill" />
             </div>
-            <h5 className="text-lg mb-0">Thuê xe an toàn</h5>
-            <p className="text-center">
-              Tất cả các xe trên CRT đã được kiểm duyệt và chịu sự quản lý của
-              CRT
-            </p>
+
+            <div>
+              <div className="text-2xl my-4 font-semibold">Thuê xe an toàn</div>
+              <div className="text-gray-500">
+                Tất cả các xe trên CRT đã được kiểm duyệt và chịu sự quản lý của
+                CRT
+              </div>
+            </div>
           </div>
 
-          <div className="flex flex-col items-center">
-            <div className="relative aspect-square w-60 h-60">
+          <div className="flex gap-4 items-center">
+            <div className="relative aspect-square w-16 h-16">
               <Image src="/images/ad-2.svg" alt="ad" layout="fill" />
             </div>
-            <h5 className="text-lg mb-0">Thủ tục đơn giản</h5>
-            <p className="text-center">
-              Chỉ cần cung cấp CCCD và bằng lái xe cho chúng tôi
-            </p>
+            <div>
+              <div className="text-2xl my-4 font-semibold">
+                Thủ tục đơn giản
+              </div>
+              <div className="text-gray-500">
+                Chỉ cần cung cấp CCCD và bằng lái xe cho chúng tôi
+              </div>
+            </div>
           </div>
 
-          <div className="flex flex-col items-center">
-            <div className="relative aspect-square w-60 h-60">
+          <div className="flex gap-4 items-center">
+            <div className="relative aspect-square w-16 h-16">
               <Image src="/images/ad-3.svg" alt="ad" layout="fill" />
             </div>
-            <h5 className="text-lg mb-0">Thanh toán dễ dàng</h5>
-            <p className="text-center">
-              Có thể lựa chọn thanh toán khi hoàn tất chuyến đi hoặc qua trang
-              thanh toán trực tuyến
-            </p>
-          </div>
-
-          <div className="flex flex-col items-center">
-            <div className="relative aspect-square w-60 h-60">
-              <Image src="/images/ad-4.svg" alt="ad" layout="fill" />
+            <div>
+              <div className="text-2xl my-4 font-semibold">
+                Thanh toán dễ dàng
+              </div>
+              <div className="text-gray-500">
+                Có thể lựa chọn thanh toán khi hoàn tất chuyến đi hoặc qua trang
+                thanh toán trực tuyến
+              </div>
             </div>
-            <h5 className="text-lg mb-0">Giao xe tận nơi</h5>
-            <p className="text-center">
-              CRT cho bạn chọn địa điểm nhận xe hoặc bạn có thể đến trực tiếp
-              CRT nhận xe
-            </p>
-          </div>
-
-          <div className="flex flex-col items-center">
-            <div className="relative aspect-square w-60 h-60">
-              <Image src="/images/ad-5.svg" alt="ad" layout="fill" />
-            </div>
-            <h5 className="text-lg mb-0">Nhiều mẫu mã</h5>
-            <p className="text-center">
-              Đa dạng các dòng xe với giá cả rất phải chăng
-            </p>
-          </div>
-
-          <div className="flex flex-col items-center">
-            <div className="relative aspect-square w-60 h-60">
-              <Image src="/images/ad-6.svg" alt="ad" layout="fill" />
-            </div>
-            <h5 className="text-lg mb-0">An toàn khi lái xe</h5>
-            <p className="text-center">Tất cả các xe đều có bảo hiểm</p>
           </div>
         </div>
       </div>
-      <div>
-        <h2 className="text-center text-2xl">Hướng Dẫn Thuê Xe</h2>
-        <p className="text-center font-semibold text-neutral-700 mb-8">
-          Chỉ với 4 bước đơn giản để trải nghiệm thuê xe Mioto một cách nhanh
-          chóng
-        </p>
 
-        <div className="grid grid-cols-4 gap-10">
-          <div className="flex flex-col">
-            <div className="relative aspect-square w-60 h-60">
-              <Image src="/images/guide-1.svg" alt="guide" layout="fill" />
-            </div>
-            <div className="flex gap-4 text-xl font-black justify-center">
-              <span className="text-green-500 text-3xl">01</span>
-              <span>Đặt xe trên app/web CRT</span>
-            </div>
+      <div className="grid grid-cols-2 gap-8 min-h-[500px]">
+        <div className="relative">
+          <Image
+            src="/images/bg-landingpage.png"
+            alt="banner"
+            layout="fill"
+            className="object-cover rounded-xl"
+          />
+        </div>
+        <div>
+          <div className="text-xl text-green-500 font-bold flex gap-2 items-center">
+            <CarIcon />
+            <span>Hướng Dẫn Thuê Xe</span>
+          </div>
+          <div className="text-3xl font-bold my-6">
+            Bắt đầu trải nghiệm cùng chúng tôi
+          </div>
+          <div className="text-gray-500">
+            Chỉ với 4 bước đơn giản để trải nghiệm thuê xe CRT một cách nhanh
+            chóng
           </div>
 
-          <div className="flex flex-col">
-            <div className="relative aspect-square w-60 h-60">
-              <Image src="/images/guide-2.svg" alt="guide" layout="fill" />
+          <div className="mt-4 grid grid-cols-1 grid-rows-4 gap-6">
+            <div className="flex gap-4 items-center">
+              <div className="shrink-0 w-12 h-12 rounded-full bg-green-300 flex justify-center items-center text-3xl text-white font-bold">
+                01
+              </div>
+              <div>
+                <div className="text-xl font-semibold text-gray-700 mb-2">
+                  Đặt xe trên app/web CRT
+                </div>
+                <div className="text-gray-500">
+                  Lorem ipsum dolor sit, amet consectetur adipisicing elit.
+                  Pariatur voluptatibus ex iusto, culpa nulla
+                </div>
+              </div>
             </div>
-            <div className="flex gap-4 text-xl font-black justify-center">
-              <span className="text-green-500 text-3xl">02</span>
-              <span>Nhận xe</span>
-            </div>
-          </div>
 
-          <div className="flex flex-col">
-            <div className="relative aspect-square w-60 h-60">
-              <Image src="/images/guide-3.svg" alt="guide" layout="fill" />
+            <div className="flex gap-4 items-center">
+              <div className="shrink-0 w-12 h-12 rounded-full bg-green-300 flex justify-center items-center text-3xl text-white font-bold">
+                02
+              </div>
+              <div>
+                <div className="text-xl font-semibold text-gray-700 mb-2">
+                  Nhận xe
+                </div>
+                <div className="text-gray-500">
+                  Lorem ipsum dolor sit, amet consectetur adipisicing elit.
+                  Pariatur voluptatibus ex iusto, culpa nulla
+                </div>
+              </div>
             </div>
-            <div className="flex gap-4 text-xl font-black justify-center">
-              <span className="text-green-500 text-3xl">03</span>
-              <span>Bắt đầu hành trình</span>
-            </div>
-          </div>
 
-          <div className="flex flex-col">
-            <div className="relative aspect-square w-60 h-60">
-              <Image src="/images/guide-4.svg" alt="guide" layout="fill" />
+            <div className="flex gap-4 items-center">
+              <div className="shrink-0 w-12 h-12 rounded-full bg-green-300 flex justify-center items-center text-3xl text-white font-bold">
+                03
+              </div>
+              <div>
+                <div className="text-xl font-semibold text-gray-700 mb-2">
+                  Bắt đầu hành trình
+                </div>
+                <div className="text-gray-500">
+                  Lorem ipsum dolor sit, amet consectetur adipisicing elit.
+                  Pariatur voluptatibus ex iusto, culpa nulla
+                </div>
+              </div>
             </div>
-            <div className="flex gap-4 text-xl font-black justify-center">
-              <span className="text-green-500 text-3xl">04</span>
-              <span>Trả xe & kết thúc chuyến đi</span>
+
+            <div className="flex gap-4 items-center">
+              <div className="shrink-0 w-12 h-12 rounded-full bg-green-300 flex justify-center items-center text-3xl text-white font-bold">
+                04
+              </div>
+              <div>
+                <div className="text-xl font-semibold text-gray-700 mb-2">
+                  Trả xe & kết thúc chuyến đi
+                </div>
+                <div className="text-gray-500">
+                  Lorem ipsum dolor sit, amet consectetur adipisicing elit.
+                  Pariatur voluptatibus ex iusto, culpa nulla
+                </div>
+              </div>
             </div>
           </div>
         </div>

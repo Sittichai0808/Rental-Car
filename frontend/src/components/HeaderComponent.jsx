@@ -36,10 +36,10 @@ export default function HeaderComponent() {
         <div className="flex items-center gap-4">
           <div className="shrink-0 mt-7 cursor-pointer">
             <Link href="/">
-              <Image src={logo} height={40} width={40} />
+              <Image src={logo} height={60} width={100} />
             </Link>
           </div>
-          <h2 className="text-green-500">CRT</h2>
+          {/* <h2 className="text-green-500">CRT</h2> */}
         </div>
         <StyledMenu
           className="grow border-none font-semibold flex justify-end w-2/4 gap-4"

@@ -56,7 +56,7 @@ const VerifyOTPPasswordPage = () => {
   return (
     <div className="py-[30px] px-[20px] h-screen">
       <div className="flex flex-col justify-center items-center h-full ">
-        <Image src={forgotPassword} alt="logo" width={50} height={50} />
+        <Image src={forgotPassword} alt="logo" width={150} height={90} />
         <Title>Quên mật khẩu</Title>
         <div>CRT vừa gửi mã OTP vào email của bạn.</div>
         <Title level={5} className="text-gray-500">

@@ -23,8 +23,7 @@ export const AdminLayout = ({ children }) => {
   const router = useRouter();
   const role = user?.result.role;
   const selectedKeys = [pathname.replace("/admin/", "")];
-  const [accessToken, setAccessToken, clearAccessToken] =
-    useLocalStorage("access_token");
+  const [accessToken, setAccessToken, clearAccessToken] = useLocalStorage("access_token");
   const items = [
     {
       label: (
@@ -55,9 +54,7 @@ export const AdminLayout = ({ children }) => {
   return (
     <Layout hasSider className="h-screen">
       <Sider theme="light" className="border-r shadow bg-white p-6" width={310}>
-        <div className="w-full bg-green-100 h-32 flex justify-center items-center mb-10">
-          LOGO
-        </div>
+        <div className="w-full bg-green-100 h-32 flex justify-center items-center mb-10">LOGO</div>
         <Menu
           selectedKeys={selectedKeys}
           items={[
@@ -86,16 +83,12 @@ export const AdminLayout = ({ children }) => {
             {
               key: "manage-contracts",
               label: "Quản lí hợp đồng",
-              icon: (
-                <ContractIcon className="shrink-0 text-2xl text-green-500 w-0.5" />
-              ),
+              icon: <ContractIcon className="shrink-0 text-2xl text-green-500 w-0.5" />,
             },
             {
               key: "manage-final-contracts",
               label: "Tất toán hợp đồng",
-              icon: (
-                <FinalContractIcon className="shrink-0 text-2xl text-green-500 w-0.5" />
-              ),
+              icon: <FinalContractIcon className="shrink-0 text-2xl text-green-500 w-0.5" />,
             },
             {
               key: "manage-coupon",
@@ -136,7 +129,7 @@ export const AdminLayout = ({ children }) => {
             <span className="flex ">{user?.result?.fullname}</span>
           </div>
         </Header>
-        <Content className="p-4 bg-white">{children}</Content>
+        <Content className="p-4 bg-slate-50">{children}</Content>
       </Layout>
     </Layout>
   );

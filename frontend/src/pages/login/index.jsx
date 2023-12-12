@@ -106,18 +106,17 @@ const LoginPage = () => {
 
   const { mutate } = useMutation(onSubmit);
   return (
-    <div className="py-[30px] px-[20px] h-screen">
+    <div className="pb-5 px-[20px] h-screen">
       <div className="flex flex-col justify-center items-center h-full ">
         <Image
           src={logo}
           alt="logo"
-          width={50}
-          height={50}
+          width={150}
+          height={90}
           loader={loaderProp}
           unoptimized={true}
         />
         <Title>Đăng nhập</Title>
-
         <div>
           <Form
             form={form}

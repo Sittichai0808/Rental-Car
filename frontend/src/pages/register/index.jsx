@@ -135,8 +135,8 @@ const RegisterPage = () => {
         <Image
           src={logo}
           alt="logo"
-          width={50}
-          height={50}
+          width={150}
+          height={90}
           loader={loaderProp}
         />
         <Title>Đăng ký thông tin</Title>

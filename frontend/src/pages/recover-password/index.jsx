@@ -73,8 +73,8 @@ const RecoverPasswordPage = () => {
         <Image
           src={forgotPassword}
           alt="logo"
-          width={50}
-          height={50}
+          width={150}
+          height={90}
           // loader={loaderProp}
         />
         <Title>Quên mật khẩu</Title>

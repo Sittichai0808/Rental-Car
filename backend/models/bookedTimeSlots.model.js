@@ -5,8 +5,8 @@ const bookedTimeSlotsSchema = new mongoose.Schema(
   {
     bookingId: {
       type: mongoose.Types.ObjectId,
-      ref: 'Booking', // Tham chiếu đến bảng Booking
-      required: true
+      ref: 'Booking' // Tham chiếu đến bảng Booking
+      // required: true
     },
     from: {
       type: Date,

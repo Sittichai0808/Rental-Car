@@ -31,6 +31,7 @@ import Image from "next/image";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import { useDatesState } from "@/recoils/dates.state";
 import { useUserState } from "@/recoils/user.state";
+import { deleteBookedTimeSlots } from "@/apis/user-bookings.api";
 import Coupon from "@/components/Coupon";
 
 const { Title } = Typography;
@@ -109,14 +110,30 @@ const BookingPage = () => {
         bookedCar();
         setResult("Giao Dịch thành công");
       } else if (router.query.vnp_TransactionStatus === "01") {
+        deleteBookedTimeSlots(accessToken, carId, {
+          timeBookingStart: orderInfo[3],
+          timeBookingEnd: orderInfo[4],
+        });
         setResult("Giao dịch chưa hoàn tất");
       } else if (router.query.vnp_TransactionStatus === "02") {
+        deleteBookedTimeSlots(accessToken, carId, {
+          timeBookingStart: orderInfo[3],
+          timeBookingEnd: orderInfo[4],
+        });
         setResult("Giao dịch bị lỗi");
       } else if (router.query.vnp_TransactionStatus === "03") {
+        deleteBookedTimeSlots(accessToken, carId, {
+          timeBookingStart: orderInfo[3],
+          timeBookingEnd: orderInfo[4],
+        });
         setResult(
           "Giao dịch đảo (Khách hàng đã bị trừ tiền tại Ngân hàng nhưng GD chưa thành công ở VNPAY)"
         );
       } else {
+        deleteBookedTimeSlots(accessToken, carId, {
+          timeBookingStart: orderInfo[3],
+          timeBookingEnd: orderInfo[4],
+        });
         setResult("Giao dịch bị nghi ngờ gian lận");
       }
       setCurrent(2);
@@ -145,9 +162,45 @@ const BookingPage = () => {
 
   const onSubmit = async (values) => {
     try {
-      const response1 = await axios.get(
-        `${process.env.NEXT_PUBLIC_REACT_APP_BACKEND_URL}/bookings/${carId}`,
+      // const response1 = await axios.get(
+      //   `${process.env.NEXT_PUBLIC_REACT_APP_BACKEND_URL}/bookings/${carId}`,
 
+      //   {
+      //     headers: {
+      //       Authorization: `Bearer ${accessToken}`,
+      //       "Content-Type": "application/json",
+      //     },
+      //     withCredentials: true,
+      //   }
+      // );
+
+      // for (const slot of response1.data.result) {
+      //   const bookedStart = new Date(slot.from);
+      //   const bookedEnd = new Date(slot.to);
+      //   var from1 = new Date(from);
+      //   var to1 = new Date(to);
+      //   console.log(bookedStart >= from, bookedEnd <= to);
+      //   if (bookedStart >= from1 && bookedEnd <= to1)
+      //     return message.error(
+      //       "Khoảng ngày đã được thuê. Vui lòng chọn lại ngày thuê!"
+      //     );
+      //   if (bookedStart <= from1 && bookedEnd >= to1)
+      //     return message.error(
+      //       "Khoảng ngày đã được thuê. Vui lòng chọn lại ngày thuê!"
+      //     );
+      //   if (bookedEnd >= from1 && bookedEnd <= to1)
+      //     return message.error(
+      //       "Khoảng ngày đã được thuê. Vui lòng chọn lại ngày thuê!"
+      //     );
+      //   if (bookedStart >= from1 && bookedStart <= to1)
+      //     return message.error(
+      //       "Khoảng ngày đã được thuê. Vui lòng chọn lại ngày thuê!"
+      //     );
+      // }
+
+      const response2 = await axios.post(
+        `${process.env.NEXT_PUBLIC_REACT_APP_BACKEND_URL}/bookings/bookRecord/${carId}`,
+        { timeBookingStart: from, timeBookingEnd: to },
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -156,30 +209,11 @@ const BookingPage = () => {
           withCredentials: true,
         }
       );
-
-      for (const slot of response1.data.result) {
-        const bookedStart = new Date(slot.from);
-        const bookedEnd = new Date(slot.to);
-        var from1 = new Date(from);
-        var to1 = new Date(to);
-        console.log(bookedStart >= from, bookedEnd <= to);
-        if (bookedStart >= from1 && bookedEnd <= to1)
-          return message.error(
-            "Khoảng ngày đã được thuê. Vui lòng chọn lại ngày thuê!"
-          );
-        if (bookedStart <= from1 && bookedEnd >= to1)
-          return message.error(
-            "Khoảng ngày đã được thuê. Vui lòng chọn lại ngày thuê!"
-          );
-        if (bookedEnd >= from1 && bookedEnd <= to1)
-          return message.error(
-            "Khoảng ngày đã được thuê. Vui lòng chọn lại ngày thuê!"
-          );
-        if (bookedStart >= from1 && bookedStart <= to1)
-          return message.error(
-            "Khoảng ngày đã được thuê. Vui lòng chọn lại ngày thuê!"
-          );
+      if (response2.status === 500) {
+        message.error("Thời gian đã được chon. Vui lòng chọn ngày khác!");
       }
+
+      console.log(response2);
 
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_REACT_APP_BACKEND_URL}/payments/create_payment_url`,
@@ -196,7 +230,7 @@ const BookingPage = () => {
         console.log(error);
       }
     } catch (error) {
-      console.log(error);
+      message.error(error.response.data.message);
     }
   };
 

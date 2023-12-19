@@ -142,9 +142,7 @@ export const AdminLayout = ({ children }) => {
               placement="bottom"
               trigger={["click"]}
             >
-              <Space>
-                <Avatar src={user?.result?.profilePicture} />
-              </Space>
+              <Avatar src={user?.result?.profilePicture} />
             </Dropdown>
             <span className="flex ">{user?.result?.fullname}</span>
           </div>

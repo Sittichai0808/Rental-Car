@@ -50,41 +50,6 @@ export const AuthLayout = ({ children }) => {
               </div>
             </div>
           </div>
-          {/* <div className="bg-cover bg-center bg-slate-400 h-screen   relative"> */}
-          {/* <div className="absolute z-30 inset-0 mx-[20px] my-[30px] rounded-[10px]  bg-green-500 bg-opacity-50"></div> */}
-          {/* <div className="absolute mx-[20px] my-[30px] ">
-              <Image
-                className="w-full h-4/5  rounded-[10px] object-cover "
-                src={bgImage}
-                // style={{ height: "500px" }}
-                alt="Picture of the author"
-              />
-            </div> */}
-          {/* <div className="absolute z-40 inset-0  mx-[20px] my-[30px]  rounded-[10px]">
-              <Title level={1} className="text-white mx-6 my-20 w-3/4">
-                CRT - Hành trình theo cách của bạn
-              </Title>
-            </div>
-            <div className="absolute z-50 inset-x-0 bottom-0 mx-[20px] my-[30px]  bottom-0 left-0    bg-green-900 bg-opacity-50 rounded-b-lg">
-              <div className="flex justify-center items-center h-24">
-                <Title level={5} className="text-white">
-                  {pathname === "/register"
-                    ? "Bạn đã có tài khoản?"
-                    : "Bạn chưa có tài khoản?"}
-                  <Button
-                    type="text"
-                    className="text-white font-bold text-base"
-                  >
-                    {pathname === "/register" ? (
-                      <Link href="/login"> Đăng nhập</Link>
-                    ) : (
-                      <Link href="/register"> Đăng ký</Link>
-                    )}
-                  </Button>
-                </Title>
-              </div>
-            </div> */}
-          {/* </div> */}
         </Col>
         <Col className="gutter-row" xs={24} sm={24} md={12} lg={12} xl={12}>
           <div>{children}</div>

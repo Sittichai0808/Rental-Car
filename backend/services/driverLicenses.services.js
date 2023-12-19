@@ -41,6 +41,18 @@ class DriverLicensesService {
       throw new Error(error)
     }
   }
+
+  async deleteLicensesDrivers(did) {
+    try {
+      const deleteDriverLicense = await DriverLicenses.findByIdAndDelete(did)
+      if (!deleteDriverLicense) {
+        throw new Error('Driver license not found')
+      }
+      await User.deleteOne({ driverLicenses: did })
+    } catch (error) {
+      throw new Error(error)
+    }
+  }
 }
 
 const driverLicensesService = new DriverLicensesService()

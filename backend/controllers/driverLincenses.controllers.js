@@ -67,3 +67,17 @@ export const getLicensesDrivers = async (req, res) => {
     })
   }
 }
+
+export const deleteDriverLicense = async (req, res) => {
+  try {
+    const { did } = req.params
+    const result = await driverLicensesService.deleteLicensesDrivers(did)
+    return res.status(HTTP_STATUS.OK).json({
+      message: 'Delete Successfully',
+    })
+  } catch (error) {
+    return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
+      message: error.message
+    })
+  }
+}

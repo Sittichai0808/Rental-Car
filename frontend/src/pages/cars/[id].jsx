@@ -519,44 +519,6 @@ export default function CarDetailPage() {
             {validationMessage && (
               <p className="text-red-500 ml-2">{validationMessage}</p>
             )}
-
-            {/* <div className="border border-solid rounded-lg border-gray-300 bg-white p-4">
-              <h4 className="m-0 mb-3 font-medium text-gray-800">
-                Địa điểm giao xe
-              </h4>
-              <span className="text-xl font-bold">Ngũ Hành Sơn, Đà Nẵng</span>
-              <p className="text-sm text-gray-500">
-                Bạn sẽ nhận trả xe tại địa chỉ xe do chủ xe không hỗ trợ giao
-                nhận tận nơi. Địa chỉ cụ thể sẽ được hiển thị sau khi đặt cọc.
-              </p>
-            </div> */}
-
-            {/* <Divider /> */}
-            {/*
-            <BorderlessTable
-              columns={[
-                { dataIndex: "label" },
-                { dataIndex: "price", className: "text-right" },
-              ]}
-              bordered={false}
-              showHeader={false}
-              pagination={false}
-              rowKey={(row) => row.label}
-              dataSource={[
-                {
-                  label: "Đơn giá thuê",
-                  price: "780 000đ/ngày",
-                },
-                {
-                  label: "Phí dịch vụ",
-                  price: "Phí bảo hiểm",
-                },
-                {
-                  label: <span className="font-bold">Tổng phí thuê xe</span>,
-                  price: <span className="font-bold">971 880đ</span>,
-                },
-              ]}
-            /> */}
             <div className="flex justify-center ">
               {/* <Link href={`/booking/${car?.result._id}`}> */}
               <Button type="primary" onClick={handleRent}>

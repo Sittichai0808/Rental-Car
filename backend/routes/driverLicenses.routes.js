@@ -1,6 +1,7 @@
 import express from 'express'
 import {
   acceptLicensesDriver,
+  deleteDriverLicense,
   getLicensesDrivers,
   regisLicensesDriver,
   updateDriverLicense
@@ -22,6 +23,6 @@ driverLicensesRoutes.post(
     wrapRequestHandler(updateDriverLicense)
   )
 driverLicensesRoutes.put('/acceptDriver/:did', adminAndStaffValidator, wrapRequestHandler(acceptLicensesDriver))
-
+driverLicensesRoutes.delete('/deleteDriver/:did', adminAndStaffValidator, wrapRequestHandler(deleteDriverLicense))
 driverLicensesRoutes.get('/', adminAndStaffValidator, wrapRequestHandler(getLicensesDrivers))
 export default driverLicensesRoutes

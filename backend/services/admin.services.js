@@ -107,6 +107,8 @@ class AdminServices {
     try {
       const ObjectId = mongoose.Types.ObjectId
       const totalCarsCreated = await Cars.find({ user: staffId }).count()
+      const currentDate = new Date();
+      const currentMonth = currentDate.getMonth() + 1
       const totalContractCreated = await Contracts.find({ createBy: staffId }).count()
       const bookingByMonth = await Bookings.aggregate([
         {

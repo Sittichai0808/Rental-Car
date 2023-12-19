@@ -169,11 +169,11 @@ export default function CarDetailPage() {
   const disabledRangeTime = (_, type) => {
     if (type === "start") {
       return {
-        disabledHours: () => [0, 1, 2, 3, 4, 5, 6, 18, 19, 20, 21, 22, 23],
+        disabledHours: () => [0, 1, 2, 3, 4, 5, 6, 17, 18, 19, 20, 21, 22, 23],
       };
     }
     return {
-      disabledHours: () => [0, 1, 2, 3, 4, 5, 6, 21, 22, 23],
+      disabledHours: () => [0, 1, 2, 3, 4, 5, 6, 17, 18, 19, 20, 21, 22, 23],
     };
   };
 

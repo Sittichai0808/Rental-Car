@@ -23,3 +23,16 @@ export async function acceptLicensesDriver(accessToken, driverId) {
   });
   return data;
 }
+
+export async function deleteDriverLicense(driverId, accessToken) {
+  console.log(driverId);
+  const { data } = await apiClient.request({
+    method: "DELETE",
+    url: `/drivers/deleteDriver/${driverId}`,
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      "Content-Type": "application/json",
+    },
+  });
+  return data;
+}

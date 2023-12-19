@@ -1,25 +1,40 @@
 import { GET_GPLX_KEY } from "@/constants/react-query-key.constant";
-import { acceptLicensesDriver, getGPLX } from "@/apis/gplx.api";
+import {
+  acceptLicensesDriver,
+  getGPLX,
+  deleteDriverLicense,
+} from "@/apis/gplx.api";
 import { AdminLayout } from "@/layouts/AdminLayout";
 import useLocalStorage from "@/hooks/useLocalStorage";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import moment from "moment";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { Table, Image, Button, Popconfirm, message } from "antd";
+import { DeleteOutlined } from "@ant-design/icons";
 
 export default function AdminManageGPLX() {
   const [accessToken] = useLocalStorage("access_token");
-  const queryClient = useQueryClient();
-  const { data: gplx } = useQuery({
+  const { data: gplx, refetch } = useQuery({
     queryKey: [GET_GPLX_KEY],
     queryFn: () => getGPLX(accessToken),
   });
+
+  const deleteGPLX = useMutation(
+    (driverId) => deleteDriverLicense(driverId, accessToken),
+    {
+      onSuccess: () => {
+        message.success("Xoá thành công");
+        refetch();
+      },
+
+      onError: (error) => {
+        message.error(`Xoá thất bại: ${error.message}`);
+      },
+    }
+  );
   const dataSource = gplx?.result.map((item, idx) => ({
     driverId: item?._id,
     id: idx + 1,
     img: item?.image,
     drivingLicenseNo: item?.drivingLicenseNo,
-    fullName: item?.fullName,
-    dob: moment(item?.dob).format("DD-MM-YYYY"),
     class: item?.class,
     status: item?.status,
   }));
@@ -28,8 +43,8 @@ export default function AdminManageGPLX() {
     (driverId) => acceptLicensesDriver(accessToken, driverId),
     {
       onSuccess: () => {
-        queryClient.invalidateQueries([GET_GPLX_KEY]);
         message.success("Duyệt thành công");
+        refetch();
       },
 
       onError: (error) => {
@@ -65,12 +80,6 @@ export default function AdminManageGPLX() {
             filterSearch: true,
             onFilter: (value, record) =>
               record.drivingLicenseNo.startsWith(value),
-          },
-          { key: "fullName", title: "Họ và Tên", dataIndex: "fullName" },
-          {
-            key: "dob",
-            title: "Ngày sinh",
-            dataIndex: "dob",
           },
           {
             key: "class",
@@ -112,7 +121,6 @@ export default function AdminManageGPLX() {
           },
           {
             key: "action",
-            title: "Duyệt",
             render: (record) => (
               <div className="flex gap-2">
                 <Popconfirm
@@ -130,6 +138,17 @@ export default function AdminManageGPLX() {
                       Duyệt
                     </Button>
                   )}
+                </Popconfirm>
+
+                <Popconfirm
+                  title="Bạn có chắc chắn xóa bằng lái xe này?"
+                  okText="Xóa"
+                  cancelText="Hủy"
+                  onConfirm={() => deleteGPLX.mutate(record.driverId)}
+                >
+                  <Button className="bg-red-500 text-white border-none hover:bg-red-500/70">
+                    <DeleteOutlined />
+                  </Button>
                 </Popconfirm>
               </div>
             ),

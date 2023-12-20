@@ -125,7 +125,11 @@ export default function CarDetailPage() {
     } else if (user?.result?.driverLicenses === undefined) {
       setIsModalCheckOpen(true);
     } else {
-      router.push(`/booking/${car?.result._id}`);
+      if (validationMessage === "Khoảng ngày đã được thuê.") {
+        message.error("Khoảng ngày đã được thuê. Vui lòng chọn ngày khác!");
+      } else {
+        router.push(`/booking/${car?.result._id}`);
+      }
     }
   };
 

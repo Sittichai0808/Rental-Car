@@ -31,7 +31,10 @@ import { useState } from "react";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import moment from "moment";
 import dayjs from "dayjs";
-
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
+dayjs.extend(utc);
+dayjs.extend(timezone);
 function UpsertCouponForm({ couponId, onOk }) {
   const [accessToken] = useLocalStorage("access_token");
   console.log(couponId);
@@ -57,8 +60,6 @@ function UpsertCouponForm({ couponId, onOk }) {
     return <Skeleton active />;
   }
 
-  console.log(couponDetail.data?.result?.timeExpired);
-
   return (
     <Form
       form={form}
@@ -66,10 +67,12 @@ function UpsertCouponForm({ couponId, onOk }) {
       className="flex flex-col gap-4 mt-10"
       initialValues={{
         ...couponDetail.data?.result,
-        timeExpired: dayjs(
-          couponDetail.data?.result?.timeExpired,
-          "YYYY-MM-DD HH:mm"
-        ),
+        timeExpired:
+          couponId === undefined
+            ? null
+            : dayjs(couponDetail?.data?.result?.timeExpired).tz(
+                "Asia/Ho_Chi_Minh"
+              ),
       }}
       onFinish={async (values) => {
         console.log(values, couponId);

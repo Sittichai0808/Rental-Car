@@ -47,6 +47,13 @@ const RatingModal = ({ open, handleCancel, bookingId, carId, accessToken }) => {
 
   const handleRatingSubmit = async () => {
     try {
+      if (!star) {
+        notification.error({
+          message: "Lỗi",
+          description: "Vui lòng chọn số sao để đánh giá.",
+        });
+        return;
+      }
       if (hasRatings) {
         await updateRating({ accessToken, bookingId, star, comment });
 

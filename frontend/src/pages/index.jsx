@@ -71,7 +71,7 @@ export default function HomePage() {
   const fetchCars = async () => {
     try {
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_REACT_APP_BACKEND_URL}/cars?limit=8`,
+        `${process.env.NEXT_PUBLIC_REACT_APP_BACKEND_URL}/cars?limit=8&totalRatings[gte]=4&totalRatings[lte]=5`,
         {
           headers: { "Content-Type": "application/json" },
           withCredentials: true,
@@ -324,10 +324,6 @@ export default function HomePage() {
                 <div className="text-xl font-semibold text-gray-700 mb-2">
                   Đặt xe trên app/web CRT
                 </div>
-                {/* <div className="text-gray-500">
-                  Lorem ipsum dolor sit, amet consectetur adipisicing elit.
-                  Pariatur voluptatibus ex iusto, culpa nulla
-                </div> */}
               </div>
             </div>
 
@@ -339,10 +335,6 @@ export default function HomePage() {
                 <div className="text-xl font-semibold text-gray-700 mb-2">
                   Nhận xe
                 </div>
-                {/* <div className="text-gray-500">
-                  Lorem ipsum dolor sit, amet consectetur adipisicing elit.
-                  Pariatur voluptatibus ex iusto, culpa nulla
-                </div> */}
               </div>
             </div>
 
@@ -354,10 +346,6 @@ export default function HomePage() {
                 <div className="text-xl font-semibold text-gray-700 mb-2">
                   Bắt đầu hành trình
                 </div>
-                {/* <div className="text-gray-500">
-                  Lorem ipsum dolor sit, amet consectetur adipisicing elit.
-                  Pariatur voluptatibus ex iusto, culpa nulla
-                </div> */}
               </div>
             </div>
 
@@ -369,10 +357,6 @@ export default function HomePage() {
                 <div className="text-xl font-semibold text-gray-700 mb-2">
                   Trả xe & kết thúc chuyến đi
                 </div>
-                {/* <div className="text-gray-500">
-                  Lorem ipsum dolor sit, amet consectetur adipisicing elit.
-                  Pariatur voluptatibus ex iusto, culpa nulla
-                </div> */}
               </div>
             </div>
           </div>

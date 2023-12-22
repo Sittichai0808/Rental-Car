@@ -5,6 +5,7 @@ import Image from "next/image";
 import logo from "../../public/logo.png";
 import { Avatar, Layout, Menu, Space, Button, Dropdown } from "antd";
 import { useUserState } from "@/recoils/user.state.js";
+import { useDriverState } from "@/recoils/driver.state";
 import { LogoutOutlined, UserOutlined } from "@ant-design/icons";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import { useRouter } from "next/router";
@@ -22,6 +23,7 @@ const StyledMenu = styled(Menu)`
 const { Header } = Layout;
 export default function HeaderComponent() {
   const [user, setUser] = useUserState();
+  const [driver, setDriver] = useDriverState();
   const router = useRouter();
   const { pathname, push } = useRouter();
   const [accessToken, setAccessToken, clearAccessToken] =
@@ -42,6 +44,7 @@ export default function HeaderComponent() {
           onClick={() => {
             clearAccessToken();
             setUser(null);
+            setDriver(null);
             router.push("/");
           }}
         >
@@ -108,22 +111,20 @@ export default function HeaderComponent() {
         ) : (
           <div className="flex items-center gap-2 shrink-0">
             <div className="flex rounded-full p-1 cursor-pointer">
-              {user?.result?.profilePicture ? (
-                <Dropdown
-                  className="cursor-pointer"
-                  menu={{
-                    items,
-                  }}
-                  placement="bottom"
-                  trigger={["click"]}
-                >
-                  <Space>
-                    <Avatar src={user?.result?.profilePicture} />
-                  </Space>
-                </Dropdown>
-              ) : (
-                <UserFilledIcon className="text-neutral-500" />
-              )}
+              <Dropdown
+                className="cursor-pointer"
+                menu={{
+                  items,
+                }}
+                placement="bottom"
+                trigger={["click"]}
+              >
+                {user?.result?.profilePicture ? (
+                  <Avatar src={user?.result?.profilePicture} />
+                ) : (
+                  <UserFilledIcon className="text-neutral-500" />
+                )}
+              </Dropdown>
             </div>
             <span>{user?.result?.fullname}</span>
           </div>

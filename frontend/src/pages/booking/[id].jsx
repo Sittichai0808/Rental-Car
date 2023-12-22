@@ -329,7 +329,7 @@ const BookingPage = () => {
       setCurrent(1);
     }
   };
-
+  //
   const applyCoupon = (coupon) => {
     const discount = coupon?.discount || 0;
     setAmountDiscount(discount);

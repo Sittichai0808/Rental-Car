@@ -324,6 +324,8 @@ const BookingPage = () => {
   const handleCheckout = () => {
     if (from == undefined || to == undefined) {
       setValidationMessage("Hãy chọn ngày thuê");
+    } else if (validationMessage === "Khoảng ngày đã được thuê.") {
+      message.error("Khoảng ngày đã được thuê. Vui lòng chọn ngày khác!");
     } else {
       setTotalDays(totalDays);
       setCurrent(1);

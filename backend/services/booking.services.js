@@ -13,19 +13,6 @@ class BookingServices {
       const bookingStart = moment.utc(timeBookingStart).toDate()
       const bookingEnd = moment.utc(timeBookingEnd).toDate()
       console.log(bookingStart, bookingEnd)
-      // if (!bookingStart.isValid() || !bookingEnd.isValid()) {
-      //     throw new Error('Invalid input')
-      // }
-
-      // const overlappingSlots = await BookedTimeSlots.find({
-      //     carId: carId,
-      //     from: bookingStart.toISOString(),
-      //     to: bookingEnd.toISOString()
-      // });
-
-      // if (overlappingSlots.length > 0) {
-      //     throw new Error('The time slot is booked');
-      // }
 
       const newBooking = new Bookings({
         bookBy: user_id,
@@ -51,14 +38,6 @@ class BookingServices {
         { new: true }
       )
 
-      // const newBookedTimeSlot = new BookedTimeSlots({
-      //   bookingId: bookingResult._id, // Lấy ID của đặt chỗ vừa tạo
-      //   from: bookingResult.timeBookingStart,
-      //   to: bookingResult.timeBookingEnd,
-      //   carId: carId
-      // })
-
-      // await newBookedTimeSlot.save()
       return { bookingResult, newBookedTimeSlot }
     } catch (error) {
       throw error
@@ -81,14 +60,6 @@ class BookingServices {
         to: bookingEnd
       })
 
-      // const newBookedTimeSlot = new BookedTimeSlots({
-      //   bookingId: bookingResult._id, // Lấy ID của đặt chỗ vừa tạo
-      //   from: bookingResult.timeBookingStart,
-      //   to: bookingResult.timeBookingEnd,
-      //   carId: carId
-      // })
-
-      // await newBookedTimeSlot.save()
       return { deleteBookedTimeSlot }
     } catch (error) {
       throw error
